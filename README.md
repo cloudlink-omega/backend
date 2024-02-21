@@ -12,6 +12,3 @@ for a template.
 ## Database
 This backend code was designed with a MariaDB server in mind, but should be compatible with any
 standard SQL server. Tables will be auto-generated on first launch.
-
-## Documentation
-See https://github.com/MikeDev101/cloudlink-omega/wiki
