@@ -1,5 +1,7 @@
+![Backend Thumbnail](https://github.com/cloudlink-omega/backend/assets/12957745/9a09a982-4c29-493e-83f7-036f05b02b9a)
+
 # Backend
-CloudLink Omega is built using Chi and Gorilla Websockets.
+Implementation of the CL5 signaling protocol and CLΩ API in Go. Powered by Chi and Gorilla Websockets.
 
 ## Basics
 All API endpoints use `application/json` or `text/plain` types. See documentation for endpoints.
