@@ -5,7 +5,7 @@ import (
 	"strings"
 	"sync"
 
-	structs "github.com/mikedev101/cloudlink-omega/backend/pkg/structs"
+	structs "github.com/cloudlink-omega/backend/pkg/structs"
 )
 
 // Client manager is a pseudo-database for signaling clients.

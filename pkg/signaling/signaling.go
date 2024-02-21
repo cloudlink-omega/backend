@@ -9,13 +9,13 @@ import (
 
 	"github.com/gorilla/websocket"
 
+	accounts "github.com/cloudlink-omega/backend/pkg/accounts"
+	dm "github.com/cloudlink-omega/backend/pkg/data"
+	clientmgr "github.com/cloudlink-omega/backend/pkg/signaling/clientmgr"
+	structs "github.com/cloudlink-omega/backend/pkg/structs"
+	utils "github.com/cloudlink-omega/backend/pkg/utils"
 	validator "github.com/go-playground/validator/v10"
 	json "github.com/goccy/go-json"
-	accounts "github.com/mikedev101/cloudlink-omega/backend/pkg/accounts"
-	dm "github.com/mikedev101/cloudlink-omega/backend/pkg/data"
-	clientmgr "github.com/mikedev101/cloudlink-omega/backend/pkg/signaling/clientmgr"
-	structs "github.com/mikedev101/cloudlink-omega/backend/pkg/structs"
-	utils "github.com/mikedev101/cloudlink-omega/backend/pkg/utils"
 )
 
 // Define global variables

@@ -6,9 +6,9 @@ import (
 	"os"
 	"strconv"
 
+	api "github.com/cloudlink-omega/backend/pkg/api"
+	dm "github.com/cloudlink-omega/backend/pkg/data"
 	godotenv "github.com/joho/godotenv"
-	api "github.com/mikedev101/cloudlink-omega/backend/pkg/api"
-	dm "github.com/mikedev101/cloudlink-omega/backend/pkg/data"
 
 	_ "github.com/go-sql-driver/mysql"
 	// _ "modernc.org/sqlite"

@@ -10,11 +10,11 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 
-	accounts "github.com/mikedev101/cloudlink-omega/backend/pkg/accounts"
-	constants "github.com/mikedev101/cloudlink-omega/backend/pkg/constants"
-	dm "github.com/mikedev101/cloudlink-omega/backend/pkg/data"
-	errors "github.com/mikedev101/cloudlink-omega/backend/pkg/errors"
-	structs "github.com/mikedev101/cloudlink-omega/backend/pkg/structs"
+	accounts "github.com/cloudlink-omega/backend/pkg/accounts"
+	constants "github.com/cloudlink-omega/backend/pkg/constants"
+	dm "github.com/cloudlink-omega/backend/pkg/data"
+	errors "github.com/cloudlink-omega/backend/pkg/errors"
+	structs "github.com/cloudlink-omega/backend/pkg/structs"
 )
 
 var validate = validator.New(validator.WithRequiredStructEnabled())

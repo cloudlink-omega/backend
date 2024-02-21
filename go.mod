@@ -1,4 +1,4 @@
-module github.com/mikedev101/cloudlink-omega/backend
+module github.com/cloudlink-omega/backend
 
 go 1.21.5
 

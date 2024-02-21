@@ -1,8 +1,8 @@
 package utils
 
 import (
+	structs "github.com/cloudlink-omega/backend/pkg/structs"
 	validator "github.com/go-playground/validator/v10"
-	structs "github.com/mikedev101/cloudlink-omega/backend/pkg/structs"
 )
 
 func VariableContainsValidationError(varname string, err error) *structs.RootError {

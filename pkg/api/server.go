@@ -11,9 +11,9 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 
-	v0 "github.com/mikedev101/cloudlink-omega/backend/pkg/api/v0"
-	constants "github.com/mikedev101/cloudlink-omega/backend/pkg/constants"
-	dm "github.com/mikedev101/cloudlink-omega/backend/pkg/data"
+	v0 "github.com/cloudlink-omega/backend/pkg/api/v0"
+	constants "github.com/cloudlink-omega/backend/pkg/constants"
+	dm "github.com/cloudlink-omega/backend/pkg/data"
 )
 
 func RunServer(host string, port int, mgr *dm.Manager) {

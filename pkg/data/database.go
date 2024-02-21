@@ -5,9 +5,9 @@ import (
 	"log"
 	"strings"
 
+	errors "github.com/cloudlink-omega/backend/pkg/errors"
+	structs "github.com/cloudlink-omega/backend/pkg/structs"
 	"github.com/huandu/go-sqlbuilder"
-	errors "github.com/mikedev101/cloudlink-omega/backend/pkg/errors"
-	structs "github.com/mikedev101/cloudlink-omega/backend/pkg/structs"
 	"github.com/oklog/ulid/v2"
 )
 

@@ -4,13 +4,13 @@ import (
 	"log"
 	"net/http"
 
+	constants "github.com/cloudlink-omega/backend/pkg/constants"
+	dm "github.com/cloudlink-omega/backend/pkg/data"
+	signaling "github.com/cloudlink-omega/backend/pkg/signaling"
+	structs "github.com/cloudlink-omega/backend/pkg/structs"
+	utils "github.com/cloudlink-omega/backend/pkg/utils"
 	"github.com/go-chi/chi/v5"
 	"github.com/gorilla/websocket"
-	constants "github.com/mikedev101/cloudlink-omega/backend/pkg/constants"
-	dm "github.com/mikedev101/cloudlink-omega/backend/pkg/data"
-	signaling "github.com/mikedev101/cloudlink-omega/backend/pkg/signaling"
-	structs "github.com/mikedev101/cloudlink-omega/backend/pkg/structs"
-	utils "github.com/mikedev101/cloudlink-omega/backend/pkg/utils"
 )
 
 // Define websocket upgrader
