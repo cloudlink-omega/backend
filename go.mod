@@ -13,7 +13,7 @@ require (
 	github.com/huandu/go-sqlbuilder v1.25.0
 	github.com/joho/godotenv v1.5.1
 	github.com/oklog/ulid/v2 v2.1.0
-	github.com/redis/go-redis/v9 v9.4.0
+	github.com/redis/go-redis/v9 v9.5.1
 )
 
 require (
