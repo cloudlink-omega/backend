@@ -10,6 +10,11 @@ import (
 	dm "github.com/cloudlink-omega/backend/pkg/data"
 	godotenv "github.com/joho/godotenv"
 
+	/*
+		Before you run the server, you will need to manually specify which SQL driver you want to use.
+		CL Omega is natively developed using "mysql" and "sqlite".
+	*/
+
 	_ "github.com/go-sql-driver/mysql"
 	// _ "modernc.org/sqlite"
 )
@@ -45,7 +50,6 @@ func main() {
 			os.Getenv("DB_HOST"),
 			os.Getenv("DATABASE"),
 		),
-		os.Getenv("REDIS_URL"),
 	)
 
 	// Run the server

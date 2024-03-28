@@ -4,21 +4,18 @@ import (
 	"context"
 	"database/sql"
 	"log"
-
-	"github.com/redis/go-redis/v9"
 )
 
 type Manager struct {
-	Ctx   context.Context
-	DB    *sql.DB
-	Redis *redis.Client
+	Ctx context.Context
+	DB  *sql.DB
 }
 
-func New(sqlDriver string, sqlUrl string, redisUrl string) *Manager {
+func New(sqlDriver string, sqlUrl string) *Manager {
 	// Create background context
 	ctx := context.Background()
 
-	log.Println("[Data Manager] Connecting to DB and Redis, please wait...")
+	log.Println("[Data Manager] Connecting to DB, please wait...")
 
 	// Open database
 	db, err := sql.Open(sqlDriver, sqlUrl)
@@ -34,25 +31,9 @@ func New(sqlDriver string, sqlUrl string, redisUrl string) *Manager {
 
 	log.Println("[Data Manager] Successfully connected to DB.")
 
-	// Connect to Redis
-	rdbOpts, err := redis.ParseURL(redisUrl)
-	if err != nil {
-		log.Fatal("[Data Manager] Failed to parse Redis URL: ", err)
-	}
-
-	rdb := redis.NewClient(rdbOpts)
-
-	// Ping Redis
-	if err = rdb.Ping(ctx).Err(); err != nil {
-		log.Fatal("[Data Manager] Failed to connect to Redis: ", err)
-	}
-
-	log.Println("[Data Manager] Successfully connected to Redis.")
-
 	// Return manager
 	return &Manager{
-		DB:    db,
-		Ctx:   ctx,
-		Redis: rdb,
+		DB:  db,
+		Ctx: ctx,
 	}
 }
