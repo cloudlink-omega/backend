@@ -35,6 +35,33 @@ func RootRouter(r chi.Router) {
 	r.Post("/login", func(w http.ResponseWriter, r *http.Request) {
 		dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager)
 
+		// If authless mode is enabled, return a randomly generated auth token
+		if dm.AuthlessMode {
+
+			// Load request body as JSON into login struct
+			var u structs.Login
+			if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte(err.Error()))
+				return
+			}
+
+			// Generate random session token
+			var usertoken string
+			if res, err := dm.GenerateSessionToken(u.Email, r.URL.Hostname()); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte(err.Error()))
+				return
+			} else {
+				usertoken = res
+			}
+
+			// Write response to client with the session token
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(usertoken))
+			return
+		}
+
 		// Load request body as JSON into login struct
 		var u structs.Login
 		if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
@@ -100,6 +127,13 @@ func RootRouter(r chi.Router) {
 
 	r.Post("/register", func(w http.ResponseWriter, r *http.Request) {
 		dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager)
+
+		// If authless mode is enabled, disable this endpoint
+		if dm.AuthlessMode {
+			w.WriteHeader(http.StatusGone)
+			w.Write([]byte("Authless mode is enabled on this server. User registration is not available."))
+			return
+		}
 
 		// Load request body as JSON into register struct
 		var u structs.Register

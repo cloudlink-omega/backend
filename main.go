@@ -40,16 +40,51 @@ func main() {
 		panic(err)
 	}
 
+	/*
+		Authless Mode
+
+		This mode completely removes the need for a SQL database,
+		and the server will accept any login request and generate
+		randomized auth tokens.
+
+		To use this mode, set AUTHLESS_MODE=true in the .env file.
+
+		This is intended for standalone or development environments.
+		By default, this should be set to false.
+	*/
+	authlessMode, err := strconv.ParseBool(os.Getenv("AUTHLESS_MODE"))
+	if err != nil {
+		panic(err)
+	}
+
+	/*
+		Use in-memory client manager
+
+		This mode disables the use of a KeyDB server for client management.
+		Be aware that this mode is not memory-efficient, and can cause performance issues.
+
+		To use an external client management system (e.g. KeyDB), set USE_IN_MEMORY_CLIENT_MGR=false in the .env file.
+
+		This is intended for standalone or development environments.
+		By default, this is set to true (Note: Server does not have any code to use KeyDB at this time!)
+	*/
+	useInMemoryClientMgr, err := strconv.ParseBool(os.Getenv("USE_IN_MEMORY_CLIENT_MGR"))
+	if err != nil {
+		panic(err)
+	}
+
 	// Initialize data manager
 	mgr := dm.New(
-		"mysql",
+		"mysql", // Change this to desired SQL driver
 		fmt.Sprintf(
 			"%s:%s@tcp(%s)/%s",
 			os.Getenv("DB_USER"),
 			os.Getenv("DB_PASS"),
 			os.Getenv("DB_HOST"),
 			os.Getenv("DATABASE"),
-		),
+		), // Change this to SQL-driver specific connection string
+		authlessMode,
+		useInMemoryClientMgr,
 	)
 
 	// Run the server

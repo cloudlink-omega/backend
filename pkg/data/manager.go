@@ -7,13 +7,29 @@ import (
 )
 
 type Manager struct {
-	Ctx context.Context
-	DB  *sql.DB
+	Ctx                  context.Context
+	DB                   *sql.DB
+	AuthlessMode         bool
+	UseInMemoryClientMgr bool
+	AuthlessUserMap      map[string]string // ULID session token -> username. Used for authless mode.
 }
 
-func New(sqlDriver string, sqlUrl string) *Manager {
+func New(sqlDriver string, sqlUrl string, authlessMode bool, useInMemoryClientMgr bool) *Manager {
 	// Create background context
 	ctx := context.Background()
+
+	if authlessMode {
+		log.Println("[Data Manager] Bypassing DB connection due to authless mode.")
+
+		// Return manager
+		return &Manager{
+			DB:                   nil,
+			Ctx:                  ctx,
+			AuthlessMode:         true,
+			UseInMemoryClientMgr: useInMemoryClientMgr,
+			AuthlessUserMap:      make(map[string]string),
+		}
+	}
 
 	log.Println("[Data Manager] Connecting to DB, please wait...")
 
@@ -33,7 +49,10 @@ func New(sqlDriver string, sqlUrl string) *Manager {
 
 	// Return manager
 	return &Manager{
-		DB:  db,
-		Ctx: ctx,
+		DB:                   db,
+		Ctx:                  ctx,
+		AuthlessMode:         false,
+		UseInMemoryClientMgr: useInMemoryClientMgr,
+		AuthlessUserMap:      nil, // Not used in authless mode
 	}
 }

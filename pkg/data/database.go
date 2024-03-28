@@ -140,6 +140,13 @@ func (mgr *Manager) GetUserID(email string) (string, error) {
 // error: an error, if any
 func (mgr *Manager) GenerateSessionToken(userid string, origin string) (string, error) {
 	usertoken := ulid.Make().String()
+
+	// Bypass insert if in authless mode
+	if mgr.AuthlessMode {
+		mgr.AuthlessUserMap[usertoken] = userid
+		return usertoken, nil
+	}
+
 	qy := sqlbuilder.NewInsertBuilder().
 		InsertInto("sessions").
 		Cols("id", "userid", "origin").
@@ -159,6 +166,13 @@ func (mgr *Manager) GenerateSessionToken(userid string, origin string) (string, 
 //
 // It takes a parameter ugi string and returns an error.
 func (mgr *Manager) VerifyUGI(ugi string) (string, string, error) {
+
+	// Bypass UGI check if in authless mode
+	if mgr.AuthlessMode {
+		// TODO: somehow allow sysadmin to customize these parameters in authless mode
+		return "", "", nil
+	}
+
 	qy := sqlbuilder.NewSelectBuilder()
 	qy.Select(
 		qy.As("g.name", "gameName"),
@@ -192,6 +206,27 @@ func (mgr *Manager) VerifyUGI(ugi string) (string, string, error) {
 //
 // It takes a usertoken string as a parameter and returns a string, a string, an int, and an error.
 func (mgr *Manager) VerifySessionToken(usertoken string) (*structs.Client, error) {
+
+	// Bypass token check if in authless mode
+	if mgr.AuthlessMode {
+		client := &structs.Client{}
+
+		// Check if the token is in the authless user map
+		if _, ok := mgr.AuthlessUserMap[usertoken]; !ok {
+			return nil, errors.ErrSessionNotFound
+		}
+
+		client.Username = mgr.AuthlessUserMap[usertoken]
+
+		// Generate a random User ID
+		client.ULID = ulid.Make().String()
+
+		// Free memory by deleting the token from the map
+		delete(mgr.AuthlessUserMap, usertoken)
+
+		return client, nil
+	}
+
 	qy := sqlbuilder.NewSelectBuilder()
 	qy.Select(
 		qy.As("u.username", "username"),

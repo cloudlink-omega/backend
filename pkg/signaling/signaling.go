@@ -438,14 +438,14 @@ func HandleInitOpcode(c *structs.Client, packet *structs.SignalPacket, dm *dm.Ma
 		return
 	}
 
-	// Check if origin matches
-	if tmpClient.Origin != r.URL.Hostname() {
+	// Check if origin matches (ignore if authless mode is enabled)
+	if !dm.AuthlessMode && tmpClient.Origin != r.URL.Hostname() {
 		SendCodeWithMessage(c, nil, "TOKEN_ORIGIN_MISMATCH", packet.Listener)
 		return
 	}
 
-	// Check if token has expired
-	if tmpClient.Expiry < time.Now().Unix() {
+	// Check if token has expired (ignore if authless mode is enabled)
+	if !dm.AuthlessMode && tmpClient.Expiry < time.Now().Unix() {
 		SendCodeWithMessage(c, nil, "TOKEN_EXPIRED", packet.Listener)
 		return
 	}

@@ -62,6 +62,11 @@ func RunServer(host string, port int, mgr *dm.Manager) {
 	// Mount default route (v0)
 	r.Mount("/api", v0.Router)
 
+	// Display warning on startup if authless mode is enabled
+	if mgr.AuthlessMode {
+		log.Printf("[Server] Authless mode is enabled - This server will accept any connection request and generate randomized auth tokens.")
+	}
+
 	// Create wait group
 	var wg sync.WaitGroup
 

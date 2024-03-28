@@ -7,6 +7,12 @@ import (
 )
 
 func (mgr *Manager) InitDB() {
+
+	// Bypass if in authless mode
+	if mgr.AuthlessMode {
+		return
+	}
+
 	log.Print("[DB] Initializing DB (This may take some time on first run)...")
 	mgr.createUsersTable()
 	mgr.createDevelopersTable()
