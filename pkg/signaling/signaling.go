@@ -353,7 +353,7 @@ func HandleConfigHostOpcode(c *structs.Client, packet *structs.SignalPacket, raw
 	matches := Manager.GetHostClientsByUGIAndLobby(c.UGI, rePacket.Payload.LobbyID)
 	if len(matches) != 0 {
 		// Cannot create lobby since it already exists
-		SendCodeWithMessage(c, "LOBBY_EXISTS", packet.Listener)
+		SendCodeWithMessage(c, nil, "LOBBY_EXISTS", packet.Listener)
 		return
 	}
 
