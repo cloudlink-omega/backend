@@ -37,11 +37,14 @@ func (mgr *Manager) FindAllUsers() map[string]*structs.UserQuery {
 	qy := sqlbuilder.NewSelectBuilder().
 		Select("id", "username", "email", "created").
 		From("users")
+
 	if res, err := mgr.RunSelectQuery(qy); err != nil {
+		res.Close()
 		return nil
 	} else {
 		// Scan all rows, using ID as the key and User as the value
 		rows := make(map[string]*structs.UserQuery)
+
 		for res.Next() {
 			var u structs.UserQuery
 			err := res.Scan(&u.ID, &u.Username, &u.Email, &u.Created)
@@ -51,6 +54,8 @@ func (mgr *Manager) FindAllUsers() map[string]*structs.UserQuery {
 			}
 			rows[u.ID] = &u
 		}
+
+		res.Close()
 		return rows
 	}
 }
@@ -96,6 +101,7 @@ func (mgr *Manager) GetUserPasswordHash(email string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	defer res.Close()
 	if res.Next() {
 		if err := res.Scan(&hash); err != nil {
 			return "", err
@@ -122,6 +128,7 @@ func (mgr *Manager) GetUserID(email string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	defer res.Close()
 	if res.Next() {
 		if err := res.Scan(&userid); err != nil {
 			return "", err
@@ -185,6 +192,7 @@ func (mgr *Manager) VerifyUGI(ugi string) (string, string, error) {
 		)
 
 	if res, err := mgr.RunSelectQuery(qy); err != nil {
+		res.Close()
 		return "", "", err
 	} else {
 		var gameName string
@@ -198,6 +206,8 @@ func (mgr *Manager) VerifyUGI(ugi string) (string, string, error) {
 		if err := res.Scan(&gameName, &developerName); err != nil {
 			return "", "", err
 		}
+
+		res.Close()
 		return gameName, developerName, nil
 	}
 }
@@ -242,8 +252,10 @@ func (mgr *Manager) VerifySessionToken(usertoken string) (*structs.Client, error
 	client := &structs.Client{}
 	res, err := mgr.RunSelectQuery(qy)
 	if err != nil {
+		res.Close()
 		return nil, err
 	}
+	defer res.Close()
 	if res.Next() {
 		if err := res.Scan(&client.Username, &client.ULID, &client.Origin, &client.Expiry); err != nil {
 			return nil, err
