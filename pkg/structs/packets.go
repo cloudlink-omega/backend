@@ -62,3 +62,10 @@ type PeerInfo struct {
 	ID   string `json:"id"`
 	User string `json:"user"`
 }
+
+type LobbyInfo struct {
+	LobbyHostID       string `json:"lobby_host_id"`
+	LobbyHostUsername string `json:"lobby_host_username"`
+	MaximumPeers      int    `json:"max_peers"`
+	PasswordProtected bool   `json:"password_protected"`
+}

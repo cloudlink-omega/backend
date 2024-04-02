@@ -265,7 +265,7 @@ func (db *ClientDB) GetClientsByUGI(ugi string) []*structs.Client {
 }
 
 // GetAllHostsByUGI returns all clients that are hosts for the given UGI.
-// SELECT * FROM clients WHERE UGI LIKE (ugi) AND IsHost = 1
+// SELECT * FROM clients WHERE UGI LIKE (ugi) AND IsPeer = 1
 func (db *ClientDB) GetAllHostsByUGI(ugi string) []*structs.Client {
 
 	// Get read lock
@@ -276,7 +276,7 @@ func (db *ClientDB) GetAllHostsByUGI(ugi string) []*structs.Client {
 	defer db.queryLock.Unlock()
 	return func() (clients []*structs.Client) {
 		for _, client := range db.clients {
-			if client.IsHost {
+			if client.IsPeer {
 				continue
 			}
 			if strings.Compare(client.UGI, ugi) == 0 {
@@ -285,6 +285,38 @@ func (db *ClientDB) GetAllHostsByUGI(ugi string) []*structs.Client {
 		}
 		return clients
 	}()
+}
+
+// GetAllPublicLobbiesByUGI returns all lobbies that are public for the given UGI.
+func (db *ClientDB) GetAllPublicLobbiesByUGI(ugi string) []string {
+
+	// Get read lock
+	db.queryLock.Lock()
+
+	log.Printf("[Client Manager] Gathering all public lobbies within UGI %s...", ugi)
+
+	lobbies := []string{}
+	defer db.queryLock.Unlock()
+	for _, client := range db.clients {
+		if client.IsPeer {
+			continue
+		}
+		if !client.IsHost {
+			continue
+		}
+		if strings.Compare(client.UGI, ugi) == 0 {
+			// Skip if there is no lobby entry for this UGI
+			if _, ok := db.Lobbies[ugi]; !ok {
+				continue
+			}
+
+			// If the lobby is public, add it to the list
+			if db.Lobbies[ugi][client.Lobby].IsPublic {
+				lobbies = append(lobbies, client.Lobby)
+			}
+		}
+	}
+	return lobbies
 }
 
 // GetAllHostsByUGI returns all clients that are peers for the given UGI.
@@ -298,7 +330,7 @@ func (db *ClientDB) GetAllPeersByUGI(ugi string) []*structs.Client {
 	defer db.queryLock.Unlock()
 	return func() (clients []*structs.Client) {
 		for _, client := range db.clients {
-			if !client.IsHost {
+			if client.IsHost {
 				continue
 			}
 			if strings.Compare(client.UGI, ugi) == 0 {

@@ -73,6 +73,10 @@ func MessageHandler(c *structs.Client, dm *dm.Manager, r *http.Request) {
 			HandleMakeAnswerOpcode(c, packet)
 		case "ICE":
 			HandleICEOpcode(c, packet)
+		case "LOBBY_LIST":
+			HandleLobbyList(c, packet)
+		case "LOBBY_INFO":
+			HandleLobbyInfo(c, packet)
 		case "CLAIM_HOST":
 			// TODO: implement CLAIM_HOST
 		case "TRANSFER_HOST":
@@ -121,6 +125,74 @@ func HandleICEOpcode(c *structs.Client, packet *structs.SignalPacket) {
 
 	// Tell the peer that the answer was relayed successfully
 	SendCodeWithMessage(c, nil, "RELAY_OK", packet.Listener)
+}
+
+func HandleLobbyList(c *structs.Client, packet *structs.SignalPacket) {
+	// Check if the client has a valid session
+	if !c.ValidSession {
+		SendCodeWithMessage(c, nil, "CONFIG_REQUIRED", packet.Listener)
+		return
+	}
+
+	// Check if the client is already a peer (they already joined a lobby, why are they asking for a lobby list query?)
+	if c.IsPeer {
+		SendCodeWithMessage(c, nil, "ALREADY_PEER", packet.Listener)
+		return
+	}
+
+	// Check if the client is already a host (they are hosting a lobby, why are they asking for a lobby list query?)
+	if c.IsHost {
+		SendCodeWithMessage(c, nil, "ALREADY_HOST", packet.Listener)
+		return
+	}
+
+	// Gather all public lobbies as a list of string lobby IDs
+	lobbies := Manager.GetAllPublicLobbiesByUGI(c.UGI)
+	log.Printf("[Signaling] Public lobbies in UGI %s: %v", c.UGI, lobbies)
+
+	SendCodeWithMessage(c, lobbies, "LOBBY_LIST", packet.Listener)
+}
+
+func HandleLobbyInfo(c *structs.Client, packet *structs.SignalPacket) {
+	// Check if the client has a valid session
+	if !c.ValidSession {
+		SendCodeWithMessage(c, nil, "CONFIG_REQUIRED", packet.Listener)
+		return
+	}
+
+	// Check if the client is already a peer (they already joined a lobby, why are they asking for a lobby list query?)
+	if c.IsPeer {
+		SendCodeWithMessage(c, nil, "ALREADY_PEER", packet.Listener)
+		return
+	}
+
+	// Check if the client is already a host (they are hosting a lobby, why are they asking for a lobby list query?)
+	if c.IsHost {
+		SendCodeWithMessage(c, nil, "ALREADY_HOST", packet.Listener)
+		return
+	}
+
+	// Type assert the payload to a string. TODO: Handle error
+	lobby := packet.Payload.(string)
+
+	// Get the lobby config
+	lobbyConfig := Manager.GetLobbyConfigStorage(c.UGI, lobby)
+
+	// If the lobby doesn't exist or is not public, return an error
+	if lobbyConfig == nil || !lobbyConfig.IsPublic {
+		SendCodeWithMessage(c, nil, "LOBBY_NOTFOUND", packet.Listener)
+		return
+	}
+
+	log.Printf("[Signaling] Getting public lobby %s info in UGI %s: %v", lobby, c.UGI, lobbyConfig)
+
+	// Send the lobby info
+	SendCodeWithMessage(c, &structs.LobbyInfo{
+		LobbyHostID:       lobbyConfig.CurrentOwnerULID,
+		LobbyHostUsername: lobbyConfig.CurrentOwnerUsername,
+		PasswordProtected: (!lobbyConfig.IsPublic),
+		MaximumPeers:      lobbyConfig.MaximumPeers,
+	}, "LOBBY_INFO", packet.Listener)
 }
 
 func HandleMakeAnswerOpcode(c *structs.Client, packet *structs.SignalPacket) {
@@ -201,7 +273,7 @@ func HandleConfigPeerOpcode(c *structs.Client, packet *structs.SignalPacket, raw
 
 	// Check if the client is already a peer
 	if c.IsPeer {
-		SendCodeWithMessage(c, nil, "ALREADY_HOST", packet.Listener)
+		SendCodeWithMessage(c, nil, "ALREADY_PEER", packet.Listener)
 		return
 	}
 
@@ -253,9 +325,11 @@ func HandleConfigPeerOpcode(c *structs.Client, packet *structs.SignalPacket, raw
 	}
 
 	// Verify password
-	if err := accounts.VerifyPassword(rePacket.Payload.Password, lobby.Password); err != nil {
-		SendCodeWithMessage(c, nil, "PASSWORD_FAIL", packet.Listener)
-		return
+	if !lobby.IsPublic {
+		if err := accounts.VerifyPassword(rePacket.Payload.Password, lobby.Password); err != nil {
+			SendCodeWithMessage(c, nil, "PASSWORD_FAIL", packet.Listener)
+			return
+		}
 	}
 
 	// Config the client as a peer
@@ -372,10 +446,14 @@ func HandleConfigHostOpcode(c *structs.Client, packet *structs.SignalPacket, raw
 	lobby.AllowPeersToReclaim = rePacket.Payload.AllowPeersToReclaim
 	lobby.CurrentOwnerID = c.ID
 	lobby.CurrentOwnerULID = c.ULID
+	lobby.CurrentOwnerUsername = c.Username
 	lobby.Locked = false
+	lobby.IsPublic = (len(rePacket.Payload.Password) == 0)
 
-	// Hash the password to store
-	lobby.Password = accounts.HashPassword(rePacket.Payload.Password)
+	// Hash the password to store (if not a public lobby)
+	if !lobby.IsPublic {
+		lobby.Password = accounts.HashPassword(rePacket.Payload.Password)
+	}
 
 	// If the host specifies a public key, set it.
 	if rePacket.Payload.PublicKey != "" {
@@ -387,7 +465,7 @@ func HandleConfigHostOpcode(c *structs.Client, packet *structs.SignalPacket, raw
 	log.Printf("[Signaling] Client %d is now a host in lobby %s and UGI %s", c.ID, rePacket.Payload.LobbyID, c.UGI)
 
 	// If the lobby has no password, broadcast the new host as a public lobby
-	if rePacket.Payload.Password == "" {
+	if lobby.IsPublic {
 		log.Printf("[Signaling] Lobby %s in UGI %s is a public lobby! Broadcasting this newly created public lobby.", rePacket.Payload.LobbyID, c.UGI)
 		BroadcastMessage(Manager.GetAllClientsWithoutLobby(c.UGI), &structs.SignalPacket{
 			Opcode: "NEW_HOST",
@@ -539,42 +617,30 @@ func SendCodeWithMessage(conn any, message any, extraargs ...string) {
 
 // CloseHandler prepares a client to be deleted.
 func CloseHandler(client *structs.Client) {
+
 	// Before we delete the client, check if it was a host.
 	if client.IsHost {
 
-		// Notify all unconfigured peers that the lobby has closed
-		for _, peer := range Manager.GetAllClientsWithoutLobby(client.UGI) {
-			SendCodeWithMessage(peer, client.Lobby, "LOBBY_CLOSE")
+		// Get lobby configuration
+		lobby := Manager.GetLobbyConfigStorage(client.UGI, client.Lobby)
+
+		if !lobby.AllowHostReclaim {
+			// The lobby does not support reclaiming; close the entire lobby.
+			FullLobbyClose(client)
+
+		} else if !lobby.AllowPeersToReclaim {
+			// The lobby supports reclaiming, but the server will decide who becomes the new host.
+			// Stub
+			FullLobbyClose(client)
+
+		} else {
+			// The lobby supports reclaiming, but peers will be responsible for reclaiming.
+			// Stub
+			FullLobbyClose(client)
 		}
 
-		// Remove all peers from the lobby.
-		for _, peer := range Manager.GetPeerClientsByUGIAndLobby(client.UGI, client.Lobby) {
-			// Lock the peer, set it to not a peer, and unlock it
-			peer.Lock.Lock()
-			defer peer.Lock.Unlock()
-			func() {
-				peer.IsPeer = false
-				peer.Lobby = ""
-			}()
-
-			// Tell the peer the lobby is closing
-			SendCodeWithMessage(peer, client.Lobby, "LOBBY_CLOSE")
-		}
-
-		// If the client was a host, check if the lobby is empty. If it is, delete the lobby.
-		peers := len(Manager.GetPeerClientsByUGIAndLobby(client.UGI, client.Lobby))
-		if peers == 0 {
-			log.Printf("[Client Manager] Deleting unused lobby config store %s in UGI %s...", client.Lobby, client.UGI)
-			delete(Manager.Lobbies[client.UGI], client.Lobby)
-		}
-
-		// Check if the root UGI has no remaining lobbies. If there are no remaining lobbies, delete the root UGI lobby manager.
-		if len(Manager.Lobbies[client.UGI]) == 0 {
-			log.Printf("[Client Manager] Deleting unused UGI %s root lobby config store...", client.UGI)
-			delete(Manager.Lobbies, client.UGI)
-		}
-
-	} else if client.IsPeer { // Check if the client is a peer. If it is, remove it from the lobby.
+	} else if client.IsPeer {
+		// Check if the client is a peer. If it is, remove it from the lobby.
 
 		// Notify the host that the peer is going away.
 		lobby := Manager.GetLobbyConfigStorage(client.UGI, client.Lobby)
@@ -582,9 +648,43 @@ func CloseHandler(client *structs.Client) {
 		SendCodeWithMessage(host, client.ULID, "PEER_GONE")
 	}
 
-	// Finally, delete the client
+	// Delete the client
 	Manager.Delete(client)
 
 	// Close connection.
 	client.Conn.Close()
+}
+
+func FullLobbyClose(client *structs.Client) {
+	// Notify all unconfigured peers that the lobby has closed
+	for _, peer := range Manager.GetAllClientsWithoutLobby(client.UGI) {
+		SendCodeWithMessage(peer, client.Lobby, "LOBBY_CLOSE")
+	}
+
+	// Remove all peers from the lobby.
+	for _, peer := range Manager.GetPeerClientsByUGIAndLobby(client.UGI, client.Lobby) {
+		// Lock the peer, set it to not a peer, and unlock it
+		peer.Lock.Lock()
+		defer peer.Lock.Unlock()
+		func() {
+			peer.IsPeer = false
+			peer.Lobby = ""
+		}()
+
+		// Tell the peer the lobby is closing
+		SendCodeWithMessage(peer, client.Lobby, "LOBBY_CLOSE")
+	}
+
+	// If the client was a host, check if the lobby is empty. If it is, delete the lobby.
+	peers := len(Manager.GetPeerClientsByUGIAndLobby(client.UGI, client.Lobby))
+	if peers == 0 {
+		log.Printf("[Client Manager] Deleting unused lobby config store %s in UGI %s...", client.Lobby, client.UGI)
+		delete(Manager.Lobbies[client.UGI], client.Lobby)
+	}
+
+	// Check if the root UGI has no remaining lobbies. If there are no remaining lobbies, delete the root UGI lobby manager.
+	if len(Manager.Lobbies[client.UGI]) == 0 {
+		log.Printf("[Client Manager] Deleting unused UGI %s root lobby config store...", client.UGI)
+		delete(Manager.Lobbies, client.UGI)
+	}
 }
