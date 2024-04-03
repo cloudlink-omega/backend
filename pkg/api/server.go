@@ -47,6 +47,9 @@ func RunServer(host string, port int, mgr *dm.Manager) {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
+	// Add Real IP middleware
+	r.Use(middleware.RealIP)
+
 	// Mount custom middleware to pass data manager into requests
 	r.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
