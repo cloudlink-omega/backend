@@ -14,10 +14,19 @@ import (
 func (mgr *Manager) RunSelectQuery(sb *sqlbuilder.SelectBuilder) (*sql.Rows, error) {
 	query, args := sb.Build()
 	if res, err := mgr.DB.Query(query, args...); err != nil {
-		log.Printf("[DB] ERROR: Failed to execute select request:\n\tquery: %s\n\targs: %v\n\tmessage: %s", query, args, err)
+		log.Printf("[DB] Failed to execute select request:\n\tquery: %s\n\targs: %v\n\tmessage: %s", query, args, err)
 		return nil, err
 	} else {
-		log.Printf("[DB] SUCCESS: Executed select request:\n\tquery: %s\n\targs: %v", query, args) // DEBUGGING ONLY
+		return res, nil
+	}
+}
+
+func (mgr *Manager) RunUpdateQuery(sb *sqlbuilder.UpdateBuilder) (sql.Result, error) {
+	query, args := sb.Build()
+	if res, err := mgr.DB.Exec(query, args...); err != nil {
+		log.Printf("[DB] Failed to execute update request:\n\tquery: %s\n\targs: %v\n\tmessage: %s", query, args, err)
+		return nil, err
+	} else {
 		return res, nil
 	}
 }
@@ -25,10 +34,9 @@ func (mgr *Manager) RunSelectQuery(sb *sqlbuilder.SelectBuilder) (*sql.Rows, err
 func (mgr *Manager) RunInsertQuery(sb *sqlbuilder.InsertBuilder) (sql.Result, error) {
 	query, args := sb.Build()
 	if res, err := mgr.DB.Exec(query, args...); err != nil {
-		log.Printf("[DB] ERROR: Failed to execute insert request:\n\tquery: %s\n\targs: %v\n\tmessage: %s", query, args, err)
+		log.Printf("[DB] Failed to execute insert request:\n\tquery: %s\n\targs: %v\n\tmessage: %s", query, args, err)
 		return nil, err
 	} else {
-		log.Printf("[DB] SUCCESS: Executed insert request:\n\tquery: %s\n\targs: %v", query, args) // DEBUGGING ONLY
 		return res, nil
 	}
 }
@@ -49,7 +57,7 @@ func (mgr *Manager) FindAllUsers() map[string]*structs.UserQuery {
 			var u structs.UserQuery
 			err := res.Scan(&u.ID, &u.Username, &u.Email, &u.Created)
 			if err != nil {
-				log.Printf(`[DB] Error: Failed to find all users: %s`, err)
+				log.Printf(`[DB] Failed to find all users: %s`, err)
 				return nil
 			}
 			rows[u.ID] = &u
@@ -169,6 +177,195 @@ func (mgr *Manager) GenerateSessionToken(userid string, origin string) (string, 
 	return usertoken, nil
 }
 
+// newSaveSlotEntry saves a new slot entry to the database.
+//
+// Parameters:
+//
+//	slotnumber int - the slot number
+//	slotdata string - the data to be saved in the slot
+//	userid string - the user ID
+//	ugi string - the game ID
+//
+// Return type:
+//
+//	error
+func (mgr *Manager) newSaveSlotEntry(slotnumber int, slotdata string, userid string, ugi string) error {
+	qy := sqlbuilder.NewInsertBuilder().
+		InsertInto("saves").
+		Cols("userid", "gameid", "slotid", "contents").
+		Values(userid, ugi, slotnumber, slotdata)
+
+	// Run the query
+	res, err := mgr.RunInsertQuery(qy)
+	if err != nil {
+		return err
+	}
+
+	// Check if any rows were created
+	if _, err := res.RowsAffected(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// updateSaveSlotEntry updates the save slot entry in the database.
+//
+// Parameters:
+//
+//	slotnumber int - the slot number to update.
+//	slotdata string - the data to update in the slot.
+//	userid string - the user ID associated with the save slot.
+//	ugi string - the game ID associated with the save slot.
+//
+// Return:
+//
+//	error - returns an error if any operation fails.
+func (mgr *Manager) updateSaveSlotEntry(slotnumber int, slotdata string, userid string, ugi string) error {
+	qy := sqlbuilder.NewUpdateBuilder()
+	qy.Update("saves").
+		Set(
+			qy.Assign("contents", slotdata),
+		).
+		Where(
+			qy.E("userid", userid),
+			qy.E("gameid", ugi),
+			qy.E("slotid", slotnumber),
+		).
+		Limit(1)
+
+	// Run the query
+	res, err := mgr.RunUpdateQuery(qy)
+	if err != nil {
+		return err
+	}
+
+	// Check if any errors occurred getting the number of rows affected
+	if _, err := res.RowsAffected(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// doesSaveSlotEntryExist checks if the slot entry exists in the Manager.
+//
+// slotnumber: the slot number to check
+// userid: the user ID to check against
+// ugi: the game ID to check against
+// int: the existence status of the slot entry, error if any
+func (mgr *Manager) doesSaveSlotEntryExist(slotnumber int, userid string, ugi string) (int, error) {
+
+	// Check if the slot exists.
+	var exists int
+	qy := sqlbuilder.NewSelectBuilder()
+	qy.Select("COUNT(*) > 0").
+		From("saves").
+		Where(
+			qy.E("userid", userid),
+			qy.E("gameid", ugi),
+			qy.E("slotid", slotnumber),
+		)
+
+	// Run the query
+	res, err := mgr.RunSelectQuery(qy)
+	if err != nil {
+		return 0, err
+	}
+
+	// Get the result
+	defer res.Close()
+	if res.Next() {
+		if err := res.Scan(&exists); err != nil {
+			return 0, err
+		}
+	}
+
+	return exists, nil
+}
+
+func (mgr *Manager) loadSaveSlotEntry(slotnumber int, userid string, ugi string) (string, error) {
+
+	var contents string
+	qy := sqlbuilder.NewSelectBuilder()
+	qy.Select("contents").
+		From("saves").
+		Where(
+			qy.E("userid", userid),
+			qy.E("gameid", ugi),
+			qy.E("slotid", slotnumber),
+		).
+		Limit(1)
+
+	// Run the query
+	res, err := mgr.RunSelectQuery(qy)
+	if err != nil {
+		return "", err
+	}
+
+	// Get the result
+	defer res.Close()
+	if res.Next() {
+		if err := res.Scan(&contents); err != nil {
+			return "", err
+		}
+	}
+
+	return contents, nil
+}
+
+// WriteSaveSlot writes or updates a save slot for a given user.
+//
+// Parameters:
+//   - slotnumber: the slot number to write or update
+//   - slotdata: the data to be saved in the slot
+//   - userid: the user ID associated with the save slot
+//   - ugi: the user group identifier
+//
+// Return type: error
+func (mgr *Manager) WriteSaveSlot(slotnumber int, slotdata string, userid string, ugi string) error {
+
+	// This function is not possible in authless mode
+	if mgr.AuthlessMode {
+		return errors.ErrAuthlessMode
+	}
+
+	// Check if the slot already exists
+	exists, err := mgr.doesSaveSlotEntryExist(slotnumber, userid, ugi)
+	if err != nil {
+		return err
+	}
+
+	// If the slot doesn't exist, create it. Otherwise, update it.
+	if exists == 0 {
+		return mgr.newSaveSlotEntry(slotnumber, slotdata, userid, ugi)
+	} else {
+		return mgr.updateSaveSlotEntry(slotnumber, slotdata, userid, ugi)
+	}
+}
+
+func (mgr *Manager) ReadSaveSlot(slotnumber int, userid string, ugi string) (string, error) {
+
+	// This function is not possible in authless mode
+	if mgr.AuthlessMode {
+		return "", errors.ErrAuthlessMode
+	}
+
+	// Check if the slot exists
+	exists, err := mgr.doesSaveSlotEntryExist(slotnumber, userid, ugi)
+	if err != nil {
+		return "", err
+	}
+
+	// If the slot doesn't exist, return an empty string
+	if exists == 0 {
+		return "", nil
+	} else {
+		// Retrieve slot data
+		return mgr.loadSaveSlotEntry(slotnumber, userid, ugi)
+	}
+}
+
 // VerifyUGI is a function that verifies the given UGI (Unique Game Identifier).
 //
 // It takes a parameter ugi string and returns an error.
@@ -214,7 +411,7 @@ func (mgr *Manager) VerifyUGI(ugi string) (string, string, error) {
 
 // VerifySessionToken verifies the session token.
 //
-// It takes a usertoken string as a parameter and returns a string, a string, an int, and an error.
+// It takes a usertoken string as a parameter and returns a client struct or an error.
 func (mgr *Manager) VerifySessionToken(usertoken string) (*structs.Client, error) {
 
 	// Bypass token check if in authless mode
@@ -264,4 +461,43 @@ func (mgr *Manager) VerifySessionToken(usertoken string) (*structs.Client, error
 		return nil, errors.ErrSessionNotFound
 	}
 	return client, nil
+}
+
+// GetSessionInfoFromToken retrieves the session info from the session token.
+//
+// It takes a usertoken string as a parameter and returns a client struct or an error.
+func (mgr *Manager) GetSessionInfoFromToken(usertoken string) (*structs.Session, error) {
+
+	// Cannot work in authless mode
+	if mgr.AuthlessMode {
+		return nil, errors.ErrAuthlessMode
+	}
+
+	qy := sqlbuilder.NewSelectBuilder()
+	qy.Select(
+		qy.As("s.userid", "userid"),
+		qy.As("s.state", "state"),
+		qy.As("s.origin", "origin"),
+		qy.As("s.created", "created"),
+		qy.As("s.expires", "expires"),
+	).
+		From("sessions s").
+		Where(
+			qy.E("s.id", usertoken),
+		)
+	session := &structs.Session{}
+	res, err := mgr.RunSelectQuery(qy)
+	if err != nil {
+		res.Close()
+		return nil, err
+	}
+	defer res.Close()
+	if res.Next() {
+		if err := res.Scan(&session.UserID, &session.State, &session.Origin, &session.Created, &session.Expiry); err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, errors.ErrSessionNotFound
+	}
+	return session, nil
 }

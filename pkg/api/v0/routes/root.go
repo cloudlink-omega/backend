@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
@@ -15,6 +16,7 @@ import (
 	dm "github.com/cloudlink-omega/backend/pkg/data"
 	errors "github.com/cloudlink-omega/backend/pkg/errors"
 	structs "github.com/cloudlink-omega/backend/pkg/structs"
+	utils "github.com/cloudlink-omega/backend/pkg/utils"
 )
 
 var validate = validator.New(validator.WithRequiredStructEnabled())
@@ -125,6 +127,157 @@ func RootRouter(r chi.Router) {
 		w.Write([]byte(usertoken))
 	})
 
+	r.Post("/save", func(w http.ResponseWriter, r *http.Request) {
+		dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager)
+
+		// If authless mode is enabled, disable this endpoint
+		if dm.AuthlessMode {
+			w.WriteHeader(http.StatusGone)
+			w.Write([]byte("Authless mode is enabled on this server. Save slots are not available."))
+			return
+		}
+
+		// Load request body as JSON into save struct
+		var s structs.Save
+		if err := json.NewDecoder(r.Body).Decode(&s); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		// Validate save struct
+		if handleValidationError(w, validate.Struct(s)) {
+			return
+		}
+
+		// Validate session token & UGI format
+		if errmsg := utils.VariableContainsValidationError("token", validate.Var(s.Token, "ulid")); errmsg != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Malformed session token."))
+			return
+		}
+		if errmsg := utils.VariableContainsValidationError("ugi", validate.Var(s.UGI, "ulid")); errmsg != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Malformed UGI."))
+			return
+		}
+
+		// Validate UGI exists
+		if _, _, err := dm.VerifyUGI(s.UGI); err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		// Find and read user account given session token
+		var session *structs.Session
+		session, err := dm.GetSessionInfoFromToken(s.Token)
+
+		// Handle errors
+		if err != nil {
+			switch err {
+			case errors.ErrSessionNotFound:
+				w.WriteHeader(http.StatusUnauthorized)
+			default:
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		// Check if session is expired
+		if session.Expiry <= time.Now().Unix() {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("Session token has expired."))
+			return
+		}
+
+		// Write save slot
+		if err = dm.WriteSaveSlot(s.SaveSlot, fmt.Sprint(s.SaveData), session.UserID, s.UGI); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		w.Write([]byte("OK"))
+	})
+
+	r.Post("/load", func(w http.ResponseWriter, r *http.Request) {
+		dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager)
+
+		// If authless mode is enabled, disable this endpoint
+		if dm.AuthlessMode {
+			w.WriteHeader(http.StatusGone)
+			w.Write([]byte("Authless mode is enabled on this server. Save slots are not available."))
+			return
+		}
+
+		// Load request body as JSON into load struct
+		var s structs.Load
+		if err := json.NewDecoder(r.Body).Decode(&s); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		// Validate save struct
+		if handleValidationError(w, validate.Struct(s)) {
+			return
+		}
+
+		// Validate session token & UGI format
+		if errmsg := utils.VariableContainsValidationError("token", validate.Var(s.Token, "ulid")); errmsg != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Malformed session token."))
+			return
+		}
+		if errmsg := utils.VariableContainsValidationError("ugi", validate.Var(s.UGI, "ulid")); errmsg != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Malformed UGI."))
+			return
+		}
+
+		// Validate UGI exists
+		if _, _, err := dm.VerifyUGI(s.UGI); err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		// Find and read user account given session token
+		var session *structs.Session
+		session, err := dm.GetSessionInfoFromToken(s.Token)
+
+		// Handle errors
+		if err != nil {
+			switch err {
+			case errors.ErrSessionNotFound:
+				w.WriteHeader(http.StatusUnauthorized)
+			default:
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		// Check if session is expired
+		if session.Expiry <= time.Now().Unix() {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("Session token has expired."))
+			return
+		}
+
+		// Read save slot
+		data, err := dm.ReadSaveSlot(s.SaveSlot, session.UserID, s.UGI)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		w.Write([]byte(data))
+	})
+
 	r.Post("/register", func(w http.ResponseWriter, r *http.Request) {
 		dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager)
 
@@ -154,6 +307,7 @@ func RootRouter(r chi.Router) {
 		// Register user
 		res, err := dm.RegisterUser(&u)
 
+		// Handle errors
 		if err != nil {
 			switch err {
 			case errors.ErrUsernameInUse:
@@ -169,7 +323,7 @@ func RootRouter(r chi.Router) {
 
 		if !res {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("something went wrong while registering your account. please try again later"))
+			w.Write([]byte("Something went wrong while registering your account. Please try again later."))
 			return
 		}
 
