@@ -178,6 +178,8 @@ func HandleLobbyInfo(c *structs.Client, packet *structs.SignalPacket) {
 	// Get the lobby config
 	lobbyConfig := Manager.GetLobbyConfigStorage(c.UGI, lobby)
 
+	lobbyCount := len(Manager.GetPeerClientsByUGIAndLobby(c.UGI, lobby))
+
 	// If the lobby doesn't exist or is not public, return an error
 	if lobbyConfig == nil || !lobbyConfig.IsPublic {
 		SendCodeWithMessage(c, nil, "LOBBY_NOTFOUND", packet.Listener)
@@ -190,7 +192,7 @@ func HandleLobbyInfo(c *structs.Client, packet *structs.SignalPacket) {
 	SendCodeWithMessage(c, &structs.LobbyInfo{
 		LobbyHostID:       lobbyConfig.CurrentOwnerULID,
 		LobbyHostUsername: lobbyConfig.CurrentOwnerUsername,
-		PasswordProtected: (!lobbyConfig.IsPublic),
+		CurrentPeers:      lobbyCount,
 		MaximumPeers:      lobbyConfig.MaximumPeers,
 	}, "LOBBY_INFO", packet.Listener)
 }
