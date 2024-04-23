@@ -10,7 +10,7 @@ require (
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/goccy/go-json v0.10.2
 	github.com/gorilla/websocket v1.5.1
-	github.com/huandu/go-sqlbuilder v1.27.0
+	github.com/huandu/go-sqlbuilder v1.27.1
 	github.com/joho/godotenv v1.5.1
 	github.com/oklog/ulid/v2 v2.1.0
 )
