@@ -12,3 +12,7 @@ type Login struct {
 	Email    string `json:"email" validate:"required,email,max=320" label:"email"`
 	Password string `json:"password" validate:"required,min=8,max=128" label:"password"`
 }
+
+type Token struct {
+	Token string `json:"token" validate:"required,ulid" label:"token"`
+}

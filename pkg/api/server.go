@@ -24,6 +24,9 @@ func RunServer(host string, port int, mgr *dm.Manager) {
 	// Thoust shall shoot the core!
 	log.Printf("[Server] CLΩ Server v%s - Presented by @MikeDEV. Warming up now...", constants.Version)
 
+	// Display public server nickname
+	log.Printf("[Server] This server is called %s", mgr.ServerNickname)
+
 	// Init router
 	r := chi.NewRouter()
 

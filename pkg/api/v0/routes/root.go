@@ -19,16 +19,14 @@ import (
 	utils "github.com/cloudlink-omega/backend/pkg/utils"
 )
 
-var validate = validator.New(validator.WithRequiredStructEnabled())
+func RootRouter(r chi.Router) {
+	var validate = validator.New(validator.WithRequiredStructEnabled())
 
-func init() {
 	// Register custom label function for validator
 	validate.RegisterTagNameFunc(func(field reflect.StructField) string {
 		return field.Tag.Get("label")
 	})
-}
 
-func RootRouter(r chi.Router) {
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		// dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager) // TODO: implement some sort of status check on the root endpoint (uptime, OS, load, memory use, etc.)
 		w.Write([]byte("Hello, World!"))
@@ -328,6 +326,14 @@ func RootRouter(r chi.Router) {
 		}
 
 		fmt.Printf("Registered user %s\n", u.Username)
+
+		dm.SendHTMLEmail(&structs.EmailArgs{
+			Subject:  "Welcome to CloudLink Omega!",
+			To:       u.Email,
+			Template: "hello",
+		}, &structs.TemplateData{
+			Name: u.Username,
+		})
 
 		// Scan output
 		w.WriteHeader(http.StatusCreated)

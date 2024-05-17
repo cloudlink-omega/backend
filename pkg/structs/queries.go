@@ -1,5 +1,7 @@
 package structs
 
+import "github.com/cloudlink-omega/backend/pkg/bitfield"
+
 type UserQuery struct {
 	ID       string
 	Username string
@@ -7,5 +9,5 @@ type UserQuery struct {
 	Email    string
 	Created  string
 	Password string
-	State    int
+	State    bitfield.Bitfield8
 }

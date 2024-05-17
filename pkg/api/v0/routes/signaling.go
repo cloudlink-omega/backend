@@ -3,6 +3,7 @@ package routes
 import (
 	"log"
 	"net/http"
+	"reflect"
 
 	constants "github.com/cloudlink-omega/backend/pkg/constants"
 	dm "github.com/cloudlink-omega/backend/pkg/data"
@@ -10,6 +11,7 @@ import (
 	structs "github.com/cloudlink-omega/backend/pkg/structs"
 	utils "github.com/cloudlink-omega/backend/pkg/utils"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/websocket"
 )
 
@@ -21,6 +23,13 @@ var upgrader = websocket.Upgrader{
 }
 
 func SignalingRouter(r chi.Router) {
+	var validate = validator.New(validator.WithRequiredStructEnabled())
+
+	// Register custom label function for validator
+	validate.RegisterTagNameFunc(func(field reflect.StructField) string {
+		return field.Tag.Get("label")
+	})
+
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager)
 

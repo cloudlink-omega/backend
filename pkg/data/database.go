@@ -189,7 +189,7 @@ func (mgr *Manager) GenerateSessionToken(userid string, origin string) (string, 
 // Return type:
 //
 //	error
-func (mgr *Manager) newSaveSlotEntry(slotnumber int, slotdata string, userid string, ugi string) error {
+func (mgr *Manager) newSaveSlotEntry(slotnumber uint8, slotdata string, userid string, ugi string) error {
 	qy := sqlbuilder.NewInsertBuilder().
 		InsertInto("saves").
 		Cols("userid", "gameid", "slotid", "contents").
@@ -221,7 +221,7 @@ func (mgr *Manager) newSaveSlotEntry(slotnumber int, slotdata string, userid str
 // Return:
 //
 //	error - returns an error if any operation fails.
-func (mgr *Manager) updateSaveSlotEntry(slotnumber int, slotdata string, userid string, ugi string) error {
+func (mgr *Manager) updateSaveSlotEntry(slotnumber uint8, slotdata string, userid string, ugi string) error {
 	qy := sqlbuilder.NewUpdateBuilder()
 	qy.Update("saves").
 		Set(
@@ -254,7 +254,7 @@ func (mgr *Manager) updateSaveSlotEntry(slotnumber int, slotdata string, userid 
 // userid: the user ID to check against
 // ugi: the game ID to check against
 // int: the existence status of the slot entry, error if any
-func (mgr *Manager) doesSaveSlotEntryExist(slotnumber int, userid string, ugi string) (int, error) {
+func (mgr *Manager) doesSaveSlotEntryExist(slotnumber uint8, userid string, ugi string) (int, error) {
 
 	// Check if the slot exists.
 	var exists int
@@ -284,7 +284,7 @@ func (mgr *Manager) doesSaveSlotEntryExist(slotnumber int, userid string, ugi st
 	return exists, nil
 }
 
-func (mgr *Manager) loadSaveSlotEntry(slotnumber int, userid string, ugi string) (string, error) {
+func (mgr *Manager) loadSaveSlotEntry(slotnumber uint8, userid string, ugi string) (string, error) {
 
 	var contents string
 	qy := sqlbuilder.NewSelectBuilder()
@@ -323,7 +323,7 @@ func (mgr *Manager) loadSaveSlotEntry(slotnumber int, userid string, ugi string)
 //   - ugi: the user group identifier
 //
 // Return type: error
-func (mgr *Manager) WriteSaveSlot(slotnumber int, slotdata string, userid string, ugi string) error {
+func (mgr *Manager) WriteSaveSlot(slotnumber uint8, slotdata string, userid string, ugi string) error {
 
 	// This function is not possible in authless mode
 	if mgr.AuthlessMode {
@@ -344,7 +344,7 @@ func (mgr *Manager) WriteSaveSlot(slotnumber int, slotdata string, userid string
 	}
 }
 
-func (mgr *Manager) ReadSaveSlot(slotnumber int, userid string, ugi string) (string, error) {
+func (mgr *Manager) ReadSaveSlot(slotnumber uint8, userid string, ugi string) (string, error) {
 
 	// This function is not possible in authless mode
 	if mgr.AuthlessMode {
@@ -439,6 +439,8 @@ func (mgr *Manager) VerifySessionToken(usertoken string) (*structs.Client, error
 		qy.As("u.username", "username"),
 		qy.As("s.userid", "userid"),
 		qy.As("s.origin", "origin"),
+		qy.As("u.state", "userstate"),
+		qy.As("s.state", "sessionstate"),
 		qy.As("s.expires", "expires"),
 	).
 		From("sessions s", "users u").
@@ -454,7 +456,7 @@ func (mgr *Manager) VerifySessionToken(usertoken string) (*structs.Client, error
 	}
 	defer res.Close()
 	if res.Next() {
-		if err := res.Scan(&client.Username, &client.ULID, &client.Origin, &client.Expiry); err != nil {
+		if err := res.Scan(&client.Username, &client.ULID, &client.Origin, &client.UserState, &client.SessionState, &client.Expiry); err != nil {
 			return nil, err
 		}
 	} else {

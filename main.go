@@ -34,57 +34,96 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Get API port
 	apiPort, err := strconv.Atoi(os.Getenv("API_PORT"))
 	if err != nil {
 		panic(err)
 	}
 
-	/*
-		Authless Mode
-
-		This mode completely removes the need for a SQL database,
-		and the server will accept any login request and generate
-		randomized auth tokens.
-
-		To use this mode, set AUTHLESS_MODE=true in the .env file.
-
-		This is intended for standalone or development environments.
-		By default, this should be set to false.
-	*/
 	authlessMode, err := strconv.ParseBool(os.Getenv("AUTHLESS_MODE"))
 	if err != nil {
 		panic(err)
 	}
 
-	/*
-		Use in-memory client manager
-
-		This mode disables the use of a KeyDB server for client management.
-		Be aware that this mode is not memory-efficient, and can cause performance issues.
-
-		To use an external client management system (e.g. KeyDB), set USE_IN_MEMORY_CLIENT_MGR=false in the .env file.
-
-		This is intended for standalone or development environments.
-		By default, this is set to true (Note: Server does not have any code to use KeyDB at this time!)
-	*/
 	useInMemoryClientMgr, err := strconv.ParseBool(os.Getenv("USE_IN_MEMORY_CLIENT_MGR"))
+	if err != nil {
+		panic(err)
+	}
+
+	enableEmail, err := strconv.ParseBool(os.Getenv("ENABLE_EMAIL"))
+	if err != nil {
+		panic(err)
+	}
+
+	emailPort, err := strconv.Atoi(os.Getenv("EMAIL_PORT"))
 	if err != nil {
 		panic(err)
 	}
 
 	// Initialize data manager
 	mgr := dm.New(
-		"mysql", // Change this to desired SQL driver
+
+		/*
+			SERVER_NICKNAME: Specifies a global nickname for the server; You should NOT change this after public deployment!
+
+			The desired format for a server nickname is as follows:
+
+			[ISO 3166-1 alpha-3 country code]-[A one-word name]-[numerical instance number]
+
+			e.g. "USA-Omega-1".
+		*/
+		os.Getenv("SERVER_NICKNAME"),
+
+		/*
+			SQL_DRIVER: Specifies the SQL driver to use for the database. Default is "mysql".
+			You will need to modify this file to match the SQL driver you want to use.
+		*/
+		os.Getenv("SQL_DRIVER"),
+
+		// Change this to SQL-driver specific connection string.
 		fmt.Sprintf(
 			"%s:%s@tcp(%s)/%s",
 			os.Getenv("DB_USER"),
 			os.Getenv("DB_PASS"),
 			os.Getenv("DB_HOST"),
 			os.Getenv("DATABASE"),
-		), // Change this to SQL-driver specific connection string
+		),
+
+		/*
+			AUTHLESS_MODE: Specifies if the server should be in Authless Mode.
+
+			By default, this should be set to false, and you should connect to a SQL database for the server.
+			However, some implementations may act as a standalone signaling server. In this case, set this to true
+			to completely ignore authentication.
+
+			This is intended for standalone or development environments. Note that using authless mode renders your
+			server vulnerable to connection spamming or spoofed user accounts.
+		*/
 		authlessMode,
+
+		/*
+			USE_IN_MEMORY_CLIENT_MGR: Specifies if the server should use a KeyDB server for client management.
+
+			By default, this should be set to true. However, if you are using Authless Mode, you should set this to false.
+			Note that using the built-in client manager will severely harm performance.
+
+			This is intended for standalone or development environments.
+		*/
 		useInMemoryClientMgr,
+
+		// Specify a boolean value if you want to enable email sending on the server.
+		enableEmail,
+
+		// Change this to desired outgoing email server port (e.g. 587)
+		emailPort,
+
+		// Change this to desired outgoing email server address (e.g. smtp.gmail.com)
+		os.Getenv("EMAIL_SERVER"),
+
+		// Specify your email username here (e.g. someone@example.com)
+		os.Getenv("EMAIL_USERNAME"),
+
+		// Specify your email password here (Use an app password if you have multifactor enabled)
+		os.Getenv("EMAIL_PASSWORD"),
 	)
 
 	// Run the server

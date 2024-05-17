@@ -53,7 +53,7 @@ func (mgr *Manager) createGamesTable() {
 		).
 		Define(
 			`state`,
-			`SMALLINT NOT NULL DEFAULT 0`, // 2 Bytes or 16 Bits, used as a bitfield
+			`TINYINT NOT NULL DEFAULT 0`,
 		).
 		Define(
 			`created`,
@@ -75,7 +75,7 @@ func (mgr *Manager) createDevelopersTable() {
 		).
 		Define(
 			`state`,
-			`SMALLINT NOT NULL DEFAULT 0`, // 2 Bytes or 16 Bits, used as a bitfield
+			`TINYINT NOT NULL DEFAULT 0`,
 		).
 		Define(
 			`created`,
@@ -119,7 +119,7 @@ func (mgr *Manager) createAdminsTable() {
 		).
 		Define(
 			`state`,
-			`SMALLINT NOT NULL DEFAULT 0`, // 2 Bytes or 16 Bits, used as a bitfield
+			`TINYINT NOT NULL DEFAULT 0`,
 		).
 		Define(
 			`created`,
@@ -141,7 +141,7 @@ func (mgr *Manager) createSessionsTable() {
 		).
 		Define(
 			`state`,
-			`SMALLINT NOT NULL DEFAULT 0`, // 2 Bytes or 16 Bits, used as a bitfield
+			`TINYINT NOT NULL DEFAULT 0`,
 		).
 		Define(
 			`created`,
@@ -193,7 +193,7 @@ func (mgr *Manager) createGamesAuthorizedOriginsTable() {
 		).
 		Define(
 			`state`,
-			`SMALLINT NOT NULL DEFAULT 0`, // 2 Bytes or 16 Bits, used as a bitfield
+			`TINYINT NOT NULL DEFAULT 0`,
 		)
 	mgr.buildTable("games_authorized_origins", sb)
 }
