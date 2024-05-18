@@ -13,7 +13,7 @@ func (mgr *Manager) InitDB() {
 		return
 	}
 
-	log.Print("[DB] Initializing DB (This may take some time on first run)...")
+	log.Print("[DB] Initializing...")
 	mgr.createUsersTable()
 	mgr.createDevelopersTable()
 	mgr.createGamesTable()
@@ -24,15 +24,14 @@ func (mgr *Manager) InitDB() {
 	mgr.createDeveloperMembersTable()
 	mgr.createIPWhitelistTable()
 	mgr.createIPBlocklistTable()
-	log.Print("[DB] Initialized!")
+	mgr.createMagicLinksTable()
+	log.Print("[DB] Ready!")
 }
 
 func (mgr *Manager) buildTable(tablename string, sb *sqlbuilder.CreateTableBuilder) {
 	query, args := sb.Build()
 	if _, err := mgr.DB.Query(query, args...); err != nil {
 		log.Printf(`[DB] Failed to prepare table "%s": %s`, tablename, err)
-	} else {
-		log.Printf(`[DB] Prepared table "%s" successfully.`, tablename)
 	}
 }
 
@@ -45,7 +44,7 @@ func (mgr *Manager) createGamesTable() {
 		).
 		Define(
 			`developerid`,
-			`CHAR(26) NOT NULL REFERENCES developers(id)`, // ULID string
+			`CHAR(26) NOT NULL REFERENCES developers(id) ON DELETE CASCADE`, // ULID string
 		).
 		Define(
 			`name`,
@@ -53,7 +52,7 @@ func (mgr *Manager) createGamesTable() {
 		).
 		Define(
 			`state`,
-			`TINYINT NOT NULL DEFAULT 0`,
+			`TINYINT unsigned NOT NULL DEFAULT 0`,
 		).
 		Define(
 			`created`,
@@ -75,7 +74,7 @@ func (mgr *Manager) createDevelopersTable() {
 		).
 		Define(
 			`state`,
-			`TINYINT NOT NULL DEFAULT 0`,
+			`TINYINT unsigned NOT NULL DEFAULT 0`,
 		).
 		Define(
 			`created`,
@@ -115,11 +114,11 @@ func (mgr *Manager) createAdminsTable() {
 	sb.CreateTable("admins").IfNotExists().
 		Define(
 			`userid`,
-			`CHAR(26) NOT NULL REFERENCES users(id)`, // ULID string
+			`CHAR(26) NOT NULL REFERENCES users(id) ON DELETE CASCADE`, // ULID string
 		).
 		Define(
 			`state`,
-			`TINYINT NOT NULL DEFAULT 0`,
+			`TINYINT unsigned NOT NULL DEFAULT 0`,
 		).
 		Define(
 			`created`,
@@ -137,11 +136,11 @@ func (mgr *Manager) createSessionsTable() {
 		).
 		Define(
 			`userid`,
-			`CHAR(26) NOT NULL REFERENCES users(id)`, // ULID string
+			`CHAR(26) NOT NULL REFERENCES users(id) ON DELETE CASCADE`, // ULID string
 		).
 		Define(
 			`state`,
-			`TINYINT NOT NULL DEFAULT 0`,
+			`TINYINT unsigned NOT NULL DEFAULT 0`,
 		).
 		Define(
 			`created`,
@@ -163,7 +162,7 @@ func (mgr *Manager) createSavesTable() {
 	sb.CreateTable("saves").IfNotExists().
 		Define(
 			`userid`,
-			`CHAR(26) NOT NULL REFERENCES users(id)`, // ULID string
+			`CHAR(26) NOT NULL REFERENCES users(id) ON DELETE CASCADE`, // ULID string
 		).
 		Define(
 			`gameid`,
@@ -171,7 +170,7 @@ func (mgr *Manager) createSavesTable() {
 		).
 		Define(
 			`slotid`,
-			`TINYINT NOT NULL DEFAULT 0`, // 10 save slots, using 0-9 index.
+			`TINYINT unsigned NOT NULL DEFAULT 0`, // 10 save slots, using 0-9 index.
 		).
 		Define(
 			`contents`,
@@ -193,7 +192,7 @@ func (mgr *Manager) createGamesAuthorizedOriginsTable() {
 		).
 		Define(
 			`state`,
-			`TINYINT NOT NULL DEFAULT 0`,
+			`TINYINT unsigned NOT NULL DEFAULT 0`,
 		)
 	mgr.buildTable("games_authorized_origins", sb)
 }
@@ -203,11 +202,11 @@ func (mgr *Manager) createDeveloperMembersTable() {
 	sb.CreateTable("developer_members").IfNotExists().
 		Define(
 			`developerid`,
-			`CHAR(26) NOT NULL REFERENCES developers(id)`, // ULID string
+			`CHAR(26) NOT NULL REFERENCES developers(id) ON DELETE CASCADE`, // ULID string
 		).
 		Define(
 			`userid`,
-			`CHAR(26) NOT NULL REFERENCES users(id)`, // ULID string
+			`CHAR(26) NOT NULL REFERENCES users(id) ON DELETE CASCADE`, // ULID string
 		).
 		Define(
 			`description`,
@@ -234,4 +233,30 @@ func (mgr *Manager) createIPWhitelistTable() {
 			`TINYTEXT NOT NULL`, // IP address
 		)
 	mgr.buildTable("ip_whitelist", sb)
+}
+
+func (mgr *Manager) createMagicLinksTable() {
+	sb := sqlbuilder.NewCreateTableBuilder()
+	sb.CreateTable("magic_links").IfNotExists().
+		Define(
+			`id`,
+			`CHAR(26) PRIMARY KEY UNIQUE NOT NULL`, // ULID string, used for the magic link ID
+		).
+		Define(
+			`mode`,
+			`TINYINT unsigned NOT NULL DEFAULT 255`, // 0-255, magic link mode. See MagicLinkMode constants
+		).
+		Define(
+			`userid`,
+			`CHAR(26) NOT NULL REFERENCES users(id) ON DELETE CASCADE`, // ULID string, used for identifying which user the magic link belongs to
+		).
+		Define(
+			`created`,
+			`BIGINT NOT NULL DEFAULT UNIX_TIMESTAMP()`, // UNIX Timestamp
+		).
+		Define(
+			`expires`,
+			`BIGINT DEFAULT NULL`, // UNIX Timestamp (i.e. security codes) or null (i.e. verification links)
+		)
+	mgr.buildTable("magic_links", sb)
 }
