@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/go-chi/chi/v5"
@@ -16,22 +17,41 @@ import (
 	dm "github.com/cloudlink-omega/backend/pkg/data"
 )
 
+// FileServer conveniently sets up a http.FileServer handler to serve
+// static files from a http.FileSystem.
+func FileServer(r chi.Router, path string, root http.FileSystem) {
+	if strings.ContainsAny(path, "{}*") {
+		panic("FileServer does not permit any URL parameters.")
+	}
+
+	if path != "/" && path[len(path)-1] != '/' {
+		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
+		path += "/"
+	}
+	path += "*"
+
+	r.Get(path, func(w http.ResponseWriter, r *http.Request) {
+		rctx := chi.RouteContext(r.Context())
+		pathPrefix := strings.TrimSuffix(rctx.RoutePattern(), "/*")
+		fs := http.StripPrefix(pathPrefix, http.FileServer(root))
+		fs.ServeHTTP(w, r)
+	})
+}
+
 func RunServer(host string, port int, mgr *dm.Manager) {
 	if mgr == nil {
 		log.Fatal("[Server] Got a null data manager. This should never happen, but if you see this message it happened anyways. Aborting...")
 	}
-
-	// Thoust shall shoot the core!
-	log.Printf("[Server] CLΩ Server v%s - Presented by @MikeDEV. Warming up now...", constants.Version)
-
-	// Display public server nickname
-	log.Printf("[Server] This server is called %s", mgr.ServerNickname)
 
 	// Init router
 	r := chi.NewRouter()
 
 	// Init DB
 	mgr.InitDB()
+
+	// Display public server nickname
+	log.Printf("[Server] CLΩ Backend v%s", constants.Version)
+	log.Printf("[Server] This server is called %s and is publicly available at %s", mgr.ServerNickname, mgr.PublicHostname)
 
 	// Add logging and recovery middeware
 	r.Use(middleware.Logger)
@@ -68,6 +88,9 @@ func RunServer(host string, port int, mgr *dm.Manager) {
 	// Mount default route (v0)
 	r.Mount("/api", v0.Router)
 
+	// Implement static file server
+	FileServer(r, "/", http.Dir("./static"))
+
 	// Display warning on startup if authless mode is enabled
 	if mgr.AuthlessMode {
 		log.Printf("[Server] Authless mode is enabled - This server will accept any connection request and generate randomized auth tokens.")
@@ -90,7 +113,7 @@ func RunServer(host string, port int, mgr *dm.Manager) {
 func StartAPI(host string, port int, r http.Handler) error {
 	err := func() error {
 		// Serve root router
-		log.Printf("[Server] API listening to %s:%d", host, port)
+		log.Printf("[Server] Ready for requests at %s:%d", host, port)
 		return http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), r)
 	}()
 	if err != nil {

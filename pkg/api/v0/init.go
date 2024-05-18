@@ -16,4 +16,5 @@ func init() {
 	// Mount routes
 	Router.Route("/", routes.RootRouter)
 	Router.Route("/signaling", routes.SignalingRouter)
+	Router.Route("/admin", routes.AdminRouter)
 }

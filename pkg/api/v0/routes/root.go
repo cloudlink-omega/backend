@@ -3,6 +3,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"reflect"
 	"strings"
@@ -12,6 +13,7 @@ import (
 	"github.com/go-playground/validator/v10"
 
 	accounts "github.com/cloudlink-omega/backend/pkg/accounts"
+	"github.com/cloudlink-omega/backend/pkg/bitfield"
 	constants "github.com/cloudlink-omega/backend/pkg/constants"
 	dm "github.com/cloudlink-omega/backend/pkg/data"
 	errors "github.com/cloudlink-omega/backend/pkg/errors"
@@ -27,11 +29,100 @@ func RootRouter(r chi.Router) {
 		return field.Tag.Get("label")
 	})
 
+	// Display server nickname and version
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		// dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager) // TODO: implement some sort of status check on the root endpoint (uptime, OS, load, memory use, etc.)
-		w.Write([]byte("Hello, World!"))
+		dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager)
+		w.Write([]byte(fmt.Sprintf("%s | v%s\n", dm.ServerNickname, constants.Version)))
 	})
 
+	// Verify magic link
+	r.Get("/verify", func(w http.ResponseWriter, r *http.Request) {
+		dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager)
+
+		// Read query parameters from URL
+		queryParams := r.URL.Query()
+		var token = queryParams.Get("token")
+
+		var user *structs.Client
+		var mode uint8
+		var err error
+		if user, mode, err = dm.VerifyMagicToken(token); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		// Verify mode
+		if mode != constants.LINKMODE_EMAIL {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("This token is not a valid email verification or unsubscribe token."))
+			return
+		}
+
+		// Update user's account state
+		user.UserState.Set(constants.USER_IS_ACTIVE)
+		if err := dm.UpdateUserState(uint(user.UserState), user.ULID); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		// Delete magic link
+		if err := dm.DestroyMagicLink(token); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		// Write response to client
+		w.Write([]byte(fmt.Sprintf("Hello %s, your email has been verified successfully.", user.Username)))
+	})
+
+	// Unsubscribe magic link
+	r.Get("/unsubscribe", func(w http.ResponseWriter, r *http.Request) {
+		dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager)
+
+		// Read query parameters from URL
+		queryParams := r.URL.Query()
+		var token = queryParams.Get("token")
+
+		var user *structs.Client
+		var mode uint8
+		var err error
+		if user, mode, err = dm.VerifyMagicToken(token); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		// Verify mode
+		if mode != constants.LINKMODE_EMAIL {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("This token is not a valid email verification or unsubscribe token."))
+			return
+		}
+
+		// Update user's account state
+		user.UserState.Set(constants.USER_IS_ACTIVE)
+		user.UserState.Set(constants.USER_IS_EMAIL_DISABLED)
+		if err := dm.UpdateUserState(uint(user.UserState), user.ULID); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		// Delete magic link
+		if err := dm.DestroyMagicLink(token); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		// Write response to client
+		w.Write([]byte(fmt.Sprintf("The email address %s for user %s has been unsubscribed successfully. If this was in error, contact support.", user.Email, user.Username)))
+	})
+
+	// Login
 	r.Post("/login", func(w http.ResponseWriter, r *http.Request) {
 		dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager)
 
@@ -125,6 +216,7 @@ func RootRouter(r chi.Router) {
 		w.Write([]byte(usertoken))
 	})
 
+	// Save to slot
 	r.Post("/save", func(w http.ResponseWriter, r *http.Request) {
 		dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager)
 
@@ -200,6 +292,7 @@ func RootRouter(r chi.Router) {
 		w.Write([]byte("OK"))
 	})
 
+	// Load from slot
 	r.Post("/load", func(w http.ResponseWriter, r *http.Request) {
 		dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager)
 
@@ -276,6 +369,7 @@ func RootRouter(r chi.Router) {
 		w.Write([]byte(data))
 	})
 
+	// Register an account
 	r.Post("/register", func(w http.ResponseWriter, r *http.Request) {
 		dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager)
 
@@ -303,7 +397,7 @@ func RootRouter(r chi.Router) {
 		u.Password = accounts.HashPassword(u.Password)
 
 		// Register user
-		res, err := dm.RegisterUser(&u)
+		res, id, err := dm.RegisterUser(&u)
 
 		// Handle errors
 		if err != nil {
@@ -327,13 +421,38 @@ func RootRouter(r chi.Router) {
 
 		fmt.Printf("Registered user %s\n", u.Username)
 
-		dm.SendHTMLEmail(&structs.EmailArgs{
+		var verifLink string
+		if verifLink, err = dm.GenerateMagicLink(id, constants.LINKMODE_EMAIL); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		// Send welcome email
+		if err := dm.SendHTMLEmail(&structs.EmailArgs{
 			Subject:  "Welcome to CloudLink Omega!",
 			To:       u.Email,
 			Template: "hello",
 		}, &structs.TemplateData{
-			Name: u.Username,
-		})
+			Name:             u.Username,
+			VerificationLink: fmt.Sprintf("%s/api/v0/verify?token=%s", dm.PublicHostname, verifLink),
+			UnsubscribeLink:  fmt.Sprintf("%s/api/v0/unsubscribe?token=%s", dm.PublicHostname, verifLink),
+		}); err != nil {
+
+			// Log error
+			log.Printf("Failed to send welcome email: %s", err)
+
+		} else {
+
+			// Update user's account state
+			var state bitfield.Bitfield8
+
+			state.Set(constants.USER_IS_EMAIL_REGISTERED)
+			if err := dm.UpdateUserState(uint(state), id); err != nil {
+				log.Printf("Failed to update user state: %s", err)
+			}
+
+		}
 
 		// Scan output
 		w.WriteHeader(http.StatusCreated)

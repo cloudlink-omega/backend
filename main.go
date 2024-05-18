@@ -124,6 +124,9 @@ func main() {
 
 		// Specify your email password here (Use an app password if you have multifactor enabled)
 		os.Getenv("EMAIL_PASSWORD"),
+
+		// Specify the server's public hostname here. (Used for magic links)
+		os.Getenv("SERVER_PUBLIC_HOSTNAME"),
 	)
 
 	// Run the server
