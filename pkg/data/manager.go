@@ -10,6 +10,7 @@ import (
 
 type Manager struct {
 	Ctx                  context.Context
+	PublicHostname       string
 	ServerNickname       string
 	EnableEmail          bool
 	MailConfig           structs.MailConfig
@@ -19,7 +20,19 @@ type Manager struct {
 	AuthlessUserMap      map[string]string // ULID session token -> username. Used for authless mode.
 }
 
-func New(serverNickname string, sqlDriver string, sqlUrl string, authlessMode bool, useInMemoryClientMgr bool, enableEmail bool, emailPort int, emailServer string, emailUsername string, emailPassword string) *Manager {
+func New(
+	serverNickname string,
+	sqlDriver string,
+	sqlUrl string,
+	authlessMode bool,
+	useInMemoryClientMgr bool,
+	enableEmail bool,
+	emailPort int,
+	emailServer string,
+	emailUsername string,
+	emailPassword string,
+	publicHostname string,
+) *Manager {
 
 	// Create background context
 	ctx := context.Background()
@@ -29,6 +42,7 @@ func New(serverNickname string, sqlDriver string, sqlUrl string, authlessMode bo
 
 		// Return manager
 		return &Manager{
+			PublicHostname:       publicHostname,
 			ServerNickname:       serverNickname,
 			DB:                   nil,
 			Ctx:                  ctx,
@@ -63,6 +77,7 @@ func New(serverNickname string, sqlDriver string, sqlUrl string, authlessMode bo
 
 	// Return manager
 	return &Manager{
+		PublicHostname:       publicHostname,
 		ServerNickname:       serverNickname,
 		DB:                   db,
 		Ctx:                  ctx,
