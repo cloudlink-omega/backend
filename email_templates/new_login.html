@@ -362,11 +362,11 @@
                   <h1>What if this wasn't me?</h1>
                   <p>If this wasn't you, it's likely someone has got your password!</p>
                   <p>Worry not! Our high-tech army of ducks are at your command. Give them the word, and we'll nuke all session tokens, just for you!</p>
-                  <table role="presentation" cellpadding="0" cellspacing="0" class="btn btn-primary">
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                     <tbody>
                       <tr>
-                        <td>
-                          <table role="presentation" cellpadding="0" cellspacing="0">
+                        <td align="center">
+                          <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                             <tbody>
                               <tr>
                                 <td> <a class="button" href="" target="_blank">Revoke all sessions</a> </td>
@@ -389,12 +389,13 @@
                 <tr>
                   <td class="content-block">
                     <p>CloudLink Omega, An open-source online multiplayer network for Scratch, created by <a href="https://github.com/MikeDev101">@MikeDEV.</a></p>
-                    <p>Don't like these emails? <a href="">Unsubscribe me!</a></p>
+                    <p>Don't like these emails? <a href="{{.UnsubscribeLink}}">Unsubscribe me!</a></p>
+                    <p>Wanna join our <a href="https://discord.gg/BZ7TWeMF75">Discord?</a></p>
                   </td>
                 </tr>
                 <tr>
                   <td class="content-block powered-by">
-                    This email was delivered to you via an army of 🦆 Ducks, requested by Server {{.ServerName}}.
+                    This email was delivered to you via an army of 🦆 Ducks on the behalf of {{.ServerName}}.
                   </td>
                 </tr>
               </table>
