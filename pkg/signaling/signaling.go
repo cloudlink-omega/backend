@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/websocket"
 
 	accounts "github.com/cloudlink-omega/backend/pkg/accounts"
+	"github.com/cloudlink-omega/backend/pkg/constants"
 	dm "github.com/cloudlink-omega/backend/pkg/data"
 	clientmgr "github.com/cloudlink-omega/backend/pkg/signaling/clientmgr"
 	structs "github.com/cloudlink-omega/backend/pkg/structs"
@@ -527,6 +528,12 @@ func HandleInitOpcode(c *structs.Client, packet *structs.SignalPacket, dm *dm.Ma
 	// Check if token has expired (ignore if authless mode is enabled)
 	if !dm.AuthlessMode && tmpClient.Expiry < time.Now().Unix() {
 		SendCodeWithMessage(c, nil, "TOKEN_EXPIRED", packet.Listener)
+		return
+	}
+
+	// Require a verified email address to connect (bypass if the user has unsubscribed)
+	if !tmpClient.UserState.Read(constants.USER_IS_ACTIVE) {
+		SendCodeWithMessage(c, "Your account has no verified email address. Please try again.")
 		return
 	}
 
