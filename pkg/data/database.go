@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/cloudlink-omega/backend/pkg/constants"
 	errors "github.com/cloudlink-omega/backend/pkg/errors"
 	structs "github.com/cloudlink-omega/backend/pkg/structs"
 	"github.com/huandu/go-sqlbuilder"
@@ -35,6 +36,16 @@ func (mgr *Manager) RunInsertQuery(sb *sqlbuilder.InsertBuilder) (sql.Result, er
 	query, args := sb.Build()
 	if res, err := mgr.DB.Exec(query, args...); err != nil {
 		log.Printf("[DB] Failed to execute insert request:\n\tquery: %s\n\targs: %v\n\tmessage: %s", query, args, err)
+		return nil, err
+	} else {
+		return res, nil
+	}
+}
+
+func (mgr *Manager) RunDeleteQuery(sb *sqlbuilder.DeleteBuilder) (sql.Result, error) {
+	query, args := sb.Build()
+	if res, err := mgr.DB.Exec(query, args...); err != nil {
+		log.Printf("[DB] Failed to execute delete request:\n\tquery: %s\n\targs: %v\n\tmessage: %s", query, args, err)
 		return nil, err
 	} else {
 		return res, nil
@@ -72,25 +83,28 @@ func (mgr *Manager) FindAllUsers() map[string]*structs.UserQuery {
 //
 // u *structs.User - the user to be registered
 // (sql.Result, error) - the result of the registration and any error encountered
-func (mgr *Manager) RegisterUser(u *structs.Register) (bool, error) {
+func (mgr *Manager) RegisterUser(u *structs.Register) (bool, string, error) {
+
+	var id = ulid.Make().String()
+
 	qy := sqlbuilder.NewInsertBuilder().
 		InsertInto("users").
 		Cols("id", "username", "password", "email").
-		Values(ulid.Make().String(), u.Username, u.Password, u.Email)
+		Values(id, u.Username, u.Password, u.Email)
 
 	res, err := mgr.RunInsertQuery(qy)
 	if err != nil {
 		if strings.Contains(err.Error(), "Duplicate entry") {
 			if strings.Contains(err.Error(), "username") {
-				return false, errors.ErrUsernameInUse
+				return false, "", errors.ErrUsernameInUse
 			} else if strings.Contains(err.Error(), "email") {
-				return false, errors.ErrEmailInUse
+				return false, "", errors.ErrEmailInUse
 			}
 		}
-		return false, err
+		return false, "", err
 	}
 	rows, _ := res.RowsAffected()
-	return rows == 1, nil
+	return rows == 1, id, nil
 }
 
 // GetUserPasswordHash retrieves the password hash for the given email.
@@ -177,6 +191,52 @@ func (mgr *Manager) GenerateSessionToken(userid string, origin string) (string, 
 	return usertoken, nil
 }
 
+// GenerateMagicLink generates a magic link token for the given user ID and mode.
+//
+// userid: uint64 representing the user ID
+// mode: uint8 representing the mode of the magic link
+// state: uint8 representing the bitfield state of the magic link
+// string: the generated magic link token
+// error: an error, if any
+func (mgr *Manager) GenerateMagicLink(userid string, mode uint8) (string, error) {
+	token := ulid.Make().String()
+
+	// Cannot work in authless mode
+	if mgr.AuthlessMode {
+		return "", errors.ErrAuthlessMode
+	}
+
+	qy := sqlbuilder.NewInsertBuilder().
+		InsertInto("magic_links").
+		Cols("id", "mode", "userid").
+		Values(token, mode, userid)
+	res, err := mgr.RunInsertQuery(qy)
+	if err != nil {
+		return "", err
+	}
+	rows, _ := res.RowsAffected()
+	if rows != 1 {
+		return "", errors.ErrDatabaseError
+	}
+	return token, nil
+}
+
+// DestroyMagicLink removes a magic link token from the database.
+func (mgr *Manager) DestroyMagicLink(token string) error {
+	// Cannot work in authless mode
+	if mgr.AuthlessMode {
+		return errors.ErrAuthlessMode
+	}
+
+	qy := sqlbuilder.NewDeleteBuilder()
+	qy.DeleteFrom("magic_links").Where(qy.Equal("id", token))
+	_, err := mgr.RunDeleteQuery(qy)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // newSaveSlotEntry saves a new slot entry to the database.
 //
 // Parameters:
@@ -202,6 +262,31 @@ func (mgr *Manager) newSaveSlotEntry(slotnumber uint8, slotdata string, userid s
 	}
 
 	// Check if any rows were created
+	if _, err := res.RowsAffected(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (mgr *Manager) UpdateUserState(newstate uint, userid string) error {
+	qy := sqlbuilder.NewUpdateBuilder()
+	qy.Update("users").
+		Set(
+			qy.Assign("state", newstate),
+		).
+		Where(
+			qy.E("id", userid),
+		).
+		Limit(1)
+
+	// Run the query
+	res, err := mgr.RunUpdateQuery(qy)
+	if err != nil {
+		return err
+	}
+
+	// Check if any errors occurred getting the number of rows affected
 	if _, err := res.RowsAffected(); err != nil {
 		return err
 	}
@@ -409,6 +494,47 @@ func (mgr *Manager) VerifyUGI(ugi string) (string, string, error) {
 	}
 }
 
+// VerifyMagicToken verifies a magic link token.
+//
+// It takes a linktoken string as a parameter and returns a client struct or an error.
+func (mgr *Manager) VerifyMagicToken(linktoken string) (*structs.Client, uint8, error) {
+
+	// This does not work in authless mode
+	if mgr.AuthlessMode {
+		return nil, constants.LINKMODE_UNDEFINED, errors.ErrAuthlessMode
+	}
+
+	qy := sqlbuilder.NewSelectBuilder()
+	qy.Select(
+		qy.As("u.username", "username"),
+		qy.As("u.email", "email"),
+		qy.As("u.id", "userid"),
+		qy.As("u.state", "state"),
+		qy.As("m.mode", "mode"),
+	).
+		From("magic_links m", "users u").
+		Where(
+			qy.E("m.id", linktoken),
+			qy.And("u.id = m.userid"),
+		)
+	var linkmode uint8
+	client := &structs.Client{}
+	res, err := mgr.RunSelectQuery(qy)
+	if err != nil {
+		res.Close()
+		return nil, constants.LINKMODE_UNDEFINED, err
+	}
+	defer res.Close()
+	if res.Next() {
+		if err := res.Scan(&client.Username, &client.Email, &client.ULID, &client.UserState, &linkmode); err != nil {
+			return nil, constants.LINKMODE_UNDEFINED, err
+		}
+	} else {
+		return nil, constants.LINKMODE_UNDEFINED, errors.ErrLinkNotFound
+	}
+	return client, linkmode, nil
+}
+
 // VerifySessionToken verifies the session token.
 //
 // It takes a usertoken string as a parameter and returns a client struct or an error.
@@ -437,6 +563,7 @@ func (mgr *Manager) VerifySessionToken(usertoken string) (*structs.Client, error
 	qy := sqlbuilder.NewSelectBuilder()
 	qy.Select(
 		qy.As("u.username", "username"),
+		qy.As("u.email", "email"),
 		qy.As("s.userid", "userid"),
 		qy.As("s.origin", "origin"),
 		qy.As("u.state", "userstate"),
@@ -456,7 +583,7 @@ func (mgr *Manager) VerifySessionToken(usertoken string) (*structs.Client, error
 	}
 	defer res.Close()
 	if res.Next() {
-		if err := res.Scan(&client.Username, &client.ULID, &client.Origin, &client.UserState, &client.SessionState, &client.Expiry); err != nil {
+		if err := res.Scan(&client.Username, &client.Email, &client.ULID, &client.Origin, &client.UserState, &client.SessionState, &client.Expiry); err != nil {
 			return nil, err
 		}
 	} else {
@@ -502,4 +629,46 @@ func (mgr *Manager) GetSessionInfoFromToken(usertoken string) (*structs.Session,
 		return nil, errors.ErrSessionNotFound
 	}
 	return session, nil
+}
+
+// GetAllNewUsers retrieves a list of all new users in the database (for migration purposes).
+//
+// Returns a slice containing username and email pairs of all new users (users that haven't been given a welcome email for verification), or an error.
+func (mgr *Manager) GetAllNewUsers() ([]*structs.BasicUserQuery, error) {
+
+	// Cannot work in authless mode
+	if mgr.AuthlessMode {
+		return nil, errors.ErrAuthlessMode
+	}
+
+	qy := sqlbuilder.NewSelectBuilder()
+	qy.Select(
+		qy.As("u.username", "username"),
+		qy.As("u.email", "email"),
+	).
+		From("users u").
+		Where(
+			qy.E("u.state", 0), // 0 = new
+		)
+
+	var users []*structs.BasicUserQuery
+	res, err := mgr.RunSelectQuery(qy)
+	if err != nil {
+		res.Close()
+		return nil, err
+	}
+	defer res.Close()
+	for res.Next() {
+		var u structs.BasicUserQuery
+		if err := res.Scan(&u.Username, &u.Email); err != nil {
+			return nil, err
+		}
+		users = append(users, &u)
+	}
+
+	if err := res.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
