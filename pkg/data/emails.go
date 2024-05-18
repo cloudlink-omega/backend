@@ -13,7 +13,7 @@ import (
 //
 // args: EmailArgs struct containing email details
 // data: TemplateData struct containing template data
-func (mgr *Manager) SendHTMLEmail(args *structs.EmailArgs, data *structs.TemplateData) {
+func (mgr *Manager) SendHTMLEmail(args *structs.EmailArgs, data *structs.TemplateData) error {
 
 	var t *template.Template
 	var err error
@@ -28,7 +28,7 @@ func (mgr *Manager) SendHTMLEmail(args *structs.EmailArgs, data *structs.Templat
 
 	// Use HTML template
 	if t, err = template.ParseFiles("./email_templates/" + args.Template + ".html"); err != nil {
-		panic(err)
+		return err
 	}
 
 	var body bytes.Buffer
@@ -51,15 +51,17 @@ func (mgr *Manager) SendHTMLEmail(args *structs.EmailArgs, data *structs.Templat
 
 	// Send E-Mail
 	if err = d.DialAndSend(m); err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
 
 // SendPlainEmail sends a plain text email using the provided Email Arguments and data.
 //
 // args: EmailArgs struct containing email details
 // data: string containing the plain text email content
-func (mgr *Manager) SendPlainEmail(args *structs.EmailArgs, data string) {
+func (mgr *Manager) SendPlainEmail(args *structs.EmailArgs, data string) error {
 
 	// Create new message
 	m := gomail.NewMessage()
@@ -86,6 +88,8 @@ func (mgr *Manager) SendPlainEmail(args *structs.EmailArgs, data string) {
 
 	// Send E-Mail
 	if err := d.DialAndSend(m); err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
