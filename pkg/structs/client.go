@@ -9,7 +9,8 @@ import (
 
 type Client struct {
 	Conn          *websocket.Conn
-	UserState     uint8              // Bitfield
+	Email         string
+	UserState     bitfield.Bitfield8 // Bitfield
 	SessionState  bitfield.Bitfield8 // Bitfield
 	ID            uint64             // For client manager tracking only
 	UGI           string

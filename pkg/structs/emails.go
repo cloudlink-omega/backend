@@ -19,6 +19,8 @@ type EmailArgs struct {
 // Template data to fill in for specified email to send
 type TemplateData struct {
 	Name                 string
+	VerificationLink     string
+	UnsubscribeLink      string
 	ServerName           string
 	DeveloperOwner       string
 	DeveloperName        string

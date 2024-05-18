@@ -13,6 +13,7 @@ type Login struct {
 	Password string `json:"password" validate:"required,min=8,max=128" label:"password"`
 }
 
-type Token struct {
+// Used for admin requests
+type AdminToken struct {
 	Token string `json:"token" validate:"required,ulid" label:"token"`
 }

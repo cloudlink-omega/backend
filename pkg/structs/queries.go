@@ -11,3 +11,8 @@ type UserQuery struct {
 	Password string
 	State    bitfield.Bitfield8
 }
+
+type BasicUserQuery struct {
+	Username string
+	Email    string
+}
