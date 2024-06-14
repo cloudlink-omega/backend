@@ -8,7 +8,7 @@ require (
 	github.com/go-chi/cors v1.2.1
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/go-sql-driver/mysql v1.8.1
-	github.com/goccy/go-json v0.10.2
+	github.com/goccy/go-json v0.10.3
 	github.com/gorilla/websocket v1.5.3
 	github.com/huandu/go-sqlbuilder v1.27.1
 	github.com/joho/godotenv v1.5.1
