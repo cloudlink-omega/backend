@@ -25,7 +25,7 @@ func FileServer(r chi.Router, path string, root http.FileSystem) {
 	}
 
 	if path != "/" && path[len(path)-1] != '/' {
-		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
+		r.Get(path, http.RedirectHandler(path+"/", http.StatusMovedPermanently).ServeHTTP)
 		path += "/"
 	}
 	path += "*"
@@ -56,6 +56,9 @@ func RunServer(host string, port int, mgr *dm.Manager) {
 	// Add logging and recovery middeware
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+
+	// Add clean path middleware
+	r.Use(middleware.CleanPath)
 
 	// Basic CORS
 	// for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
