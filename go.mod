@@ -4,7 +4,7 @@ go 1.22.1
 
 require (
 	github.com/elithrar/simple-scrypt v1.3.0
-	github.com/go-chi/chi/v5 v5.0.12
+	github.com/go-chi/chi/v5 v5.0.14
 	github.com/go-chi/cors v1.2.1
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/go-sql-driver/mysql v1.8.1
