@@ -150,6 +150,61 @@ func AdminRouter(r chi.Router) {
 		json.NewEncoder(w).Encode(users)
 	})
 
+	r.Post("/resend_hello_all_new", func(w http.ResponseWriter, r *http.Request) {
+		dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager)
+
+		var ok bool
+		var err error
+		var verifLink string
+
+		if ok, _ = VerifyAdminSession(validate, dm, w, r); !ok {
+			return
+		}
+
+		// Get all users that need to be sent a hello email
+		var users []*structs.BroadcastHelloEmailUserQuery
+		if users, err = dm.GetAllUsersForHelloEmailBroadcast(); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		// Send hello email to each user
+		for _, user := range users {
+			log.Printf("[Admin] Sending hello email to %s (%s) - %s...", user.Username, user.ULID, user.Email)
+
+			// Generate link for each user
+			if verifLink, err = dm.GenerateMagicLink(user.ULID, constants.LINKMODE_EMAIL); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte(err.Error()))
+				return
+			}
+
+			// Send email
+			if err := dm.SendHTMLEmail(&structs.EmailArgs{
+				Subject:  "Hello, " + user.Username + "!",
+				To:       user.Email,
+				Template: "hello",
+			}, &structs.TemplateData{
+				Name:             user.Username,
+				VerificationLink: fmt.Sprintf("%s/api/v0/verify?token=%s", dm.PublicHostname, verifLink),
+				UnsubscribeLink:  fmt.Sprintf("%s/api/v0/unsubscribe?token=%s", dm.PublicHostname, verifLink),
+			}); err != nil {
+				log.Printf("[Admin] Error sending hello email to %s: %s", user.Username, err)
+			} else {
+				// Update user's account state
+				user.UserState.Set(constants.USER_IS_EMAIL_REGISTERED)
+				if err := dm.UpdateUserState(uint(user.UserState), user.ULID); err != nil {
+					log.Printf("[Admin] Error updating user %s state: %s", user.Username, err)
+				}
+			}
+
+			time.Sleep(50 * time.Millisecond)
+		}
+
+		w.Write([]byte("OK"))
+	})
+
 	r.Post("/test_html_email", func(w http.ResponseWriter, r *http.Request) {
 		dm := r.Context().Value(constants.DataMgrCtx).(*dm.Manager)
 

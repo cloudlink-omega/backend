@@ -672,3 +672,47 @@ func (mgr *Manager) GetAllNewUsers() ([]*structs.BasicUserQuery, error) {
 
 	return users, nil
 }
+
+// GetAllUsersForHelloEmailBroadcast retrieves a list of all new users in the database with IDs and States (for migration purposes).
+//
+// Returns a slice containing username and email pairs of all new users (users that haven't been given a welcome email for verification), or an error.
+func (mgr *Manager) GetAllUsersForHelloEmailBroadcast() ([]*structs.BroadcastHelloEmailUserQuery, error) {
+
+	// Cannot work in authless mode
+	if mgr.AuthlessMode {
+		return nil, errors.ErrAuthlessMode
+	}
+
+	qy := sqlbuilder.NewSelectBuilder()
+	qy.Select(
+		qy.As("u.username", "username"),
+		qy.As("u.email", "email"),
+		qy.As("u.id", "id"),
+		qy.As("u.state", "state"),
+	).
+		From("users u").
+		Where(
+			qy.E("u.state", 0), // 0 = new
+		)
+
+	var users []*structs.BroadcastHelloEmailUserQuery
+	res, err := mgr.RunSelectQuery(qy)
+	if err != nil {
+		res.Close()
+		return nil, err
+	}
+	defer res.Close()
+	for res.Next() {
+		var u structs.BroadcastHelloEmailUserQuery
+		if err := res.Scan(&u.Username, &u.Email, &u.ULID, &u.UserState); err != nil {
+			return nil, err
+		}
+		users = append(users, &u)
+	}
+
+	if err := res.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}

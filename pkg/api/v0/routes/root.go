@@ -451,7 +451,6 @@ func RootRouter(r chi.Router) {
 			if err := dm.UpdateUserState(uint(state), id); err != nil {
 				log.Printf("Failed to update user state: %s", err)
 			}
-
 		}
 
 		// Scan output

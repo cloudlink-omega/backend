@@ -16,3 +16,10 @@ type BasicUserQuery struct {
 	Username string
 	Email    string
 }
+
+type BroadcastHelloEmailUserQuery struct {
+	Username  string
+	Email     string
+	ULID      string
+	UserState bitfield.Bitfield8
+}
