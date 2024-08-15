@@ -531,8 +531,8 @@ func HandleInitOpcode(c *structs.Client, packet *structs.SignalPacket, dm *dm.Ma
 		return
 	}
 
-	// Require a verified email address to connect (bypass if the user has unsubscribed)
-	if !tmpClient.UserState.Read(constants.USER_IS_ACTIVE) {
+	// Require a verified email address to connect (bypass if the user has unsubscribed or ignore if Authless mode is enabled)
+	if !dm.AuthlessMode && !tmpClient.UserState.Read(constants.USER_IS_ACTIVE) {
 		SendCodeWithMessage(c, "Your account has no verified email address. Please try again.")
 		return
 	}
