@@ -428,20 +428,25 @@ func RootRouter(r chi.Router) {
 			return
 		}
 
-		// Send welcome email
-		if err := dm.SendHTMLEmail(&structs.EmailArgs{
-			Subject:  "Welcome to CloudLink Omega!",
-			To:       u.Email,
-			Template: "hello",
-		}, &structs.TemplateData{
-			Name:             u.Username,
-			VerificationLink: fmt.Sprintf("%s/api/v0/verify?token=%s", dm.PublicHostname, verifLink),
-			UnsubscribeLink:  fmt.Sprintf("%s/api/v0/unsubscribe?token=%s", dm.PublicHostname, verifLink),
-		}); err != nil {
-
-			// Log error
-			log.Printf("Failed to send welcome email: %s", err)
-
+		// Send welcome email - TODO: Somehow make this a template.
+		if err := dm.SendPlainEmail(&structs.EmailArgs{
+			Subject: "Please verify your email address",
+			To:      u.Email,
+		}, fmt.Sprintf(
+`Hello %s. You are receiving this email because you created an account with CloudLink Omega.
+		
+You can verify your email address by going to this link: %s
+		
+If you are not the intended recipient (or you've changed your mind), please visit this link: %s
+		
+If you have questions, comments, or concerns, please reach out to MikeDEV via Discord: https://discord.gg/BZ7TWeMF75
+		
+Please support the project by marking this email as "not spam". Beware phishing: We will never ask for your login credentials over email.`,
+			u.Username,
+			fmt.Sprintf("%s/api/v0/verify?token=%s", dm.PublicHostname, verifLink),
+			fmt.Sprintf("%s/api/v0/unsubscribe?token=%s", dm.PublicHostname, verifLink),
+		)); err != nil {
+			log.Printf("Error sending welcome email: %s", err)
 		} else {
 
 			// Update user's account state
