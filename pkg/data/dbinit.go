@@ -103,6 +103,10 @@ func (mgr *Manager) createUsersTable() {
 			`VARCHAR(320) UNIQUE NOT NULL DEFAULT ''`, // Longest (insane) email address is 320 characters long. But why would you do that to yourself?
 		).
 		Define(
+			`state`,
+			`TINYINT unsigned NOT NULL DEFAULT 0`, // How did I overlook adding this?
+		).
+		Define(
 			`created`,
 			`BIGINT NOT NULL DEFAULT UNIX_TIMESTAMP()`, // UNIX Timestamp
 		)
