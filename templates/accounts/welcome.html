@@ -1,0 +1,116 @@
+<!-- Primary content -->
+<div class="container mx-auto px-4 py-8">
+    <div class="container text-center justify-center mx-auto mb-4">
+        <span class="flex items-center justify-center pb-4 text-black dark:text-white">
+            <svg width="177" height="123" viewBox="0 0 177 123" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_149_138)">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M55.4632 48.5129H42.0789C24.3611 48.5129 10 62.875 10 80.5918C10 98.3086 24.3611 112.671 42.0789 112.671H134.32C152.037 112.671 166.399 98.3086 166.399 80.5918C166.399 62.875 152.037 48.5129 134.32 48.5129H120.935L120.166 39.3498C118.786 22.9153 104.995 10 88.1993 10C71.4038 10 57.6129 22.9153 56.2327 39.3498L55.4632 48.5129ZM130.131 38.5129C128.319 16.9423 110.237 0 88.1993 0C66.1613 0 48.0793 16.9423 46.2678 38.5129H42.0789C18.838 38.5129 0 57.3523 0 80.5918C0 103.831 18.838 122.671 42.0789 122.671H134.32C157.561 122.671 176.399 103.831 176.399 80.5918C176.399 57.3523 157.561 38.5129 134.32 38.5129H130.131Z" fill="currentColor"/>
+                <path d="M117.278 98.9703C117.278 101.364 115.338 103.304 112.944 103.304H97.5482C95.1549 103.304 93.2148 101.364 93.2148 98.9703V89.6158C93.2148 87.9408 94.1803 86.4159 95.6942 85.6991C101.585 82.911 105.391 76.9013 105.391 70.3889C105.391 61.0546 97.7967 53.4604 88.4622 53.4604C79.1277 53.4604 71.5337 61.0546 71.5337 70.3889C71.5337 76.9015 75.3399 82.911 81.2305 85.6991C82.7445 86.4156 83.71 87.9406 83.71 89.6158V98.9703C83.71 101.364 81.77 103.304 79.3766 103.304H63.9802C61.5869 103.304 59.6468 101.364 59.6468 98.9703C59.6468 96.577 61.5869 94.6369 63.9802 94.6369H75.0433V92.1875C71.8002 90.1894 69.0342 87.4877 66.9496 84.2607C64.2787 80.1262 62.8669 75.3296 62.8669 70.3889C62.8669 56.2755 74.3489 44.7936 88.4622 44.7936C102.576 44.7936 114.058 56.2755 114.058 70.3887C114.058 75.3294 112.646 80.1262 109.975 84.2605C107.891 87.4875 105.125 90.1894 101.882 92.1875V94.6369H112.944C115.338 94.6369 117.278 96.577 117.278 98.9703Z" fill="currentColor"/>
+                </g>
+                <defs>
+                <clipPath id="clip0_149_138">
+                <rect width="176.399" height="122.671" fill="currentColor"/>
+                </clipPath>
+                </defs>
+            </svg>
+        </span>
+        <h1 class="text-5xl font-bold mt-2 mb-2 dark:text-white">Welcome</h1>
+        {{ if .Message }}
+        {{ if .Error }}
+        <span class="inline-flex items-center mt-4 gap-1 px-2 py-1 rounded-full text-2xl font-medium 
+                    bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">
+            {{ .Message }}
+        </span>
+        {{ end }}
+        {{ if .Warning }}
+        <span class="inline-flex items-center mt-4 gap-1 px-2 py-1 rounded-full text-2xl font-medium 
+                    bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300">
+            {{ .Message }}
+        </span>
+        {{ end }}
+        {{ if .Info }}
+        <span class="inline-flex items-center mt-4 gap-1 px-2 py-1 rounded-full text-2xl font-medium 
+                    bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
+            {{ .Message }}
+        </span>
+        {{ end }}
+        {{ if .Success }}
+        <span class="inline-flex items-center mt-4 gap-1 px-2 py-1 rounded-full text-2xl font-medium 
+                    bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300">
+            {{ .Message }}
+        </span>
+        {{ end }}
+        {{ end }}
+    </div>
+
+    <div>
+        <div class="container text-center justify-center mx-auto mb-4">
+            <h2 class="text-2xl dark:text-white mb-4">Choose any of the following providers to continue:</h2>
+        </div>
+        <div class="flex flex-wrap flex-column gap-3 justify-center px-4">
+            <a href="/{{ .RouterPath }}/oauth/google" type="button" class="w-50 px-6 py-3 bg-white dark:bg-gray-600 hover:font-bold hover:bg-red-400 dark:hover:bg-red-400 text-black dark:text-white hover:text-white rounded-xl 
+                        font-medium transition-all duration-300 
+                        hover:shadow-lg hover:shadow-red-500/30 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
+                        active:scale-95">
+                <span class="flex items-center justify-center gap-2 text-2xl">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M43.611 20.083H42V20H24V28H35.303C33.654 32.657 29.223 36 24 36C17.373 36 12 30.627 12 24C12 17.373 17.373 12 24 12C27.059 12 29.842 13.154 31.961 15.039L37.618 9.382C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24C4 35.045 12.955 44 24 44C35.045 44 44 35.045 44 24C44 22.659 43.862 21.35 43.611 20.083Z" fill="currentColor"/>
+                    </svg>
+                    Continue with Google
+                </span>
+            </a>
+            <a href="/{{ .RouterPath }}/oauth/discord" type="button" class="w-50 px-6 py-3 bg-white dark:bg-gray-600 hover:font-bold hover:bg-red-400 dark:hover:bg-red-400 text-black dark:text-white hover:text-white rounded-xl 
+                        font-medium transition-all duration-300 
+                        hover:shadow-lg hover:shadow-red-500/30 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
+                        active:scale-95">
+                <span class="flex items-center justify-center gap-2 text-2xl">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M39.248 10.177C36.444 8.88996 33.436 7.94196 30.292 7.39896C30.235 7.38896 30.178 7.41496 30.148 7.46696C29.761 8.15496 29.333 9.05196 29.033 9.75796C25.651 9.25196 22.286 9.25196 18.974 9.75796C18.674 9.03696 18.23 8.15496 17.841 7.46696C17.811 7.41596 17.754 7.38996 17.697 7.39896C14.554 7.93996 11.547 8.88796 8.74098 10.177C8.71698 10.187 8.69598 10.205 8.68198 10.228C2.97798 18.75 1.41498 27.063 2.18198 35.272C2.18498 35.312 2.20798 35.351 2.23898 35.375C6.00198 38.139 9.64798 39.817 13.226 40.929C13.283 40.946 13.344 40.926 13.38 40.878C14.226 39.722 14.981 38.504 15.628 37.222C15.666 37.147 15.63 37.058 15.552 37.028C14.355 36.574 13.216 36.021 12.12 35.392C12.033 35.341 12.026 35.217 12.106 35.158C12.337 34.985 12.567 34.805 12.788 34.624C12.828 34.591 12.883 34.584 12.93 34.605C20.131 37.893 27.927 37.893 35.043 34.605C35.09 34.582 35.145 34.589 35.187 34.622C35.407 34.804 35.638 34.985 35.87 35.158C35.95 35.217 35.945 35.341 35.858 35.392C34.762 36.033 33.622 36.574 32.424 37.026C32.346 37.056 32.311 37.146 32.349 37.222C33.01 38.502 33.764 39.72 34.595 40.876C34.63 40.925 34.692 40.946 34.749 40.928C38.344 39.816 41.99 38.138 45.753 35.374C45.786 35.35 45.807 35.313 45.81 35.273C46.727 25.782 44.273 17.538 39.305 10.229C39.293 10.205 39.272 10.187 39.248 10.177ZM16.703 30.273C14.535 30.273 12.749 28.283 12.749 25.838C12.749 23.393 14.501 21.403 16.703 21.403C18.923 21.403 20.692 23.411 20.657 25.838C20.658 28.282 18.906 30.273 16.703 30.273ZM31.324 30.273C29.156 30.273 27.37 28.283 27.37 25.838C27.37 23.393 29.122 21.403 31.324 21.403C33.544 21.403 35.313 23.411 35.278 25.838C35.278 28.282 33.544 30.273 31.324 30.273Z" fill="currentColor"/>
+                    </svg>
+                    Continue with Discord
+                </span>
+            </a>
+            <a href="/{{ .RouterPath }}/oauth/github" type="button" class="w-50 px-6 py-3 bg-white dark:bg-gray-600 hover:font-bold hover:bg-red-400 dark:hover:bg-red-400 text-black dark:text-white hover:text-white rounded-xl 
+                        font-medium transition-all duration-300 
+                        hover:shadow-lg hover:shadow-red-500/30 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
+                        active:scale-95">
+                <span class="flex items-center justify-center gap-2 text-2xl">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M24 4.5C13.2307 4.5 4.5 13.2307 4.5 24C4.5 33.2078 10.884 40.92 19.4662 42.9645C19.0222 42.8587 18.582 42.7402 18.15 42.6052V38.1375C18.15 38.1375 17.4187 38.3812 16.4437 38.3812C13.716 38.3812 12.5827 35.9475 12.3 34.725C12.1282 33.9802 11.6797 33.2745 11.1982 32.8433C10.623 32.3303 10.3538 32.3287 10.35 32.1532C10.3425 31.785 10.8435 31.8 11.0812 31.8C12.3 31.8 13.224 33.0967 13.653 33.7672C14.7158 35.4225 15.8565 35.7 16.4437 35.7C17.175 35.7 17.8065 35.5905 18.2415 35.3805C18.4425 33.9645 19.0725 32.703 20.1 31.8C15.5272 30.8858 12.3 28.263 12.3 24C12.3 21.804 13.1813 19.7858 14.6498 18.156C14.4998 17.7308 14.25 16.8705 14.25 15.4688C14.25 14.5425 14.3145 13.4055 14.7375 12.3C14.7375 12.3 17.5185 12.3195 20.1412 14.8035C21.3517 14.451 22.647 14.25 24 14.25C25.353 14.25 26.6483 14.451 27.8588 14.8035C30.4815 12.3195 33.2625 12.3 33.2625 12.3C33.6877 13.4055 33.75 14.5425 33.75 15.4688C33.75 16.98 33.549 17.8613 33.426 18.2415C34.8495 19.8563 35.7 21.843 35.7 24C35.7 28.263 32.4728 30.8858 27.9 31.8C29.121 32.8725 29.85 34.4348 29.85 36.1875V42.6052C29.418 42.741 28.9785 42.8587 28.5337 42.9645C37.116 40.92 43.5 33.2078 43.5 24C43.5 13.2307 34.7693 4.5 24 4.5ZM25.3597 43.4475C24.9105 43.479 24.4575 43.5 24 43.5C24.4575 43.5 24.9097 43.4783 25.3597 43.4475ZM24 43.5C23.5425 43.5 23.0895 43.479 22.6403 43.4475C23.0903 43.4783 23.5425 43.5 24 43.5ZM22.341 43.425C21.4283 43.3478 20.5328 43.2083 19.6605 43.0095C20.5335 43.2075 21.4283 43.3478 22.341 43.425Z" fill="currentColor"/>
+                    </svg>
+                    Continue with GitHub
+                </span>
+            </a>
+            <div class="container text-center justify-center mx-auto mt-2 mb-2">
+                <h2 class="text-2xl dark:text-white">Or, use an email address and password:</h2>
+            </div>
+            <a href="/{{ .RouterPath }}/login?redirect={{ .Redirect }}" type="button" class="w-25 px-6 py-3 bg-white dark:bg-gray-600 hover:font-bold hover:bg-red-400 dark:hover:bg-red-400 text-black dark:text-white hover:text-white rounded-xl 
+                        font-medium transition-all duration-300 
+                        hover:shadow-lg hover:shadow-red-500/30 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
+                        active:scale-95">
+                <span class="flex items-center justify-center gap-2 text-2xl">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M31 15L35.6 19.6C35.9739 19.9665 36.4765 20.1717 37 20.1717C37.5235 20.1717 38.0261 19.9665 38.4 19.6L42.6 15.4C42.9665 15.0261 43.1717 14.5235 43.1717 14C43.1717 13.4765 42.9665 12.9739 42.6 12.6L38 8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M41.9998 4L22.7998 23.2" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M15 42C21.0751 42 26 37.0751 26 31C26 24.9249 21.0751 20 15 20C8.92487 20 4 24.9249 4 31C4 37.0751 8.92487 42 15 42Z" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>                        
+                    Login
+                </span>
+            </a>
+            <a href="/{{ .RouterPath }}/register?redirect={{ .Redirect }}" type="button" class="w-25 px-6 py-3 bg-white dark:bg-gray-600 hover:font-bold hover:bg-red-400 dark:hover:bg-red-400 text-black dark:text-white hover:text-white rounded-xl 
+                        font-medium transition-all duration-300 
+                        hover:shadow-lg hover:shadow-red-500/30 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
+                        active:scale-95">
+                <span class="flex items-center justify-center gap-2 text-2xl">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 42C3.99983 38.9207 4.88827 35.9067 6.55869 33.3198C8.22911 30.7329 10.6105 28.683 13.4172 27.4161C16.2239 26.1491 19.3365 25.719 22.3815 26.1774C25.4266 26.6357 28.2747 27.963 30.584 30" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M20 26C25.5228 26 30 21.5228 30 16C30 10.4772 25.5228 6 20 6C14.4772 6 10 10.4772 10 16C10 21.5228 14.4772 26 20 26Z" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M38 32V44" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M44 38H32" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>                        
+                    Register
+                </span>
+            </a>
+        </div>
+    </div>
+</div>

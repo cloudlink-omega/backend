@@ -1,0 +1,380 @@
+<!-- Primary content -->
+<div class="container mx-auto px-4 py-8">
+    <div class="container text-center justify-center mx-auto mb-4">
+        <span class="flex items-center justify-center pb-4 text-black dark:text-white">
+            <svg width="177" height="123" viewBox="0 0 177 123" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_149_138)">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M55.4632 48.5129H42.0789C24.3611 48.5129 10 62.875 10 80.5918C10 98.3086 24.3611 112.671 42.0789 112.671H134.32C152.037 112.671 166.399 98.3086 166.399 80.5918C166.399 62.875 152.037 48.5129 134.32 48.5129H120.935L120.166 39.3498C118.786 22.9153 104.995 10 88.1993 10C71.4038 10 57.6129 22.9153 56.2327 39.3498L55.4632 48.5129ZM130.131 38.5129C128.319 16.9423 110.237 0 88.1993 0C66.1613 0 48.0793 16.9423 46.2678 38.5129H42.0789C18.838 38.5129 0 57.3523 0 80.5918C0 103.831 18.838 122.671 42.0789 122.671H134.32C157.561 122.671 176.399 103.831 176.399 80.5918C176.399 57.3523 157.561 38.5129 134.32 38.5129H130.131Z"
+                        fill="currentColor" />
+                    <path
+                        d="M117.278 98.9703C117.278 101.364 115.338 103.304 112.944 103.304H97.5482C95.1549 103.304 93.2148 101.364 93.2148 98.9703V89.6158C93.2148 87.9408 94.1803 86.4159 95.6942 85.6991C101.585 82.911 105.391 76.9013 105.391 70.3889C105.391 61.0546 97.7967 53.4604 88.4622 53.4604C79.1277 53.4604 71.5337 61.0546 71.5337 70.3889C71.5337 76.9015 75.3399 82.911 81.2305 85.6991C82.7445 86.4156 83.71 87.9406 83.71 89.6158V98.9703C83.71 101.364 81.77 103.304 79.3766 103.304H63.9802C61.5869 103.304 59.6468 101.364 59.6468 98.9703C59.6468 96.577 61.5869 94.6369 63.9802 94.6369H75.0433V92.1875C71.8002 90.1894 69.0342 87.4877 66.9496 84.2607C64.2787 80.1262 62.8669 75.3296 62.8669 70.3889C62.8669 56.2755 74.3489 44.7936 88.4622 44.7936C102.576 44.7936 114.058 56.2755 114.058 70.3887C114.058 75.3294 112.646 80.1262 109.975 84.2605C107.891 87.4875 105.125 90.1894 101.882 92.1875V94.6369H112.944C115.338 94.6369 117.278 96.577 117.278 98.9703Z"
+                        fill="currentColor" />
+                </g>
+                <defs>
+                    <clipPath id="clip0_149_138">
+                        <rect width="176.399" height="122.671" fill="currentColor" />
+                    </clipPath>
+                </defs>
+            </svg>
+        </span>
+        <h1 class="text-5xl font-bold mt-2 mb-2 dark:text-white">Register</h1>
+        <span id="red_message"
+            class="hidden inline-flex items-center mt-4 gap-1 px-2 py-1 rounded-full text-2xl font-medium bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300"></span>
+        <span id="green_message"
+            class="hidden inline-flex items-center mt-4 gap-1 px-2 py-1 rounded-full text-2xl font-medium bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300"></span>
+        <span id="info_message"
+            class="hidden inline-flex items-center mt-4 gap-1 px-2 py-1 rounded-full text-2xl font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"></span>
+    </div>
+    <div>
+        <form id="register">
+            <div class="flex flex-col justify-center items-center">
+                <div id="setup_credentials" class="hidden flex flex-col justify-center items-center">
+                    <h2 class="text-2xl text-black dark:text-white">Enter your email address.</h2>
+                    <input type="email" id="email" name="email"
+                        class="text-2xl block text-center px-4 py-2 mt-4 mb-4 bg-white dark:bg-gray-900 text-black dark:text-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent"
+                        placeholder="Enter your email" required />
+                    <h2 class="text-2xl text-black dark:text-white">Next, make a password...</h2>
+                    <div class="w-full flex flex-col items-center justify-center mt-2 text-black dark:text-white">
+                        <ul class="list-disc pb-2">
+                            <li>At least 8 characters long,</li>
+                            <li>Has at least 1 number,</li>
+                            <li>Has at least 1 special character,</li>
+                            <li>And has at least 1 uppercase letter.</li>
+                        </ul>
+                        <p>(And make sure to store it somewhere safe!)</p>
+                    </div>
+                    <input type="password" id="password" name="password"
+                        class="text-2xl block text-center px-4 py-2 mt-4 mb-2 bg-white dark:bg-gray-900 text-black dark:text-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent"
+                        placeholder="Enter your password" required />
+                    <input type="password" id="password-confirm"
+                        class="text-2xl block text-center px-4 py-2 mt-4 mb-8 bg-white dark:bg-gray-900 text-black dark:text-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent"
+                        placeholder="Confirm your password" required />
+                </div>
+                <div id="pick_username" class="flex flex-col justify-center items-center">
+                    <h2 class="text-2xl text-black dark:text-white">What username do you want?</h2>
+                    <input type="text" id="username" name="username"
+                        class="text-2xl block text-center px-4 py-2 mt-4 mb-4 bg-white dark:bg-gray-900 text-black dark:text-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent"
+                        placeholder="Enter a username" required />
+                </div>
+            </div>
+            <div class="w-full flex flex-wrap flex-row items-center justify-center gap-3">
+                <button id="check" class="w-50 px-6 py-3 bg-white dark:bg-gray-600 hover:font-bold hover:bg-red-400 dark:hover:bg-red-400 text-black dark:text-white hover:text-white rounded-xl 
+                    font-medium transition-all duration-300 
+                    hover:shadow-lg hover:shadow-red-500/30 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
+                    active:scale-95">
+                    <span class="flex items-center justify-center gap-2 text-2xl">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M43.6022 20C44.5156 24.4826 43.8646 29.1428 41.7579 33.2036C39.6512 37.2643 36.216 40.4801 32.0252 42.3146C27.8345 44.1491 23.1415 44.4915 18.7288 43.2847C14.3161 42.0779 10.4506 39.3948 7.77675 35.6828C5.10292 31.9709 3.78244 27.4545 4.03553 22.8868C4.28861 18.319 6.09996 13.9762 9.1675 10.5823C12.235 7.18848 16.3734 4.94884 20.8923 4.23689C25.4113 3.52493 30.0378 4.3837 34.0002 6.66998"
+                                stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M18 22L24 28L44 8" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                        Check
+                    </span>
+                </button>
+                <button id="confirm" class="hidden w-50 px-6 py-3 bg-white dark:bg-gray-600 hover:font-bold hover:bg-red-400 dark:hover:bg-red-400 text-black dark:text-white hover:text-white rounded-xl 
+                    font-medium transition-all duration-300 
+                    hover:shadow-lg hover:shadow-red-500/30 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
+                    active:scale-95">
+                    <span class="flex items-center justify-center gap-2 text-2xl">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M31 15L35.6 19.6C35.9739 19.9665 36.4765 20.1717 37 20.1717C37.5235 20.1717 38.0261 19.9665 38.4 19.6L42.6 15.4C42.9665 15.0261 43.1717 14.5235 43.1717 14C43.1717 13.4765 42.9665 12.9739 42.6 12.6L38 8"
+                                stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M41.9998 4L22.7998 23.2" stroke="currentColor" stroke-width="3"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                            <path
+                                d="M15 42C21.0751 42 26 37.0751 26 31C26 24.9249 21.0751 20 15 20C8.92487 20 4 24.9249 4 31C4 37.0751 8.92487 42 15 42Z"
+                                stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        Confirm
+                    </span>
+                </button>
+                <a href="/{{ .RouterPath }}?redirect={{ .Redirect }}" type="button" class="w-50 px-6 py-3 bg-white dark:bg-gray-600 hover:font-bold hover:bg-red-400 dark:hover:bg-red-400 text-black dark:text-white hover:text-white rounded-xl 
+                        font-medium transition-all duration-300 
+                        hover:shadow-lg hover:shadow-red-500/30 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
+                        active:scale-95">
+                    <span class="flex items-center justify-center gap-2 text-2xl">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44Z"
+                                stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M9.7998 9.80005L38.1998 38.2001" stroke="currentColor" stroke-width="3"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        Cancel
+                    </span>
+                </a>
+            </div>
+        </form>
+
+        <form id="verify_email" class="hidden">
+            <div class="flex flex-col justify-center items-center text-center">
+                <h2 class="text-3xl text-black dark:text-white mb-4">Verify your email address</h2>
+                <p class="text-black dark:text-white">Please check your inbox (as well as spam) for a verification code.
+                    This is required to fully activate your account.</p>
+                <input type="number" id="emailcode" name="emailcode"
+                    class="text-2xl block text-center px-4 py-2 mt-4 mb-4 bg-white dark:bg-gray-900 text-black dark:text-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    placeholder="Verification code" required />
+                <button id="verify" class="w-50 px-6 py-3 bg-white dark:bg-gray-600 hover:font-bold hover:bg-red-400 dark:hover:bg-red-400 text-black dark:text-white hover:text-white rounded-xl 
+                    font-medium transition-all duration-300 
+                    hover:shadow-lg hover:shadow-red-500/30 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
+                    active:scale-95">
+                    <span class="flex items-center justify-center gap-2 text-2xl">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14 20V44" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path
+                                d="M30 11.76L28 20H39.66C40.281 20 40.8934 20.1446 41.4489 20.4223C42.0043 20.7 42.4874 21.1032 42.86 21.6C43.2326 22.0968 43.4844 22.6735 43.5955 23.2845C43.7066 23.8954 43.6739 24.5239 43.5 25.12L38.84 41.12C38.5977 41.9509 38.0924 42.6807 37.4 43.2C36.7076 43.7193 35.8655 44 35 44H8C6.93913 44 5.92172 43.5786 5.17157 42.8284C4.42143 42.0783 4 41.0609 4 40V24C4 22.9391 4.42143 21.9217 5.17157 21.1716C5.92172 20.4214 6.93913 20 8 20H13.52C14.2642 19.9996 14.9935 19.7916 15.6259 19.3994C16.2583 19.0073 16.7688 18.4464 17.1 17.78L24 4C24.9432 4.01168 25.8715 4.23634 26.7156 4.65719C27.5597 5.07805 28.2979 5.68421 28.8748 6.43041C29.4518 7.1766 29.8526 8.04352 30.0475 8.9664C30.2423 9.88929 30.2261 10.8443 30 11.76Z"
+                                stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        Verify
+                    </span>
+                </button>
+            </div>
+        </form>
+
+        <form id="setup_totp" class="hidden">
+            <div class="flex flex-col justify-center items-center text-center">
+                <h2 class="text-3xl text-black dark:text-white">Would you like to setup TOTP?</h2>
+
+                <h3 class="text-2xl text-black dark:text-white mt-8 mb-4">What is TOTP?</h3>
+                <p class="text-black dark:text-white">TOTP, short for Time-based One-time Password, is a type of
+                    two-factor authentication (2FA) that ensures that only you can access your account.</p>
+
+                <h3 class="text-2xl text-black dark:text-white mt-8 mb-4">How does it work?</h3>
+                <p class="text-black dark:text-white">When you log in, you will be asked to enter a numerical code.</p>
+
+                <h3 class="text-2xl text-black dark:text-white mt-8 mb-4">What about [...] game?</h3>
+                <p class="text-black dark:text-white">If a game doesn't natively support TOTP, simply add the numerical
+                    code at the end of your password when logging in.</p>
+
+                <h3 class="text-2xl text-black dark:text-white mt-8 mb-4">What if I change my mind?</h3>
+                <p class="text-black dark:text-white">You can setup TOTP at any time by going into your account
+                    settings.</p>
+
+            </div>
+            <div class="w-full mt-4 flex flex-wrap flex-row items-center justify-center gap-3">
+                <button id="continue" class="w-50 px-6 py-3 bg-white dark:bg-gray-600 hover:font-bold hover:bg-red-400 dark:hover:bg-red-400 text-black dark:text-white hover:text-white rounded-xl 
+                    font-medium transition-all duration-300 
+                    hover:shadow-lg hover:shadow-red-500/30 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
+                    active:scale-95">
+                    <span class="flex items-center justify-center gap-2 text-2xl">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14 20V44" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path
+                                d="M30 11.76L28 20H39.66C40.281 20 40.8934 20.1446 41.4489 20.4223C42.0043 20.7 42.4874 21.1032 42.86 21.6C43.2326 22.0968 43.4844 22.6735 43.5955 23.2845C43.7066 23.8954 43.6739 24.5239 43.5 25.12L38.84 41.12C38.5977 41.9509 38.0924 42.6807 37.4 43.2C36.7076 43.7193 35.8655 44 35 44H8C6.93913 44 5.92172 43.5786 5.17157 42.8284C4.42143 42.0783 4 41.0609 4 40V24C4 22.9391 4.42143 21.9217 5.17157 21.1716C5.92172 20.4214 6.93913 20 8 20H13.52C14.2642 19.9996 14.9935 19.7916 15.6259 19.3994C16.2583 19.0073 16.7688 18.4464 17.1 17.78L24 4C24.9432 4.01168 25.8715 4.23634 26.7156 4.65719C27.5597 5.07805 28.2979 5.68421 28.8748 6.43041C29.4518 7.1766 29.8526 8.04352 30.0475 8.9664C30.2423 9.88929 30.2261 10.8443 30 11.76Z"
+                                stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        Sure
+                    </span>
+                </button>
+
+                <a href="/{{ .RouterPath }}?redirect={{ .Redirect }}" class="w-50 px-6 py-3 bg-white dark:bg-gray-600 hover:font-bold hover:bg-red-400 dark:hover:bg-red-400 text-black dark:text-white hover:text-white rounded-xl 
+                    font-medium transition-all duration-300 
+                    hover:shadow-lg hover:shadow-red-500/30 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
+                    active:scale-95">
+                    <span class="flex items-center justify-center gap-2 text-2xl">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M34 28V4" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path
+                                d="M17.9998 36.24L19.9998 28H8.33984C7.71886 28 7.10641 27.8554 6.55099 27.5777C5.99557 27.3 5.51243 26.8968 5.13984 26.4C4.76726 25.9032 4.51545 25.3265 4.40436 24.7155C4.29328 24.1046 4.32597 23.4761 4.49984 22.88L9.15984 6.88C9.40218 6.04914 9.90746 5.31929 10.5998 4.8C11.2922 4.28071 12.1344 4 12.9998 4H39.9998C41.0607 4 42.0781 4.42143 42.8283 5.17157C43.5784 5.92172 43.9998 6.93913 43.9998 8V24C43.9998 25.0609 43.5784 26.0783 42.8283 26.8284C42.0781 27.5786 41.0607 28 39.9998 28H34.4798C33.7357 28.0004 33.0064 28.2084 32.3739 28.6006C31.7415 28.9927 31.231 29.5536 30.8998 30.22L23.9998 44C23.0567 43.9883 22.1284 43.7637 21.2842 43.3428C20.4401 42.922 19.702 42.3158 19.125 41.5696C18.5481 40.8234 18.1472 39.9565 17.9524 39.0336C17.7575 38.1107 17.7738 37.1557 17.9998 36.24Z"
+                                stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        No thanks
+                    </span>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" onload>
+    document.getElementById("check").addEventListener("click", async function (event) {
+        event.preventDefault(); // Prevent the default behavior
+
+        // Hide messages
+        $(`#green_message`)[0].classList.add("hidden");
+        $(`#info_message`)[0].classList.add("hidden");
+        $(`#red_message`)[0].classList.add("hidden");
+
+        // username cannot be empty
+        if ($(`#username`)[0].value.length == 0) {
+            $(`#red_message`)[0].classList.remove("hidden");
+            $(`#red_message`)[0].textContent = "Please enter a username.";
+            return;
+        }
+
+        // Check if the desired username is larger than 20 characters
+        if ($(`#username`)[0].value.length > 20) {
+            $(`#red_message`)[0].classList.remove("hidden");
+            $(`#red_message`)[0].textContent = "Your username is too long. It should be less than 20 characters.";
+            return;
+        }
+
+        // Show the loading overlay
+        $(`#loadingOverlay`)[0].classList.remove("hidden");
+
+        // Check if the playername is taken
+        response = await fetch("/{{ .RouterPath }}/api/v0/check?" + new URLSearchParams({ playername: $(`#username`)[0].value }));
+        message = await response.text();
+
+        // TODO: something with the results
+
+        // Artificial 1 second delay - It's called UX design, calm down
+        setTimeout(() => {
+
+            // Hide the loading overlay
+            $(`#loadingOverlay`)[0].classList.add("hidden");
+
+            // Show the message
+            // $(`#red_message`)[0].classList.remove("hidden");
+            // $(`#red_message`)[0].textContent = "That name's been taken. Try something else.";
+
+            $(`#info_message`)[0].classList.remove("hidden");
+            $(`#info_message`)[0].textContent = "Nice to meet you, " + $(`#username`)[0].value + "!";
+
+            // Hide the first part of setup, show the second
+            $(`#pick_username`)[0].classList.add("hidden");
+            $(`#check`)[0].classList.add("hidden");
+            $(`#setup_credentials`)[0].classList.remove("hidden");
+            $(`#confirm`)[0].classList.remove("hidden");
+
+        }, 1000);
+
+    });
+
+    document.getElementById("confirm").addEventListener("click", async function (event) {
+        event.preventDefault(); // Prevent the default behavior
+
+        // Hide messages
+        $(`#green_message`)[0].classList.add("hidden");
+        $(`#info_message`)[0].classList.add("hidden");
+        $(`#red_message`)[0].classList.add("hidden");
+
+        // Require an email to be set
+        if ($(`#email`)[0].value === "") {
+            $(`#red_message`)[0].classList.remove("hidden");
+            $(`#red_message`)[0].textContent = "Please enter your email address.";
+            return;
+        }
+
+        // Check if the email is syntax valid
+        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test($(`#email`)[0].value)) {
+            $(`#red_message`)[0].classList.remove("hidden");
+            $(`#red_message`)[0].textContent = "That doesn't look like a valid email address.";
+            return;
+        }
+
+        // Enforce password policy:
+        // At least 8 characters long
+        // at least 1 number
+        // at least 1 special character
+        // at least 1 uppercase letter
+        if ($(`#password`)[0].value === "") {
+            $(`#red_message`)[0].classList.remove("hidden");
+            $(`#red_message`)[0].textContent = "Please set a password.";
+            return;
+        }
+        if ($(`#password`)[0].value.length < 8) {
+            $(`#red_message`)[0].classList.remove("hidden");
+            $(`#red_message`)[0].textContent = "Your password must be at least 8 characters long.";
+            return;
+        }
+        if (!/\d/.test($(`#password`)[0].value)) {
+            $(`#red_message`)[0].classList.remove("hidden");
+            $(`#red_message`)[0].textContent = "Your password must contain at least one number.";
+            return;
+        }
+        if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test($(`#password`)[0].value)) {
+            $(`#red_message`)[0].classList.remove("hidden");
+            $(`#red_message`)[0].textContent = "Your password must contain at least one special character.";
+            return;
+        }
+        if (!/[A-Z]/.test($(`#password`)[0].value)) {
+            $(`#red_message`)[0].classList.remove("hidden");
+            $(`#red_message`)[0].textContent = "Your password must contain at least one uppercase letter.";
+            return;
+        }
+        if ($(`#password`)[0].value !== $(`#password-confirm`)[0].value) {
+            $(`#red_message`)[0].classList.remove("hidden");
+            $(`#red_message`)[0].textContent = "Your passwords didn't match. Please double-check and try again.";
+            return;
+        }
+
+        // Show the loading overlay
+        $(`#loadingOverlay`)[0].classList.remove("hidden");
+
+        // Submit for processing
+        response = await fetch(
+                "/{{ .RouterPath }}/api/v0/register", {
+                method: "POST",
+                body: new FormData($(`#register`)[0]),
+            });
+
+        console.log(response.statusText);
+        message = await response.text();
+
+        // Artificial 1 second delay - It's called UX design, calm down
+        setTimeout(async () => {
+
+            // Hide the loading overlay
+            $(`#loadingOverlay`)[0].classList.add("hidden");
+
+            if (!response.ok) {
+                $(`#red_message`)[0].classList.remove("hidden");
+                $(`#red_message`)[0].textContent = message;
+            }
+
+            if (message == "OK") {
+                $(`#green_message`)[0].classList.remove("hidden");
+                $(`#green_message`)[0].textContent = "Account registered and logged in successfully!";
+                $(`#register`)[0].classList.add("hidden");
+                $(`#verify_email`)[0].classList.remove("hidden");
+
+            } else {
+                $(`#info_message`)[0].classList.remove("hidden");
+                $(`#info_message`)[0].textContent = message;
+            }
+
+        }, 1000);
+    });
+
+    document.getElementById("continue").addEventListener("click", async function (event) {
+        event.preventDefault(); // Prevent the default behavior
+    });
+
+    document.getElementById("verify").addEventListener("click", async function (event) {
+        event.preventDefault(); // Prevent the default behavior
+
+        // Hide messages
+        $(`#green_message`)[0].classList.add("hidden");
+        $(`#info_message`)[0].classList.add("hidden");
+        $(`#red_message`)[0].classList.add("hidden");
+
+        // Require the verification code to be set
+        if ($(`#emailcode`)[0].value === "") {
+            $(`#red_message`)[0].classList.remove("hidden");
+            $(`#red_message`)[0].textContent = "Please enter your verification code.";
+            return;
+        }
+
+        // Show the loading overlay
+        $(`#loadingOverlay`)[0].classList.remove("hidden");
+
+        // Artificial 1 second delay - It's called UX design, calm down
+        setTimeout(async () => {
+
+            // Hide the loading overlay
+            $(`#loadingOverlay`)[0].classList.add("hidden");
+
+            $(`#red_message`)[0].classList.remove("hidden");
+            $(`#red_message`)[0].textContent = "Work in progress.";
+
+        }, 1000);
+    });
+</script>

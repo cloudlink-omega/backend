@@ -1,0 +1,29 @@
+<!-- Primary content -->
+<div class="container mx-auto px-4 py-8">
+	<div class="container text-center justify-center mx-auto mb-8">
+		<h1 class="text-5xl font-bold dark:text-white">New releases</h1>
+	</div>
+
+	<div>
+		<div class="flex flex-wrap flex-column gap-3 justify-center px-4">
+			{{ range .Cards }}
+				{{ template "card" . }}
+			{{ end }}
+		</div>
+	</div>
+
+	<div class="container text-center justify-center mx-auto mt-8 mb-8">
+		<h1 class="text-5xl font-bold dark:text-white">Coming soon</h1>
+	</div>
+
+	<div>
+		<div class="flex flex-wrap flex-column gap-3 justify-center px-4">
+			{{ range .CardsSoon }}
+				{{ template "card_soon" . }}
+			{{ end }}
+		</div>
+	</div>
+</div>
+
+<!-- Use to handle modals -->
+<script src="/assets/js/modals.js"></script>

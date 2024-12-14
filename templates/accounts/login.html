@@ -1,0 +1,164 @@
+<!-- Primary content -->
+<div class="container mx-auto px-4 py-8">
+    <div class="container text-center justify-center mx-auto mb-4">
+        <span class="flex items-center justify-center pb-4 text-black dark:text-white">
+            <svg width="177" height="123" viewBox="0 0 177 123" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_149_138)">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M55.4632 48.5129H42.0789C24.3611 48.5129 10 62.875 10 80.5918C10 98.3086 24.3611 112.671 42.0789 112.671H134.32C152.037 112.671 166.399 98.3086 166.399 80.5918C166.399 62.875 152.037 48.5129 134.32 48.5129H120.935L120.166 39.3498C118.786 22.9153 104.995 10 88.1993 10C71.4038 10 57.6129 22.9153 56.2327 39.3498L55.4632 48.5129ZM130.131 38.5129C128.319 16.9423 110.237 0 88.1993 0C66.1613 0 48.0793 16.9423 46.2678 38.5129H42.0789C18.838 38.5129 0 57.3523 0 80.5918C0 103.831 18.838 122.671 42.0789 122.671H134.32C157.561 122.671 176.399 103.831 176.399 80.5918C176.399 57.3523 157.561 38.5129 134.32 38.5129H130.131Z" fill="currentColor"/>
+                <path d="M117.278 98.9703C117.278 101.364 115.338 103.304 112.944 103.304H97.5482C95.1549 103.304 93.2148 101.364 93.2148 98.9703V89.6158C93.2148 87.9408 94.1803 86.4159 95.6942 85.6991C101.585 82.911 105.391 76.9013 105.391 70.3889C105.391 61.0546 97.7967 53.4604 88.4622 53.4604C79.1277 53.4604 71.5337 61.0546 71.5337 70.3889C71.5337 76.9015 75.3399 82.911 81.2305 85.6991C82.7445 86.4156 83.71 87.9406 83.71 89.6158V98.9703C83.71 101.364 81.77 103.304 79.3766 103.304H63.9802C61.5869 103.304 59.6468 101.364 59.6468 98.9703C59.6468 96.577 61.5869 94.6369 63.9802 94.6369H75.0433V92.1875C71.8002 90.1894 69.0342 87.4877 66.9496 84.2607C64.2787 80.1262 62.8669 75.3296 62.8669 70.3889C62.8669 56.2755 74.3489 44.7936 88.4622 44.7936C102.576 44.7936 114.058 56.2755 114.058 70.3887C114.058 75.3294 112.646 80.1262 109.975 84.2605C107.891 87.4875 105.125 90.1894 101.882 92.1875V94.6369H112.944C115.338 94.6369 117.278 96.577 117.278 98.9703Z" fill="currentColor"/>
+                </g>
+                <defs>
+                <clipPath id="clip0_149_138">
+                <rect width="176.399" height="122.671" fill="currentColor"/>
+                </clipPath>
+                </defs>
+            </svg>
+        </span>
+        <h1 class="text-5xl font-bold mt-2 mb-2 dark:text-white">Login</h1>
+        <span id="red_message" class="hidden inline-flex items-center mt-4 gap-1 px-2 py-1 rounded-full text-2xl font-medium bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300"></span>
+        <span id="info_message" class="hidden inline-flex items-center mt-4 gap-1 px-2 py-1 rounded-full text-2xl font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"></span>
+    </div>
+    <div>
+        <form id="login">
+            <div class="flex flex-col justify-center items-center">
+
+                <div id="credentials" class="flex flex-col justify-center items-center">
+                    <h2 class="text-2xl text-black dark:text-white">Enter your email address:</h2>
+
+                    <input type="email" id="email" name="email"
+                        class="text-2xl block text-center px-4 py-2 mt-4 mb-4 bg-white dark:bg-gray-900 text-black dark:text-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent"
+                        placeholder="Enter your email" required />
+                    
+                    <h2 class="text-2xl text-black dark:text-white">Enter your password:</h2>
+
+                    <input type="password" id="password" name="password"
+                        class="text-2xl block text-center px-4 py-2 mt-4 mb-8 bg-white dark:bg-gray-900 text-black dark:text-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent"
+                        placeholder="Enter your password" required />
+                </div>
+                
+
+                <div id="totp" class="hidden flex flex-col justify-center items-center">
+
+                    <h2 class="text-2xl text-black dark:text-white">Please enter your TOTP code.</h2>
+
+                    <input type="number" id="totp" name="totp"
+                        class="text-2xl block text-center px-4 py-2 mt-4 mb-8 bg-white dark:bg-gray-900 text-black dark:text-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        placeholder="TOTP code" required />
+                </div>
+                
+
+            </div>
+            <div id="buttons" class="w-full flex flex-wrap flex-row items-center justify-center gap-3">
+                <button id="submit" class="w-50 px-6 py-3 bg-white dark:bg-gray-600 hover:font-bold hover:bg-red-400 dark:hover:bg-red-400 text-black dark:text-white hover:text-white rounded-xl 
+                    font-medium transition-all duration-300 
+                    hover:shadow-lg hover:shadow-red-500/30 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
+                    active:scale-95">
+                    <span class="flex items-center justify-center gap-2 text-2xl">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M31 15L35.6 19.6C35.9739 19.9665 36.4765 20.1717 37 20.1717C37.5235 20.1717 38.0261 19.9665 38.4 19.6L42.6 15.4C42.9665 15.0261 43.1717 14.5235 43.1717 14C43.1717 13.4765 42.9665 12.9739 42.6 12.6L38 8"
+                                stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path d="M41.9998 4L22.7998 23.2" stroke="currentColor" stroke-width="3"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                            <path
+                                d="M15 42C21.0751 42 26 37.0751 26 31C26 24.9249 21.0751 20 15 20C8.92487 20 4 24.9249 4 31C4 37.0751 8.92487 42 15 42Z"
+                                stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                        Login
+                    </span>
+                </button>
+                <a href="/{{ .RouterPath }}?redirect={{ .Redirect }}" type="button" id="cancel" class="w-50 px-6 py-3 bg-white dark:bg-gray-600 hover:font-bold hover:bg-red-400 dark:hover:bg-red-400 text-black dark:text-white hover:text-white rounded-xl 
+                        font-medium transition-all duration-300 
+                        hover:shadow-lg hover:shadow-red-500/30 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
+                        active:scale-95">
+                    <span class="flex items-center justify-center gap-2 text-2xl">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44Z"
+                                stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path d="M9.7998 9.80005L38.1998 38.2001" stroke="currentColor" stroke-width="3"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        Cancel
+                    </span>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" onload>
+    $(`#submit`)[0].addEventListener("click", async function(event) {
+        event.preventDefault(); // Prevent the default behavior
+    
+        // Hide messages
+        $(`#info_message`)[0].classList.add("hidden");
+        $(`#red_message`)[0].classList.add("hidden");
+
+        // Require an email to be set
+        if ($(`#email`)[0].value.length == 0) {
+            $(`#red_message`)[0].classList.remove("hidden");
+            $(`#red_message`)[0].textContent = "Please enter your email address.";
+            return;
+        }
+
+        // Check if the email is syntactically valid
+        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test($(`#email`)[0].value)) {
+            $(`#red_message`)[0].classList.remove("hidden");
+            $(`#red_message`)[0].textContent = "That doesn't look like a valid email address.";
+            return;
+        }
+
+        // Require a password
+        if ($(`#password`)[0].value.length == 0) {
+            $(`#red_message`)[0].classList.remove("hidden");
+            $(`#red_message`)[0].textContent = "Please enter a password.";
+            return;
+        }
+
+        // Show the loading overlay
+        $(`#loadingOverlay`)[0].classList.remove("hidden");
+
+        // Submit for processing
+        response = await fetch(
+            "api/v0/login", {
+                method: "POST",
+                body: new FormData($(`#login`)[0]),
+            }
+        );
+    
+        // Artificial 1 second delay - It's called UX design, calm down
+        setTimeout(async() => {
+            message = await response.text();
+
+            if (response.ok) {
+                window.location.replace("/{{ .RouterPath }}?redirect={{ .Redirect }}");
+                return;
+            }
+            
+            switch (message) {
+
+                case "totp required":
+                    $(`#loadingOverlay`)[0].classList.add("hidden");
+                    $(`#credentials`)[0].classList.add("hidden");
+                    $(`#totp`)[0].classList.remove("hidden");
+                    break;
+                
+                default:
+                    $(`#loadingOverlay`)[0].classList.add("hidden");
+                    if (!response.ok) {
+                        $(`#red_message`)[0].classList.remove("hidden");
+                        $(`#red_message`)[0].textContent = message;
+                    } else {
+                        $(`#info_message`)[0].classList.remove("hidden");
+                        $(`#info_message`)[0].textContent = message;
+                    }
+            }
+        }, 1000);
+    });
+</script>

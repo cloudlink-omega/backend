@@ -1,0 +1,77 @@
+{{ define "card_soon" }}
+<div class="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)]">
+    <div class="relative group">
+        <div
+            class="relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-black/20">
+            <!-- Image Container -->
+            <div class="relative h-56 overflow-hidden">
+                {{ if .ImageURL }}
+                <img src="{{ .ImageURL }}"
+                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" alt="..."
+                    loading="lazy">
+                {{ else }}
+                <img src="/assets/static/img/blank.png"
+                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" alt="...">
+                {{ end }}
+            </div>
+
+            <!-- Content Section -->
+            <div class="pt-6 pl-6 pr-6 pb-3">
+
+                <!-- Title -->
+                <h5 class="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                    {{ if .Title }}
+                    {{ .Title }}
+                    {{ else }}
+                    ⠀
+                    {{ end }}
+                </h5>
+
+                <!-- Creator Content -->
+                <h6 class="text-gray-700 dark:text-gray-400 text-clamp-3 mb-4">
+                    {{ if .Creator }}
+                    {{ .Creator }}
+                    {{ else }}
+                    ⠀
+                    {{ end }}
+                </h6>
+
+                <!-- Text Content -->
+                <p class="text-gray-700 dark:text-gray-300 text-clamp-3">
+                    {{ if .Text }}
+                    {{ .Text }}
+                    {{ else }}
+                    ⠀
+                    {{ end }}
+                </p>
+            </div>
+
+            <!-- Feature tags -->
+            {{ if .Features }}
+            <div class="px-6 py-4 flex items-center">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5">
+                    {{ range .Features }}
+                        {{ range $key, $value := . }}
+                            <img class="dark:invert" src="/assets/static/img/tags/{{ $key }}.svg" class="w-10 h-10" title="{{ $value }}"/>
+                        {{ end }}
+                    {{ end }}
+                </div>
+            </div>
+            {{ end }}
+
+            <!-- Footer -->
+            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80">
+                <div class="flex items-center justify-between">
+                    <small class="text-gray-600 dark:text-gray-400">
+                        {{ if .FooterText }}
+                        {{ .FooterText }}
+                        {{ else }}
+                        ⠀
+                        {{ end }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ end }}

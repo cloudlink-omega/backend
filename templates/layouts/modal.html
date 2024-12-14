@@ -1,0 +1,120 @@
+<!-- Modal -->
+<div 
+    id="dynamicModal" 
+    class="fixed inset-0 z-50 hidden overflow-y-auto"
+    aria-labelledby="dynamicModalLabel" 
+    role="dialog" 
+    aria-modal="true"
+>
+    <!-- Backdrop overlay -->
+    <div class="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity"></div>
+
+    <!-- Modal Container -->
+    <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+
+        <!-- Modal Content -->
+        <div 
+            class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg
+                   animate-[modal-open_0.3s_ease-out]"
+        >
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                    <h3 
+                        class="text-xl font-semibold text-gray-900 dark:text-white" 
+                        id="dynamicModalLabel"
+                    >
+                        {{ .Title }}
+                    </h3>
+                </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="px-6 py-4">
+                <div class="text-gray-600 dark:text-gray-300">
+                    {{ .Content }}
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex flex-row-reverse gap-3">
+                <button 
+                    type="button" 
+                    class="button-confirm inline-flex justify-center rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm 
+                           hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2
+                           transition-all duration-200 hover:shadow-lg hover:shadow-red-500/30 active:scale-95"
+                >
+                    Save changes
+                </button>
+                <button 
+                    type="button" 
+                    class="button-dismiss inline-flex justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 
+                           hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2
+                           dark:bg-gray-700 dark:text-gray-200 dark:ring-gray-600 dark:hover:bg-gray-600
+                           transition-all duration-200"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes modal-open {
+        from {
+            opacity: 0;
+            transform: scale(0.95) translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    .modal-open {
+        display: block !important;
+    }
+
+    /* Optional: Add animation for modal closing */
+    @keyframes modal-close {
+        from {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: scale(0.95) translateY(10px);
+        }
+    }
+
+    .modal-closing {
+        animation: modal-close 0.2s ease-out forwards;
+    }
+</style>
+
+<script type="text/javascript" onload>
+
+    // Initialize and show the modal
+    $(`#dynamicModal`)[0].classList.remove("hidden");
+    
+    // Bind handlers to the modal
+    $(`.button-confirm`)[0].addEventListener('click', function() {
+        $(`#dynamicModal`)[0].classList.add('modal-closing');
+        setTimeout(() => {
+
+            // Clean the main container as the modal nearly finishes hiding
+            $("#main").empty();
+            showLoadingOverlay();
+
+            // After cleaning the main container, remove the modal after 1 second. Render a demo page in the main container
+            setTimeout(() => {
+                $("#main").append(`<iframe class="mx-auto min-h-screen w-full" frameborder="0" scrolling="no" src="/hosted/Countdown.html" allowfullscreen="true" allow="autoplay; clipboard-write;" referrerpolicy="same-origin"></iframe>`);
+                hideLoadingOverlay();
+                $("#modalContainer").empty();
+            }, 1000);
+        }, 100);
+    });
+    $(`.button-dismiss`)[0].addEventListener('click', closeModal);
+
+</script>

@@ -1,0 +1,106 @@
+<div class="flex mx-auto w-full">
+
+  <!-- Sidebar -->
+  <aside class="w-1/6 bg-white text-black dark:text-white dark:bg-gray-800 p-4">
+    <h2 class="text-xl font-semibold mb-4">User Dashboard</h2>
+    <nav>
+      <ul class="space-y-2">
+        <li class="block px-3 py-2 rounded bg-red-400 text-white font-bold">
+          <a href="#">
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+              Overview
+            </div>
+          </a>
+        </li>
+        <li class="block px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 hover:bg-red-400 dark:hover:bg-red-400 hover:text-white hover:font-bold">
+          <a href="#">
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trophy"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+              Achievements
+            </div>
+          </a>
+        </li>
+        <li class="block px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 hover:bg-red-400 dark:hover:bg-red-400 hover:text-white hover:font-bold">
+          <a href="#">
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-user-round"><path d="M18 21a6 6 0 0 0-12 0"/><circle cx="12" cy="11" r="4"/><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+              Profile
+            </div>
+          </a>
+        </li>
+        <li class="block px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 hover:bg-red-400 dark:hover:bg-red-400 hover:text-white hover:font-bold">
+          <a href="#">
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lock-keyhole"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg>
+              Security
+            </div>
+          </a>
+        </li>
+        <li class="block px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 hover:bg-red-400 dark:hover:bg-red-400 hover:text-white hover:font-bold">
+          <a href="#">
+            <div class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
+              Cloud Saves
+            </div>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-6 bg-gray-100 dark:bg-gray-900 dark:text-white">
+    <!-- Dashboard Header -->
+    <div class="mb-6">
+      <h1 class="text-3xl font-semibold text-gray-800 dark:text-white">Overview</h1>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div class="bg-white dark:bg-gray-800 p-4 rounded shadow">
+        <h3 class="text-lg font-semibold text-gray-700 dark:text-white">Games I've Played</h3>
+        <p class="text-2xl font-bold text-red-400">23</p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 p-4 rounded shadow">
+        <h3 class="text-lg font-semibold text-gray-700 dark:text-white">Friends I've Met</h3>
+        <p class="text-2xl font-bold text-red-400">32</p>
+      </div>
+      <div class="bg-white dark:bg-gray-800 p-4 rounded shadow">
+        <h3 class="text-lg font-semibold text-gray-700 dark:text-white">Points I've Earned</h3>
+        <p class="text-2xl font-bold text-red-400">5432</p>
+      </div>
+    </div>
+
+    <!-- Recent Logs Table -->
+    <div class="bg-white dark:bg-gray-800 p-4 rounded shadow">
+      <h2 class="text-xl font-semibold text-gray-700 dark:text-white mb-4">Account Log</h2>
+      <table class="w-full text-left">
+        <thead>
+          <tr class="border-b">
+            <th class="px-4 py-2 text-gray-600 dark:text-white font-semibold">Timestamp</th>
+            <th class="px-4 py-2 text-gray-600 dark:text-white font-semibold">Action</th>
+            <th class="px-4 py-2 text-gray-600 dark:text-white font-semibold">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b hover:bg-gray-100 dark:hover:bg-gray-700">
+            <td class="px-4 py-2">nil</td>
+            <td class="px-4 py-2">Authentication (IP: 127.0.0.1)</td>
+            <td class="px-4 py-2 text-green-600">Successful</td>
+          </tr>
+          <tr class="border-b hover:bg-gray-100 dark:hover:bg-gray-700">
+            <td class="px-4 py-2">nil</td>
+            <td class="px-4 py-2">Authentication (IP: 127.0.0.1)</td>
+            <td class="px-4 py-2 text-yellow-600">Multifactor Step Failed</td>
+          </tr>
+          <tr class="border-b hover:bg-gray-100 dark:hover:bg-gray-700">
+            <td class="px-4 py-2">nil</td>
+            <td class="px-4 py-2">Authentication (IP: 192.168.1.1)</td>
+            <td class="px-4 py-2 text-red-600">Invalid Credentials</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
