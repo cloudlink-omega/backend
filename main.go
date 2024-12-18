@@ -1,21 +1,32 @@
 package main
 
 import (
+	"database/sql"
 	"os"
 	"strings"
 
-	"git.mikedev101.cc/MikeDEV/accounts"
-	"git.mikedev101.cc/MikeDEV/backend/pkg/server"
-	"git.mikedev101.cc/MikeDEV/signaling"
+	"github.com/cloudlink-omega/accounts"
+	"github.com/cloudlink-omega/backend/pkg/server"
+	"github.com/cloudlink-omega/signaling"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/huandu/go-sqlbuilder"
 	"github.com/joho/godotenv"
+
+	_ "github.com/ncruces/go-sqlite3/driver"
+	_ "github.com/ncruces/go-sqlite3/embed"
 )
 
 func main() {
 	if err := godotenv.Load(); err != nil {
+		panic(err)
+	}
+
+	// Initialize SQLite database
+	db, err := sql.Open("sqlite3", "file:mydb.db")
+	if err != nil {
 		panic(err)
 	}
 
@@ -37,6 +48,7 @@ func main() {
 
 	// Initialize the Accounts service
 	auth := accounts.New(
+		"/accounts",
 		os.Getenv("SERVER_URL"),
 		os.Getenv("API_DOMAIN"),
 		os.Getenv("API_URL"),
@@ -44,7 +56,8 @@ func main() {
 		os.Getenv("PRIMARY_WEBSITE"),
 		os.Getenv("SESSION_KEY"),
 		os.Getenv("ENFORCE_HTTPS") == "true",
-		"./templates/accounts",
+		db,
+		sqlbuilder.SQLite,
 	)
 
 	// Initialize the OAuth providers

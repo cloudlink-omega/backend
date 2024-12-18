@@ -3,7 +3,7 @@ package server
 import (
 	"strconv"
 
-	"git.mikedev101.cc/MikeDEV/backend/pkg/flags"
+	"github.com/cloudlink-omega/backend/pkg/flags"
 	"github.com/gofiber/fiber/v2"
 )
 

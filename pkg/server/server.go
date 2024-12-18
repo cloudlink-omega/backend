@@ -1,7 +1,7 @@
 package server
 
 import (
-	"git.mikedev101.cc/MikeDEV/backend/pkg/structs"
+	"github.com/cloudlink-omega/backend/pkg/structs"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
