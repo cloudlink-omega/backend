@@ -10,7 +10,6 @@ replace (
 require (
 	github.com/cloudlink-omega/accounts v0.0.0-00010101000000-000000000000
 	github.com/cloudlink-omega/signaling v0.0.0-00010101000000-000000000000
-	github.com/cloudlink-omega/backend v0.0.0-20241015194227-80fc91596c4c
 	github.com/elithrar/simple-scrypt v1.3.0
 	github.com/go-chi/chi/v5 v5.2.0
 	github.com/go-chi/cors v1.2.1
