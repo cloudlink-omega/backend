@@ -3,9 +3,11 @@ package main
 import (
 	"database/sql"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/cloudlink-omega/accounts"
+	"github.com/cloudlink-omega/accounts/pkg/types"
 	"github.com/cloudlink-omega/backend/pkg/server"
 	"github.com/cloudlink-omega/signaling"
 	"github.com/gofiber/fiber/v2"
@@ -46,6 +48,11 @@ func main() {
 		os.Getenv("TURN_ONLY") == "true",
 	)
 
+	email_port, err := strconv.Atoi(os.Getenv("EMAIL_PORT"))
+	if err != nil {
+		panic(err)
+	}
+
 	// Initialize the Accounts service
 	auth := accounts.New(
 		"/accounts",
@@ -58,6 +65,12 @@ func main() {
 		os.Getenv("ENFORCE_HTTPS") == "true",
 		db,
 		sqlbuilder.SQLite,
+		&types.MailConfig{
+			Port:     email_port, //  os.Getenv("EMAIL_PORT") -> int
+			Server:   os.Getenv("EMAIL_SERVER"),
+			Username: os.Getenv("EMAIL_USERNAME"),
+			Password: os.Getenv("EMAIL_PASSWORD"),
+		},
 	)
 
 	// Initialize the OAuth providers

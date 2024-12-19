@@ -11,10 +11,6 @@ require (
 	github.com/cloudlink-omega/accounts v0.0.0-00010101000000-000000000000
 	github.com/cloudlink-omega/signaling v0.0.0-00010101000000-000000000000
 	github.com/elithrar/simple-scrypt v1.3.0
-	github.com/go-chi/chi/v5 v5.2.0
-	github.com/go-chi/cors v1.2.1
-	github.com/go-playground/validator/v10 v10.22.1
-	github.com/goccy/go-json v0.10.3
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/gofiber/template/html/v2 v2.1.2
 	github.com/gorilla/websocket v1.5.3
@@ -28,10 +24,13 @@ require (
 require (
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
+	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
 	github.com/fasthttp/websocket v1.5.8 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/go-playground/validator/v10 v10.22.1 // indirect
+	github.com/goccy/go-json v0.10.3 // indirect
 	github.com/gofiber/contrib/websocket v1.3.2 // indirect
 	github.com/gofiber/template v1.8.3 // indirect
 	github.com/gofiber/utils v1.1.0 // indirect
@@ -61,6 +60,7 @@ require (
 	github.com/pion/transport/v3 v3.0.7 // indirect
 	github.com/pion/turn/v4 v4.0.0 // indirect
 	github.com/pion/webrtc/v4 v4.0.1 // indirect
+	github.com/pquerna/otp v1.4.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/savsgio/gotils v0.0.0-20240303185622-093b76447511 // indirect
 	github.com/tetratelabs/wazero v1.8.2 // indirect
