@@ -12,7 +12,7 @@ import (
 	"github.com/cloudlink-omega/signaling"
 	"github.com/gofiber/fiber/v2"
 
-	// "github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -59,7 +59,7 @@ func main() {
 	)
 
 	// Compile authorized domains for CORS
-	// allowed_domains := strings.ReplaceAll(os.Getenv("ALLOWED_DOMAINS"), " ", ", ")
+	allowed_domains := strings.ReplaceAll(os.Getenv("ALLOWED_DOMAINS"), " ", ", ")
 
 	// Read port from environment
 	if use_email {
@@ -111,11 +111,11 @@ func main() {
 	app.Use(logger.New())
 	app.Use(recover.New())
 
-	/* app.Use(cors.New(cors.Config{
+	app.Use(cors.New(cors.Config{
 		AllowOrigins:     allowed_domains,
 		AllowHeaders:     "Origin, Content-Type, Accept",
 		AllowCredentials: true,
-	})) */
+	}))
 
 	// Mount servers in the Fiber app
 	app.Mount("/signaling", signaling_server.App)
