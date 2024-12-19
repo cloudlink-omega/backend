@@ -5,10 +5,12 @@ import (
 )
 
 func (s *Server) OmegaDash(c *fiber.Ctx) error {
+	client := s.Authorization.GetClaims(c)
+
 	// Create modal data based on the ID
 	data := map[string]interface{}{
 		"ServerName": s.ServerName,
-		"Username":   "MikeDEV",
+		"Username":   client.Username,
 		"Points":     1234,
 	}
 

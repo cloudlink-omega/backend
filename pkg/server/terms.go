@@ -5,9 +5,7 @@ import (
 )
 
 func (s *Server) Terms(c *fiber.Ctx) error {
-
-	// Fetch dynamic data (e.g., based on query params or IDs)
-	loggedIn := c.QueryBool("auth")
+	loggedIn := s.Authorization.Valid(c)
 
 	// Create modal data based on the ID
 	data := map[string]interface{}{

@@ -1,20 +1,13 @@
 package server
 
 import (
-	"strconv"
-
 	"github.com/cloudlink-omega/backend/pkg/flags"
 	"github.com/gofiber/fiber/v2"
 )
 
 // Handler for the index page
 func (s *Server) Index(c *fiber.Ctx) error {
-
-	// Fetch dynamic data (e.g., based on query params or IDs)
-	loggedIn, err := strconv.ParseBool(c.Params("auth"))
-	if err != nil {
-		loggedIn = false
-	}
+	loggedIn := s.Authorization.Valid(c)
 
 	data := map[string]interface{}{
 		"ServerName": s.ServerName,

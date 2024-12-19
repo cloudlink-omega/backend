@@ -4,6 +4,7 @@ import (
 	"embed"
 	"net/http"
 
+	"github.com/cloudlink-omega/accounts/pkg/authorization"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -19,8 +20,9 @@ var embedded_static embed.FS
 
 // TODO: add fields for the frontend server
 type Server struct {
-	ServerName string
-	App        *fiber.App
+	ServerName    string
+	App           *fiber.App
+	Authorization *authorization.Auth
 }
 
 // New creates a new Server instance.
@@ -58,7 +60,7 @@ func New(
 	srv.App.Use("/assets", filesystem.New(filesystem.Config{
 		Root:       http.FS(embedded_static),
 		PathPrefix: "assets",
-		Browse:     true,
+		Browse:     false,
 	}))
 
 	// Initialize middleware

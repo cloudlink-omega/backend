@@ -5,9 +5,7 @@ import (
 )
 
 func (s *Server) Admin(c *fiber.Ctx) error {
-
-	// Fetch dynamic data (e.g., based on query params or IDs)
-	loggedIn := c.QueryBool("auth")
+	loggedIn := s.Authorization.Valid(c)
 
 	// Create modal data based on the ID
 	data := map[string]interface{}{
@@ -16,5 +14,5 @@ func (s *Server) Admin(c *fiber.Ctx) error {
 	}
 
 	c.Context().SetContentType("text/html; charset=utf-8")
-	return c.Render("views/admin", data, "views/layouts/default")
+	return c.Render("views/admin", data, "views/layouts/nofooter")
 }

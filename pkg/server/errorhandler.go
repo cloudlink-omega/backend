@@ -37,6 +37,6 @@ func (s *Server) ErrorPage(c *fiber.Ctx, err error) error {
 		return c.Render("views/error", &map[string]string{
 			"Message":    err.Error(),
 			"Status":     fmt.Sprint(status_code),
-			"ServerName": s.ServerName})
+			"ServerName": s.ServerName}, "views/layouts/error")
 	}
 }

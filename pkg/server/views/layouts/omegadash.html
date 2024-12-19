@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ .Title }}</title>
+    <link rel="icon" type="image/x-icon" href="/assets/static/img/favicons/favicon.ico">
+    <link rel="manifest" href="/assets/static/site.webmanifest"/>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -40,7 +42,7 @@
     {{ template "omegadash_navbar" . }}
 
     <!-- Main content -->
-    <main id="main" class="flex-grow bg-gray-900">
+    <main id="main" class="flex-grow bg-gray-300 dark:bg-gray-900">
         {{ embed }}
     </main>
 
@@ -51,6 +53,9 @@
     <div id="loadingOverlay" class="hidden fixed inset-0 bg-black/75 flex justify-center items-center z-50">
         <div class="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
     </div>
+
+    <!-- Theme toggle -->
+    <script src="/assets/js/color-modes.js"></script>
 </body>
 
 </html>

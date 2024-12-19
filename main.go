@@ -69,6 +69,9 @@ func main() {
 		},
 	)
 
+	// Passthrough authorization server to the backend server
+	backend.Authorization = auth.APIv0.Auth
+
 	// Initialize the OAuth providers
 	auth.OAuth.Discord(os.Getenv("DISCORD_KEY"), os.Getenv("DISCORD_SECRET"))
 	auth.OAuth.Google(os.Getenv("GOOGLE_KEY"), os.Getenv("GOOGLE_SECRET"))
