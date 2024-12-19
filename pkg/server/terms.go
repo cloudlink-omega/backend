@@ -16,5 +16,5 @@ func (s *Server) Terms(c *fiber.Ctx) error {
 	}
 
 	c.Context().SetContentType("text/html; charset=utf-8")
-	return c.Render("terms", data, "layouts/default")
+	return c.Render("views/terms", data, "views/layouts/default")
 }

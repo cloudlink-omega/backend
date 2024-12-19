@@ -22,6 +22,8 @@ import (
 )
 
 func main() {
+
+	// Load environment variables
 	if err := godotenv.Load(); err != nil {
 		panic(err)
 	}
@@ -32,15 +34,8 @@ func main() {
 		panic(err)
 	}
 
-	// Initialize frontend server
-	backend := server.New(
-		"./templates",
-		os.Getenv("SERVER_NAME"))
-
-	// Initialize fiber app
-	app := fiber.New(fiber.Config{
-		ErrorHandler: backend.ErrorPage,
-	})
+	// Initialize the Frontend server
+	backend := server.New(os.Getenv("SERVER_NAME"))
 
 	// Initialize the Signaling server
 	signaling_server := signaling.New(
@@ -48,12 +43,13 @@ func main() {
 		os.Getenv("TURN_ONLY") == "true",
 	)
 
+	// Read port from environment
 	email_port, err := strconv.Atoi(os.Getenv("EMAIL_PORT"))
 	if err != nil {
 		panic(err)
 	}
 
-	// Initialize the Accounts service
+	// Initialize the Accounts server
 	auth := accounts.New(
 		"/accounts",
 		os.Getenv("SERVER_URL"),
@@ -66,7 +62,7 @@ func main() {
 		db,
 		sqlbuilder.SQLite,
 		&types.MailConfig{
-			Port:     email_port, //  os.Getenv("EMAIL_PORT") -> int
+			Port:     email_port,
 			Server:   os.Getenv("EMAIL_SERVER"),
 			Username: os.Getenv("EMAIL_USERNAME"),
 			Password: os.Getenv("EMAIL_PASSWORD"),
@@ -78,23 +74,23 @@ func main() {
 	auth.OAuth.Google(os.Getenv("GOOGLE_KEY"), os.Getenv("GOOGLE_SECRET"))
 	auth.OAuth.GitHub(os.Getenv("GITHUB_KEY"), os.Getenv("GITHUB_SECRET"))
 
-	// Initialize middleware
+	// Initialize overall Fiber app
+	app := fiber.New(fiber.Config{ErrorHandler: backend.ErrorPage})
+
+	// Initialize Fiber middleware
 	app.Use(logger.New())
 	app.Use(recover.New())
 
-	// Mount the routes
+	// Mount servers in the Fiber app
 	app.Mount("/signaling", signaling_server.App)
 	app.Mount("/accounts", auth.App)
-
-	// Serve assets and hosted files
-	app.Static("/assets", "./assets")
-	app.Static("/hosted", "./hosted")
-
-	// Mount the metrics endpoint
-	app.Get("/metrics", monitor.New())
-
-	// Mount the frontend server
 	app.Mount("/", backend.App)
+
+	// Serve hosted files
+	app.Static("/hosted", os.Getenv("HOSTED_PATH"))
+
+	// Mount metrics middleware
+	app.Get("/metrics", monitor.New())
 
 	// Run the app
 	app.Listen(os.Getenv("API_URL"))

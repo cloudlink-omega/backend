@@ -15,5 +15,5 @@ func (s *Server) Dashboard(c *fiber.Ctx) error {
 	}
 
 	c.Context().SetContentType("text/html; charset=utf-8")
-	return c.Render("user", data, "layouts/default")
+	return c.Render("views/user", data, "views/layouts/default")
 }

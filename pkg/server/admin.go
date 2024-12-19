@@ -16,5 +16,5 @@ func (s *Server) Admin(c *fiber.Ctx) error {
 	}
 
 	c.Context().SetContentType("text/html; charset=utf-8")
-	return c.Render("admin", data, "layouts/default")
+	return c.Render("views/admin", data, "views/layouts/default")
 }

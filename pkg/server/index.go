@@ -117,5 +117,5 @@ func (s *Server) Index(c *fiber.Ctx) error {
 
 	// Render the modal template
 	c.Context().SetContentType("text/html; charset=utf-8")
-	return c.Render("index", data, "layouts/default")
+	return c.Render("views/index", data, "views/layouts/default")
 }

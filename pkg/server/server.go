@@ -1,14 +1,27 @@
 package server
 
 import (
-	"github.com/cloudlink-omega/backend/pkg/structs"
+	"embed"
+	"net/http"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/html/v2"
 )
 
-type Server structs.Server
+//go:embed views/*
+var embedded_templates embed.FS
+
+//go:embed assets/*
+var embedded_static embed.FS
+
+// TODO: add fields for the frontend server
+type Server struct {
+	ServerName string
+	App        *fiber.App
+}
 
 // New creates a new Server instance.
 //
@@ -17,9 +30,6 @@ type Server structs.Server
 //
 // The created instance is returned.
 func New(
-
-	// Point to where the template pages will be located.
-	template_path string,
 
 	// Server Name is used for labeling the server. Format: [Country Code]-[Server Nickname]-[Designation].
 	server_name string,
@@ -30,7 +40,7 @@ func New(
 	}
 
 	// Initialize template engine
-	engine := html.New(template_path, ".html")
+	engine := html.NewFileSystem(http.FS(embedded_templates), ".html")
 
 	// Initialize app
 	srv.App = fiber.New(fiber.Config{Views: engine, ErrorHandler: srv.ErrorPage})
@@ -43,6 +53,13 @@ func New(
 	srv.App.Get("/terms", srv.Terms)
 	srv.App.Get("/modal", srv.Modal)
 	srv.App.Get("/", srv.Index)
+
+	// Initialize assets path
+	srv.App.Use("/assets", filesystem.New(filesystem.Config{
+		Root:       http.FS(embedded_static),
+		PathPrefix: "assets",
+		Browse:     true,
+	}))
 
 	// Initialize middleware
 	srv.App.Use(recover.New())

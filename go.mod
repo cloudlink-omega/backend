@@ -13,7 +13,6 @@ require (
 	github.com/elithrar/simple-scrypt v1.3.0
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/gofiber/template/html/v2 v2.1.2
-	github.com/gorilla/websocket v1.5.3
 	github.com/huandu/go-sqlbuilder v1.32.0
 	github.com/joho/godotenv v1.5.1
 	github.com/ncruces/go-sqlite3 v0.21.2

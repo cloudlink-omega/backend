@@ -13,5 +13,5 @@ func (s *Server) OmegaDash(c *fiber.Ctx) error {
 	}
 
 	c.Context().SetContentType("text/html; charset=utf-8")
-	return c.Render("omega", data, "layouts/omegadash")
+	return c.Render("views/omega", data, "views/layouts/omegadash")
 }

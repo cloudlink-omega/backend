@@ -15,5 +15,5 @@ func (s *Server) DeveloperDashboard(c *fiber.Ctx) error {
 	}
 
 	c.Context().SetContentType("text/html; charset=utf-8")
-	return c.Render("developer", data, "layouts/default")
+	return c.Render("views/developer", data, "views/layouts/default")
 }

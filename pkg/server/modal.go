@@ -18,5 +18,5 @@ func (s *Server) Modal(c *fiber.Ctx) error {
 	}
 
 	c.Context().SetContentType("text/html; charset=utf-8")
-	return c.Render("layouts/modal", data)
+	return c.Render("views/layouts/modal", data)
 }
