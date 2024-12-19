@@ -29,4 +29,9 @@ __debug_*
 
 # Ignore certificates
 *.cert
+*.crt
+*.pem
 *.key
+
+# Ignore DBs
+*.db

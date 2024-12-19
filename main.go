@@ -92,7 +92,11 @@ func main() {
 	// Initialize Fiber middleware
 	app.Use(logger.New())
 	app.Use(recover.New())
-	app.Use(cors.New(cors.Config{AllowOrigins: allowed_domains}))
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     allowed_domains,
+		AllowHeaders:     "Origin, Content-Type, Accept",
+		AllowCredentials: true,
+	}))
 
 	// Mount servers in the Fiber app
 	app.Mount("/signaling", signaling_server.App)
