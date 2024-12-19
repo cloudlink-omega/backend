@@ -3,7 +3,7 @@ package structs
 import (
 	"sync"
 
-	"github.com/cloudlink-omega/backend/pkg/bitfield"
+	"github.com/cloudlink-omega/accounts/pkg/bitfield"
 	"github.com/gorilla/websocket"
 )
 
