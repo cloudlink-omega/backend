@@ -11,6 +11,7 @@ import (
 	"github.com/cloudlink-omega/backend/pkg/server"
 	"github.com/cloudlink-omega/signaling"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -34,14 +35,22 @@ func main() {
 		panic(err)
 	}
 
+	// Read flags from environment
+	https_mode := os.Getenv("HTTPS_MODE") == "true"
+	turn_only := os.Getenv("TURN_ONLY") == "true"
+	enforce_https := os.Getenv("ENFORCE_HTTPS") == "true"
+
 	// Initialize the Frontend server
 	backend := server.New(os.Getenv("SERVER_NAME"))
 
 	// Initialize the Signaling server
 	signaling_server := signaling.New(
 		strings.Split(os.Getenv("ALLOWED_DOMAINS"), " "),
-		os.Getenv("TURN_ONLY") == "true",
+		turn_only,
 	)
+
+	// Compile authorized domains for CORS
+	allowed_domains := strings.ReplaceAll(os.Getenv("ALLOWED_DOMAINS"), " ", ", ")
 
 	// Read port from environment
 	email_port, err := strconv.Atoi(os.Getenv("EMAIL_PORT"))
@@ -58,7 +67,7 @@ func main() {
 		os.Getenv("SERVER_NAME"),
 		os.Getenv("PRIMARY_WEBSITE"),
 		os.Getenv("SESSION_KEY"),
-		os.Getenv("ENFORCE_HTTPS") == "true",
+		enforce_https,
 		db,
 		sqlbuilder.SQLite,
 		&types.MailConfig{
@@ -83,6 +92,7 @@ func main() {
 	// Initialize Fiber middleware
 	app.Use(logger.New())
 	app.Use(recover.New())
+	app.Use(cors.New(cors.Config{AllowOrigins: allowed_domains}))
 
 	// Mount servers in the Fiber app
 	app.Mount("/signaling", signaling_server.App)
@@ -96,5 +106,9 @@ func main() {
 	app.Get("/metrics", monitor.New())
 
 	// Run the app
-	app.Listen(os.Getenv("API_URL"))
+	if https_mode {
+		app.ListenTLS(os.Getenv("API_URL"), os.Getenv("HTTPS_CERT"), os.Getenv("HTTPS_KEY"))
+	} else {
+		app.Listen(os.Getenv("API_URL"))
+	}
 }
