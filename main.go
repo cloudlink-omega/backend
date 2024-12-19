@@ -11,7 +11,8 @@ import (
 	"github.com/cloudlink-omega/backend/pkg/server"
 	"github.com/cloudlink-omega/signaling"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
+
+	// "github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -23,22 +24,30 @@ import (
 )
 
 func main() {
+	// Initialize variables for flags and environment
+	var err error
+	var email_port int
+	var https_mode, use_email, turn_only, enforce_https, enable_google, enable_github, enable_discord bool
 
 	// Load environment variables
 	if err := godotenv.Load(); err != nil {
 		panic(err)
 	}
 
+	// Read flags from environment
+	https_mode = os.Getenv("HTTPS_MODE") == "true"
+	use_email = os.Getenv("USE_EMAIL") == "true"
+	turn_only = os.Getenv("TURN_ONLY") == "true"
+	enforce_https = os.Getenv("ENFORCE_HTTPS") == "true"
+	enable_google = os.Getenv("ENABLE_GOOGLE") == "true"
+	enable_github = os.Getenv("ENABLE_GITHUB") == "true"
+	enable_discord = os.Getenv("ENABLE_DISCORD") == "true"
+
 	// Initialize SQLite database
 	db, err := sql.Open("sqlite3", "file:mydb.db")
 	if err != nil {
 		panic(err)
 	}
-
-	// Read flags from environment
-	https_mode := os.Getenv("HTTPS_MODE") == "true"
-	turn_only := os.Getenv("TURN_ONLY") == "true"
-	enforce_https := os.Getenv("ENFORCE_HTTPS") == "true"
 
 	// Initialize the Frontend server
 	backend := server.New(os.Getenv("SERVER_NAME"))
@@ -50,12 +59,14 @@ func main() {
 	)
 
 	// Compile authorized domains for CORS
-	allowed_domains := strings.ReplaceAll(os.Getenv("ALLOWED_DOMAINS"), " ", ", ")
+	// allowed_domains := strings.ReplaceAll(os.Getenv("ALLOWED_DOMAINS"), " ", ", ")
 
 	// Read port from environment
-	email_port, err := strconv.Atoi(os.Getenv("EMAIL_PORT"))
-	if err != nil {
-		panic(err)
+	if use_email {
+		email_port, err = strconv.Atoi(os.Getenv("EMAIL_PORT"))
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	// Initialize the Accounts server
@@ -71,6 +82,7 @@ func main() {
 		db,
 		sqlbuilder.SQLite,
 		&types.MailConfig{
+			Enabled:  use_email,
 			Port:     email_port,
 			Server:   os.Getenv("EMAIL_SERVER"),
 			Username: os.Getenv("EMAIL_USERNAME"),
@@ -82,9 +94,15 @@ func main() {
 	backend.Authorization = auth.APIv0.Auth
 
 	// Initialize the OAuth providers
-	auth.OAuth.Discord(os.Getenv("DISCORD_KEY"), os.Getenv("DISCORD_SECRET"))
-	auth.OAuth.Google(os.Getenv("GOOGLE_KEY"), os.Getenv("GOOGLE_SECRET"))
-	auth.OAuth.GitHub(os.Getenv("GITHUB_KEY"), os.Getenv("GITHUB_SECRET"))
+	if enable_discord {
+		auth.OAuth.Discord(os.Getenv("DISCORD_KEY"), os.Getenv("DISCORD_SECRET"))
+	}
+	if enable_google {
+		auth.OAuth.Google(os.Getenv("GOOGLE_KEY"), os.Getenv("GOOGLE_SECRET"))
+	}
+	if enable_github {
+		auth.OAuth.GitHub(os.Getenv("GITHUB_KEY"), os.Getenv("GITHUB_SECRET"))
+	}
 
 	// Initialize overall Fiber app
 	app := fiber.New(fiber.Config{ErrorHandler: backend.ErrorPage})
@@ -92,11 +110,12 @@ func main() {
 	// Initialize Fiber middleware
 	app.Use(logger.New())
 	app.Use(recover.New())
-	app.Use(cors.New(cors.Config{
+
+	/* app.Use(cors.New(cors.Config{
 		AllowOrigins:     allowed_domains,
 		AllowHeaders:     "Origin, Content-Type, Accept",
 		AllowCredentials: true,
-	}))
+	})) */
 
 	// Mount servers in the Fiber app
 	app.Mount("/signaling", signaling_server.App)
