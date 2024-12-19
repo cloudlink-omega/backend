@@ -17,8 +17,6 @@ require (
 	github.com/huandu/go-sqlbuilder v1.32.0
 	github.com/joho/godotenv v1.5.1
 	github.com/ncruces/go-sqlite3 v0.21.2
-	github.com/oklog/ulid/v2 v2.1.0
-	gopkg.in/mail.v2 v2.3.1
 )
 
 require (
@@ -44,6 +42,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/mrz1836/go-sanitize v1.3.3 // indirect
 	github.com/ncruces/julianday v1.0.0 // indirect
+	github.com/oklog/ulid/v2 v2.1.0 // indirect
 	github.com/pion/datachannel v1.5.9 // indirect
 	github.com/pion/dtls/v3 v3.0.3 // indirect
 	github.com/pion/ice/v4 v4.0.2 // indirect
@@ -74,4 +73,5 @@ require (
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
+	gopkg.in/mail.v2 v2.3.1 // indirect
 )
