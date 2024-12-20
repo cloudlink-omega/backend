@@ -45,7 +45,7 @@ func New(
 	engine := html.NewFileSystem(http.FS(embedded_templates), ".html")
 
 	// Initialize app
-	srv.App = fiber.New(fiber.Config{Views: engine, ErrorHandler: srv.ErrorPage})
+	srv.App = fiber.New(fiber.Config{Views: engine})
 
 	// Configure routes
 	srv.App.Get("/admin", srv.Admin)
