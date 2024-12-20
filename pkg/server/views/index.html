@@ -1,7 +1,7 @@
 <div class="container mx-auto px-4 py-4 text-center items-center">
 
 	{{ if not .LoggedIn }}
-	<div class="container border py-8 px-4 rounded-xl text-center justify-center mb-4">
+	<div class="container border py-8 px-4 rounded-xl text-center justify-center mb-4 bg-white dark:bg-gray-900">
 		<span class="flex items-center justify-center pb-4 text-black dark:text-white">
 			<svg width="177" height="123" viewBox="0 0 177 123" fill="none" xmlns="http://www.w3.org/2000/svg">
 				<g clip-path="url(#clip0_149_138)">
@@ -17,38 +17,23 @@
 		</span>
 
 		<h1 class="text-5xl font-bold mt-2 mb-2 dark:text-white">Welcome to CloudLink Omega</h1>
-		<p class="text-lg dark:text-white mb-8">A WebRTC-powered FLOSS multiplayer network.</p>
+		<p class="text-lg dark:text-white mb-2">A WebRTC-powered FLOSS multiplayer network.</p>
 
-		<div class="border rounded-xl mb-4 py-4 px-4">
-			<h2 class="font-bold text-2xl dark:text-white mb-4">FLOSS? That white stringy thing?</h2>
-			<p class="text-lg dark:text-white"><i>No, not the dental floss.</i> FLOSS means "Free, Libre, and Open Source Software".<br>
-				We mean <i>"free" as in "freedom"</i>, not just <i>"free" as in "free beer".</i><br>
-				<i>The best part, you're more than welcome to make it your own.</i></br>
-				Got a new idea? Found a bug? Wanna know how it works?<br><a class="font-bold underline" href="https://github.com/cloudlink-omega/">The world is your oyster.</a>
-			</p>
+		<div id="buttons" class="w-full flex flex-wrap flex-row items-center justify-center gap-3">
+			<a href="/about" type="button" class="w-50 px-6 py-3 bg-gray-100 dark:bg-gray-600 hover:font-bold hover:bg-red-400 dark:hover:bg-red-400 text-black dark:text-white hover:text-white rounded-xl 
+			font-medium transition-all duration-300 
+			hover:shadow-lg hover:shadow-red-500/30 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
+			active:scale-95">
+				<span class="flex items-center justify-center gap-2 text-2xl">
+					Tell me more!
+				</span>
+			</a>
 		</div>
 
-		<div class="border rounded-xl mb-4 py-4 px-4">
-			<h2 class="font-bold text-2xl dark:text-white mb-4">WebRTC? I've never heard of it.</h2>
-			<p class="text-lg dark:text-white">It's the technology that makes video and audio calls possible over the internet.<br>
-				We've taken it a step further and made it possible to play games with your friends, no matter where they are.<br>
-				<i>And the best part? No downloads, no installs, no plugins.</i>
-			</p>
-		</div>
-
-		<div class="border rounded-xl mb-8 py-4 px-4">
-			<h2 class="font-bold text-2xl dark:text-white mb-4">Don't just stand there!</h2>
-			<p class="text-lg dark:text-white">Check out these amazing games made by people like you!<br>
-				<i>And if you're feeling adventurous, why not make your own?</i><br>
-				Everything is just an <a class="font-bold underline" href="/accounts">account</a> away*.
-			</p>
-		</div>
-
-		<small class="dark:text-white">* All games are subject to review, and a developer account is required.<br><a class="font-bold underline" href="/terms">Terms and Conditions apply.</a></small>
 	</div>
 	{{ end }}
 
-	<div class="border py-8 rounded-xl mb-4">
+	<div class="border py-8 rounded-xl mb-4 bg-white dark:bg-gray-900">
 		<div class="container text-center justify-center mb-8">
 			<h2 class="text-3xl font-bold dark:text-white mb-4">Featured</h2>
 			<p class="text-lg dark:text-white">Check out some of these games made by our community!</p>
@@ -63,7 +48,7 @@
 		</div>
 	</div>
 
-	<div class="border py-8 rounded-xl mb-4">
+	<div class="border py-8 rounded-xl mb-4 bg-white dark:bg-gray-900">
 		<div class="container text-center justify-center mb-8">
 			<h2 class="text-3xl font-bold dark:text-white mb-4">Coming soon</h2>
 			<p class="text-lg dark:text-white">Keep an eye out for these games, they're still in the oven...</p>
