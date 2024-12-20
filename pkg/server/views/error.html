@@ -46,7 +46,7 @@
 
     <!-- Main content -->
     <main id="main" class="flex-grow bg-gray-100 dark:bg-gray-900">
-        <div class="container mx-auto px-4 py-8">
+        <div class="container mx-auto mt-4 mb-4 px-4 py-8 border py-8 px-4 rounded-xl">
             <div class="container text-center justify-center mx-auto mb-4">
                 <span class="flex items-center justify-center pb-4 text-black dark:text-white">
                     <svg width="177" height="123" viewBox="0 0 177 123" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -75,10 +75,7 @@
                 <div class="container text-center justify-center mx-auto mb-4">
                     <h2 class="text-2xl dark:text-white mb-4">It appears that an error has occurred. Here's a bit more
                         information:</h2>
-                    <div
-                        class="container text-center justify-center mx-auto mb-4 p-8 border border-black dark:border-white">
-                        <p class="dark:text-white">{{ .Message }}</p>
-                    </div>
+                    <p class="dark:text-white m-8">{{ .Message }}</p>
                     <a href="http://i.imgur.com/GaPPuyT.jpg" class="text-bold underline dark:text-white">In the meantime, how about a fun fact?</a>
                 </div>
                 <div id="buttons" class="w-full flex flex-wrap flex-row items-center justify-center gap-3">
