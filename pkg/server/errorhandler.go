@@ -7,18 +7,25 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (s *Server) ErrorHandler(c *fiber.Ctx, err error) error {
-
-	var error_code int
-	if e, ok := err.(*fiber.Error); ok {
-		error_code = e.Code
+func (s *Server) ErrorPage(c *fiber.Ctx, err error) error {
+	var status_code int
+	if err == nil {
+		status_code = fiber.StatusInternalServerError
 	} else {
-		error_code = fiber.StatusInternalServerError
+		switch e := err.(type) {
+		case *fiber.Error:
+			status_code = e.Code
+		default:
+			status_code = fiber.StatusInternalServerError
+		}
 	}
 
-	c.SendStatus(error_code)
+	// Set the status code for the response
+	c.Status(status_code)
 
+	// Either render a page, or send plain text
 	request_content_type := string(c.Request().Header.Peek("Content-Type"))
+
 	var match bool
 	for _, t := range []string{"html", "plain", "form"} {
 		match = !match && strings.Contains(request_content_type, t)
@@ -26,14 +33,10 @@ func (s *Server) ErrorHandler(c *fiber.Ctx, err error) error {
 
 	if match {
 		return c.SendString(err.Error())
+	} else {
+		return c.Render("views/error", &map[string]string{
+			"Message":    err.Error(),
+			"Status":     fmt.Sprint(status_code),
+			"ServerName": s.ServerName}, "views/layouts/error")
 	}
-
-	if render_error := c.Render("views/error", &map[string]string{
-		"Message":    err.Error(),
-		"Status":     fmt.Sprint(error_code),
-		"ServerName": s.ServerName}); render_error != nil {
-		panic(render_error)
-	}
-
-	return nil
 }

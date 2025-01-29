@@ -105,13 +105,11 @@ func main() {
 	}
 
 	// Initialize overall Fiber app
-	app := fiber.New(fiber.Config{ErrorHandler: backend.ErrorHandler})
+	app := fiber.New(fiber.Config{ErrorHandler: backend.ErrorPage})
 
 	// Initialize Fiber middleware
 	app.Use(logger.New())
-	app.Use(recover.New(recover.Config{
-		EnableStackTrace: true,
-	}))
+	app.Use(recover.New())
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     allowed_domains,

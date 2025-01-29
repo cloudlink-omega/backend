@@ -1,137 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>{{ .ServerName }}</title>
-    
-    <link rel="icon" type="image/x-icon" href="/assets/static/img/favicons/favicon.ico">
-    <link rel="manifest" href="/assets/static/site.webmanifest"/>
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900" rel="stylesheet">
-
-    <!-- Tailwind Configuration -->
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    // theme extensions here
-                },
-                fontFamily: {
-                    sans: ['Lexend Deca', 'sans-serif'],
-                    serif: ['Lexend Deca', 'serif'],
-                },
-            },
-        }
-    </script>
-</head>
-
-<body class="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
-
-    <noscript>
-        <h1>You need to enable JavaScript to run this webapp.
-    </noscript>
-
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="crossorigin="anonymous"></script>
-
-    <!-- Main content -->
-    <main id="main" class="flex-grow bg-gray-100 dark:bg-gray-900">
-        <div class="container mx-auto mt-4 mb-4 px-4 py-8 border py-8 px-4 rounded-xl">
-            <div class="container text-center justify-center mx-auto mb-4">
-                <span class="flex items-center justify-center pb-4 text-black dark:text-white">
-                    <svg width="177" height="123" viewBox="0 0 177 123" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <g clip-path="url(#clip0_153_143)">
-                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                d="M55.4632 48.5129H42.0789C24.3611 48.5129 10 62.875 10 80.5918C10 98.3086 24.3611 112.671 42.0789 112.671H134.32C152.037 112.671 166.399 98.3086 166.399 80.5918C166.399 62.875 152.037 48.5129 134.32 48.5129H120.935L120.166 39.3498C118.786 22.9153 104.995 10 88.1993 10C71.4038 10 57.6129 22.9153 56.2327 39.3498L55.4632 48.5129ZM130.131 38.5129C128.319 16.9423 110.237 0 88.1993 0C66.1613 0 48.0793 16.9423 46.2678 38.5129H42.0789C18.838 38.5129 0 57.3523 0 80.5918C0 103.831 18.838 122.671 42.0789 122.671H134.32C157.561 122.671 176.399 103.831 176.399 80.5918C176.399 57.3523 157.561 38.5129 134.32 38.5129H130.131Z"
-                                fill="currentColor" />
-                            <path d="M106.715 94C106.715 94 99.6431 84.5714 87.8573 84.5714C76.0715 84.5714 69 94 69 94"
-                                stroke="currentColor" stroke-width="10" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                            <path d="M73.7146 61H73.7617" stroke="currentColor" stroke-width="10" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                            <path d="M102.001 61H102.048" stroke="currentColor" stroke-width="10" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_153_143">
-                                <rect width="176.399" height="122.671" fill="currentColor" />
-                            </clipPath>
-                        </defs>
-                    </svg>
-                </span>
-                <h1 class="text-5xl font-bold mt-2 mb-2 dark:text-white">Aw crap! ({{ .Status }})</h1>
-            </div>
-            <div>
-                <div class="container text-center justify-center mx-auto mb-4">
-                    <h2 class="text-2xl dark:text-white mb-4">It appears that an error has occurred. Here's a bit more
-                        information:</h2>
-                    <p class="dark:text-white m-8">{{ .Message }}</p>
-                    <a href="http://i.imgur.com/GaPPuyT.jpg" class="text-bold underline dark:text-white">In the meantime, how about a fun fact?</a>
-                </div>
-                <div id="buttons" class="w-full flex flex-wrap flex-row items-center justify-center gap-3">
-                    <a href="/" type="button" class="w-50 px-6 py-3 bg-white dark:bg-gray-600 hover:font-bold hover:bg-red-400 dark:hover:bg-red-400 text-black dark:text-white hover:text-white rounded-xl 
-                    font-medium transition-all duration-300 
-                    hover:shadow-lg hover:shadow-red-500/30 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
-                    active:scale-95">
-                        <span class="flex items-center justify-center gap-2 text-2xl">
-                            Get me out of here!
-                        </span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Modal container -->
-    <div id="modalContainer" class="relative z-50"></div>
-
-    <!-- Loading overlay -->
-    <div id="loadingOverlay" class="hidden fixed inset-0 bg-black/75 flex justify-center items-center z-50">
-        <div class="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
+<div class="container mx-auto px-4 py-8">
+    <div class="container text-center justify-center mx-auto mb-4">
+        <span class="flex items-center justify-center pb-4 text-black dark:text-white">
+            <svg width="177" height="123" viewBox="0 0 177 123" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_153_143)">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M55.4632 48.5129H42.0789C24.3611 48.5129 10 62.875 10 80.5918C10 98.3086 24.3611 112.671 42.0789 112.671H134.32C152.037 112.671 166.399 98.3086 166.399 80.5918C166.399 62.875 152.037 48.5129 134.32 48.5129H120.935L120.166 39.3498C118.786 22.9153 104.995 10 88.1993 10C71.4038 10 57.6129 22.9153 56.2327 39.3498L55.4632 48.5129ZM130.131 38.5129C128.319 16.9423 110.237 0 88.1993 0C66.1613 0 48.0793 16.9423 46.2678 38.5129H42.0789C18.838 38.5129 0 57.3523 0 80.5918C0 103.831 18.838 122.671 42.0789 122.671H134.32C157.561 122.671 176.399 103.831 176.399 80.5918C176.399 57.3523 157.561 38.5129 134.32 38.5129H130.131Z"
+                        fill="currentColor" />
+                    <path d="M106.715 94C106.715 94 99.6431 84.5714 87.8573 84.5714C76.0715 84.5714 69 94 69 94"
+                        stroke="currentColor" stroke-width="10" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M73.7146 61H73.7617" stroke="currentColor" stroke-width="10" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M102.001 61H102.048" stroke="currentColor" stroke-width="10" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </g>
+                <defs>
+                    <clipPath id="clip0_153_143">
+                        <rect width="176.399" height="122.671" fill="currentColor" />
+                    </clipPath>
+                </defs>
+            </svg>
+        </span>
+        <h1 class="text-5xl font-bold mt-2 mb-2 dark:text-white">Aw crap! ({{ .Status }})</h1>
     </div>
-
-    <!-- Footer -->
-    <footer class="bg-white dark:bg-gray-800 shadow-lg">
-        <div class="container mx-auto px-4 py-6">
-            <div class="text-center">
-                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
-                    CloudLink Omega
-                </h3>
-                <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                    An open source WebRTC-powered multiplayer network.
-                </p>
-                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Copyright © 2024 Mike J. Renaker. All rights reserved.
-                </p>
-                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    <b>You are currently using {{ .ServerName }}.</b>
-                </p>
-                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    <a class="underline" href="/terms">Terms of Service & Privacy Policy</a>
-                </p>
-                <div class="mt-3 flex items-center justify-center space-x-2">
-                    <span class="text-sm text-gray-600 dark:text-gray-300">Powered by</span>
-                    <a href="https://go.dev/"
-                        class="text-sm hover:opacity-80 transition-opacity">
-                        <img src="/assets/static/img/golang.png" alt='A blue gopher next to a blue "Go" word' class="h-6 inline-block" />
-                    </a>
-                </div>
+    <div>
+        <div class="container text-center justify-center mx-auto mb-4">
+            <h2 class="text-2xl dark:text-white mb-4">It appears that an error has occurred. Here's a bit more
+                information:</h2>
+            <div
+                class="container text-center justify-center mx-auto mb-4 p-8 border border-black dark:border-white">
+                <p class="dark:text-white">{{ .Message }}</p>
             </div>
+            <a href="http://i.imgur.com/GaPPuyT.jpg" class="text-bold underline dark:text-white">In the meantime, how about a fun fact?</a>
         </div>
-    </footer>
-
-    <!-- Theme toggle -->
-    <script src="/assets/js/color-modes.js"></script>
-</body>
-
-</html>
+        <div id="buttons" class="w-full flex flex-wrap flex-row items-center justify-center gap-3">
+            <a href="/" type="button" class="w-50 px-6 py-3 bg-white dark:bg-gray-600 hover:font-bold hover:bg-red-400 dark:hover:bg-red-400 text-black dark:text-white hover:text-white rounded-xl 
+            font-medium transition-all duration-300 
+            hover:shadow-lg hover:shadow-red-500/30 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 
+            active:scale-95">
+                <span class="flex items-center justify-center gap-2 text-2xl">
+                    Get me out of here!
+                </span>
+            </a>
+        </div>
+    </div>
+</div>

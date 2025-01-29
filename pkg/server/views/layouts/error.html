@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ .Title }}</title>
+
+    <title>{{ .ServerName }}</title>
+    
     <link rel="icon" type="image/x-icon" href="/assets/static/img/favicons/favicon.ico">
     <link rel="manifest" href="/assets/static/site.webmanifest"/>
 
@@ -41,9 +43,6 @@
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="crossorigin="anonymous"></script>
-
-    <!-- Navbar -->
-    {{ template "navbar_default" . }}
 
     <!-- Main content -->
     <main id="main" class="flex-grow bg-gray-100 dark:bg-gray-900">
