@@ -1,0 +1,15 @@
+{{ define "user_logs" }}
+<div class="bg-white dark:bg-gray-800 p-4 rounded shadow">
+    <h2 class="text-xl font-semibold text-gray-700 dark:text-white mb-4">Account Log</h2>
+        <table class="w-full text-left">
+            <tr class="border-b">
+                <th class="px-4 py-2 text-gray-600 dark:text-white font-semibold">Timestamp</th>
+                <th class="px-4 py-2 text-gray-600 dark:text-white font-semibold">Action</th>
+                <th class="px-4 py-2 text-gray-600 dark:text-white font-semibold">Status</th>
+            </tr>
+            {{ range .Logs }}
+                {{ template "user_log_element" . }}
+            {{ end }}
+        </table>
+</div>
+{{ end }}

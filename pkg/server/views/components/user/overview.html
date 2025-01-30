@@ -1,0 +1,22 @@
+{{ define "user_overview" }}
+<!-- Dashboard Header -->
+<div class="mb-6">
+    <h1 class="text-3xl font-semibold text-gray-800 dark:text-white">Overview</h1>
+</div>
+
+<!-- Statistics Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <div class="bg-white dark:bg-gray-800 p-4 rounded shadow">
+        <h3 class="text-lg font-semibold text-gray-700 dark:text-white">Games I've Played</h3>
+        <p class="text-2xl font-bold text-red-400">{{ .GamesPlayed }}</p>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-4 rounded shadow">
+        <h3 class="text-lg font-semibold text-gray-700 dark:text-white">Friends I've Met</h3>
+        <p class="text-2xl font-bold text-red-400">{{ .FriendsMet }}</p>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-4 rounded shadow">
+        <h3 class="text-lg font-semibold text-gray-700 dark:text-white">Points I've Earned</h3>
+        <p class="text-2xl font-bold text-red-400">{{ .PointsEarned }}</p>
+    </div>
+</div>
+{{ end }}

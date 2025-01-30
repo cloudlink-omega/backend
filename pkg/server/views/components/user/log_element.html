@@ -1,0 +1,18 @@
+{{ define "user_log_element" }}
+<tr class="border-b hover:bg-gray-100 dark:hover:bg-gray-700">
+    <td class="px-4 py-2">{{ .Timestamp }}</td>
+    <td class="px-4 py-2">{{ .Action }}</td>
+
+    {{ if .Success }}
+    <td class="px-4 py-2 text-green-600">{{ .Message }}</td>
+    {{ end }}
+
+    {{ if .Warn }}
+    <td class="px-4 py-2 text-yellow-600">{{ .Message }}</td>
+    {{ end}}
+
+    {{ if .Fail }}
+    <td class="px-4 py-2 text-red-600">{{ .Message }}</td>
+    {{ end }}
+</tr>
+{{ end }}
