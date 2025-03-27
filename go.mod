@@ -1,7 +1,6 @@
 module github.com/cloudlink-omega/backend
 
 go 1.22.1
-
 require (
 	github.com/elithrar/simple-scrypt v1.3.0
 	github.com/go-chi/chi/v5 v5.2.1
@@ -10,7 +9,7 @@ require (
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/goccy/go-json v0.10.5
 	github.com/gorilla/websocket v1.5.3
-	github.com/huandu/go-sqlbuilder v1.34.0
+	github.com/huandu/go-sqlbuilder v1.35.0
 	github.com/joho/godotenv v1.5.1
 	github.com/oklog/ulid/v2 v2.1.0
 	gopkg.in/mail.v2 v2.3.1
