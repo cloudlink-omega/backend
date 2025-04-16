@@ -21,6 +21,7 @@ var embedded_static embed.FS
 // TODO: add fields for the frontend server
 type Server struct {
 	ServerName    string
+	ServerURL     string
 	App           *fiber.App
 	Authorization *authorization.Auth
 }
@@ -36,9 +37,13 @@ func New(
 	// Server Name is used for labeling the server. Format: [Country Code]-[Server Nickname]-[Designation].
 	server_name string,
 
+	// PrimaryWebsite is the URL of the primary website.
+	server_url string,
+
 ) *Server {
 	srv := &Server{
 		ServerName: server_name,
+		ServerURL:  server_url,
 	}
 
 	// Initialize template engine

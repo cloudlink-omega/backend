@@ -17,7 +17,7 @@ function closeModal() {
 
 function openModal(id) {
     showLoadingOverlay(); // Show loading overlay before fetching content
-    $("#modalContainer").load(`/modal?id=${id}`, function(responseTxt, statusTxt, xhr){
+    $("#modalContainer").load(`/modal?id=${id}`, function(_, statusTxt, xhr){
         hideLoadingOverlay(); // Hide loading overlay after content is fetched
         if (statusTxt == "error") {
             console.log("Error loading modal: " + xhr.status + ": " + xhr.statusText);

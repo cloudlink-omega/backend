@@ -8,7 +8,8 @@ func (s *Server) About(c *fiber.Ctx) error {
 	loggedIn := s.Authorization.Valid(c)
 
 	// Create modal data based on the ID
-	data := map[string]interface{}{
+	data := map[string]any{
+		"BaseURL":    s.ServerURL,
 		"ServerName": s.ServerName,
 		"LoggedIn":   loggedIn,
 	}

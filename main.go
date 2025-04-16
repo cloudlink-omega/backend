@@ -50,7 +50,7 @@ func main() {
 	}
 
 	// Initialize the Frontend server
-	backend := server.New(os.Getenv("SERVER_NAME"))
+	backend := server.New(os.Getenv("SERVER_NAME"), os.Getenv("SERVER_URL"))
 
 	// Initialize the Signaling server
 	signaling_server := signaling.New(

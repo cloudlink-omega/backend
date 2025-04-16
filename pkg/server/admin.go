@@ -14,7 +14,8 @@ func (s *Server) Admin(c *fiber.Ctx) error {
 	}
 
 	// Create modal data based on the ID
-	data := map[string]interface{}{
+	data := map[string]any{
+		"BaseURL":    s.ServerURL,
 		"ServerName": s.ServerName,
 		"LoggedIn":   true,
 	}

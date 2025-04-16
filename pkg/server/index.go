@@ -5,15 +5,37 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+var BlankComingSoonEntry map[string]any = map[string]any{
+	"ImageURL":   "",
+	"Title":      "",
+	"Text":       "",
+	"Creator":    "",
+	"FooterText": "",
+	"Features":   []map[string]any{},
+}
+
+var BlankCardEntry map[string]any = map[string]any{
+	"ImageURL":   "",
+	"Title":      ". . .",
+	"Text":       "",
+	"Creator":    "",
+	"FooterText": "",
+	"Enabled":    false,
+	"IsNew":      false,
+	"ID":         "",
+	"Features":   []map[string]any{},
+}
+
 // Handler for the index page
 func (s *Server) Index(c *fiber.Ctx) error {
 	loggedIn := s.Authorization.Valid(c)
 
-	data := map[string]interface{}{
+	data := map[string]any{
+		"BaseURL":    s.ServerURL,
 		"ServerName": s.ServerName,
 		"Title":      "Home Page",
 		"LoggedIn":   loggedIn,
-		"Cards": []map[string]interface{}{
+		"Cards": []map[string]any{
 			{
 				"ImageURL":   "/assets/static/img/dummy2.png",
 				"Title":      "CatChat Remastered",
@@ -23,7 +45,7 @@ func (s *Server) Index(c *fiber.Ctx) error {
 				"Enabled":    true,
 				"IsNew":      true,
 				"ID":         "catchat",
-				"Features": []map[string]interface{}{
+				"Features": []map[string]any{
 					flags.SupportsAchievements,
 					flags.SupportsControllers,
 					flags.SuitableForAllAges,
@@ -46,7 +68,7 @@ func (s *Server) Index(c *fiber.Ctx) error {
 				"Enabled":    true,
 				"IsNew":      true,
 				"ID":         "cpmf",
-				"Features": []map[string]interface{}{
+				"Features": []map[string]any{
 					flags.SupportsControllers,
 					flags.SuitableForAllAges,
 					flags.SupportsLegacyProtocols,
@@ -66,7 +88,7 @@ func (s *Server) Index(c *fiber.Ctx) error {
 				"Enabled":    true,
 				"IsNew":      true,
 				"ID":         "sb3",
-				"Features": []map[string]interface{}{
+				"Features": []map[string]any{
 					flags.SupportsControllers,
 					flags.HasDownloadableContent,
 					flags.SuitableForAllAges,
@@ -79,32 +101,12 @@ func (s *Server) Index(c *fiber.Ctx) error {
 					flags.SupportsSaveData,
 				},
 			},
+			BlankCardEntry,
 		},
-		"CardsSoon": []map[string]interface{}{
-			{
-				"ImageURL":   "",
-				"Title":      "",
-				"Text":       "",
-				"Creator":    "",
-				"FooterText": "",
-				"Features":   []map[string]interface{}{},
-			},
-			{
-				"ImageURL":   "",
-				"Title":      "",
-				"Text":       "",
-				"Creator":    "",
-				"FooterText": "",
-				"Features":   []map[string]interface{}{},
-			},
-			{
-				"ImageURL":   "",
-				"Title":      "",
-				"Text":       "",
-				"Creator":    "",
-				"FooterText": "",
-				"Features":   []map[string]interface{}{},
-			},
+		"CardsSoon": []map[string]any{
+			BlankComingSoonEntry,
+			BlankComingSoonEntry,
+			BlankComingSoonEntry,
 		},
 	}
 

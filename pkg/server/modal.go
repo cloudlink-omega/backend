@@ -11,7 +11,8 @@ func (s *Server) Modal(c *fiber.Ctx) error {
 	id := c.Query("id")
 
 	// Create modal data based on the ID
-	data := map[string]interface{}{
+	data := map[string]any{
+		"BaseURL":    s.ServerURL,
 		"ServerName": s.ServerName,
 		"Title":      "Dynamic Modal for Item " + id,
 		"Content":    "This is dynamically loaded content for item " + id,

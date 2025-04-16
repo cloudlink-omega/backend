@@ -14,13 +14,14 @@ func (s *Server) Dashboard(c *fiber.Ctx) error {
 	}
 
 	// Create modal data based on the ID
-	data := map[string]interface{}{
+	data := map[string]any{
+		"BaseURL":      s.ServerURL,
 		"ServerName":   s.ServerName,
 		"LoggedIn":     true,
 		"GamesPlayed":  0,
 		"FriendsMet":   0,
 		"PointsEarned": 0,
-		"Logs": []map[string]interface{}{
+		"Logs": []map[string]any{
 			{
 				"Timestamp": "nil",
 				"Action":    "Authentication (IP: 127.0.0.1)",

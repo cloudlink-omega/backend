@@ -35,3 +35,7 @@ __debug_*
 
 # Ignore DBs
 *.db
+
+# Ignore live reload by Air
+.air.toml
+tmp/
