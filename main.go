@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"os"
 	"strconv"
 	"strings"
@@ -16,11 +15,10 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/huandu/go-sqlbuilder"
 	"github.com/joho/godotenv"
 
-	_ "github.com/ncruces/go-sqlite3/driver"
-	_ "github.com/ncruces/go-sqlite3/embed"
+	"github.com/glebarez/sqlite"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -44,7 +42,7 @@ func main() {
 	enable_discord = os.Getenv("ENABLE_DISCORD") == "true"
 
 	// Initialize SQLite database
-	db, err := sql.Open("sqlite3", "file:mydb.db")
+	db, err := gorm.Open(sqlite.Open("mydb.db"), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
@@ -80,7 +78,6 @@ func main() {
 		os.Getenv("SESSION_KEY"),
 		enforce_https,
 		db,
-		sqlbuilder.SQLite,
 		&types.MailConfig{
 			Enabled:  use_email,
 			Port:     email_port,
