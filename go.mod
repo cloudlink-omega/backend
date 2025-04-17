@@ -1,15 +1,17 @@
 module github.com/cloudlink-omega/backend
 
-go 1.23.3
+go 1.24.1
 
 replace (
-	github.com/cloudlink-omega/accounts => ../accounts
-	github.com/cloudlink-omega/signaling => ../signaling
+	github.com/cloudlink-omega/accounts => ..\accounts
+	github.com/cloudlink-omega/signaling => ..\signaling
+	github.com/cloudlink-omega/storage => ..\storage
 )
 
 require (
-	github.com/cloudlink-omega/accounts v0.0.0-20250130171945-64f6d4eb9ab0
-	github.com/cloudlink-omega/signaling v0.0.0-20241220011641-24c75d59ff5a
+	github.com/cloudlink-omega/accounts v0.0.0-00010101000000-000000000000
+	github.com/cloudlink-omega/signaling v0.0.0-00010101000000-000000000000
+	github.com/cloudlink-omega/storage v0.0.0-00010101000000-000000000000
 	github.com/glebarez/sqlite v1.11.0
 	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/gofiber/template/html/v2 v2.1.3
@@ -26,7 +28,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/elithrar/simple-scrypt v1.3.0 // indirect
 	github.com/fasthttp/websocket v1.5.12 // indirect
-	github.com/glebarez/go-sqlite v1.21.2 // indirect
+	github.com/glebarez/go-sqlite v1.22.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/gofiber/contrib/websocket v1.3.4 // indirect
 	github.com/gofiber/template v1.8.3 // indirect
@@ -42,6 +44,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/mrz1836/go-sanitize v1.3.5 // indirect
 	github.com/muka/peerjs-go v0.0.0-20240401061429-5b28944b9e4f // indirect
+	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/oklog/ulid/v2 v2.1.0 // indirect
 	github.com/pion/datachannel v1.5.10 // indirect
 	github.com/pion/dtls/v2 v2.2.12 // indirect
@@ -71,6 +74,7 @@ require (
 	github.com/valyala/fasthttp v1.60.0 // indirect
 	github.com/wlynxg/anet v0.0.5 // indirect
 	golang.org/x/crypto v0.37.0 // indirect
+	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394 // indirect
 	golang.org/x/net v0.39.0 // indirect
 	golang.org/x/oauth2 v0.29.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect
@@ -78,8 +82,8 @@ require (
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/mail.v2 v2.3.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/libc v1.22.5 // indirect
-	modernc.org/mathutil v1.5.0 // indirect
-	modernc.org/memory v1.5.0 // indirect
-	modernc.org/sqlite v1.23.1 // indirect
+	modernc.org/libc v1.62.1 // indirect
+	modernc.org/mathutil v1.7.1 // indirect
+	modernc.org/memory v1.10.0 // indirect
+	modernc.org/sqlite v1.37.0 // indirect
 )

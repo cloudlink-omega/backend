@@ -5,11 +5,13 @@ import (
 	"net/http"
 
 	"github.com/cloudlink-omega/accounts/pkg/authorization"
+	"github.com/cloudlink-omega/backend/pkg/database"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/html/v2"
+	"gorm.io/gorm"
 )
 
 //go:embed views/*
@@ -22,6 +24,7 @@ var embedded_static embed.FS
 type Server struct {
 	ServerName    string
 	ServerURL     string
+	DB            *database.Database
 	App           *fiber.App
 	Authorization *authorization.Auth
 }
@@ -40,11 +43,21 @@ func New(
 	// PrimaryWebsite is the URL of the primary website.
 	server_url string,
 
+	// Database.
+	db *gorm.DB,
+
 ) *Server {
 	srv := &Server{
 		ServerName: server_name,
 		ServerURL:  server_url,
 	}
+
+	// Initialize DB
+	frontend_db := &database.Database{DB: db}
+	if err := frontend_db.RunMigrations(); err != nil {
+		panic(err)
+	}
+	srv.DB = frontend_db
 
 	// Initialize template engine
 	engine := html.NewFileSystem(http.FS(embedded_templates), ".html")

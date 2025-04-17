@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/cloudlink-omega/accounts"
-	"github.com/cloudlink-omega/accounts/pkg/types"
+	"github.com/cloudlink-omega/accounts/pkg/structs"
 	"github.com/cloudlink-omega/backend/pkg/server"
 	"github.com/cloudlink-omega/signaling"
 	"github.com/gofiber/fiber/v2"
@@ -41,14 +41,11 @@ func main() {
 	enable_github = os.Getenv("ENABLE_GITHUB") == "true"
 	enable_discord = os.Getenv("ENABLE_DISCORD") == "true"
 
-	// Initialize SQLite database
+	// Initialize database
 	db, err := gorm.Open(sqlite.Open("mydb.db"), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
-
-	// Initialize the Frontend server
-	backend := server.New(os.Getenv("SERVER_NAME"), os.Getenv("SERVER_URL"))
 
 	// Initialize the Signaling server
 	signaling_server := signaling.New(
@@ -78,13 +75,20 @@ func main() {
 		os.Getenv("SESSION_KEY"),
 		enforce_https,
 		db,
-		&types.MailConfig{
+		&structs.MailConfig{
 			Enabled:  use_email,
 			Port:     email_port,
 			Server:   os.Getenv("EMAIL_SERVER"),
 			Username: os.Getenv("EMAIL_USERNAME"),
 			Password: os.Getenv("EMAIL_PASSWORD"),
 		},
+	)
+
+	// Initialize the Frontend server
+	backend := server.New(
+		os.Getenv("SERVER_NAME"),
+		os.Getenv("SERVER_URL"),
+		db,
 	)
 
 	// Passthrough authorization server to the backend server
