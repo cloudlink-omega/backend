@@ -42,7 +42,7 @@ func main() {
 	enable_discord = os.Getenv("ENABLE_DISCORD") == "true"
 
 	// Initialize database
-	db, err := gorm.Open(sqlite.Open("mydb.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("mydb.sql"), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}

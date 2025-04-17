@@ -13,6 +13,7 @@ type Database struct {
 func (d *Database) RunMigrations() error {
 	return d.DB.AutoMigrate(
 		&types.Developer{},
-		&types.Game{},
+		&types.DeveloperGame{},
+		&types.DeveloperMember{},
 	)
 }
