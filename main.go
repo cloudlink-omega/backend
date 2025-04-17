@@ -12,13 +12,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+	fiber_logger "github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
 
 	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
+	gorm_logger "gorm.io/gorm/logger"
 )
 
 func main() {
@@ -42,7 +43,9 @@ func main() {
 	enable_discord = os.Getenv("ENABLE_DISCORD") == "true"
 
 	// Initialize database
-	db, err := gorm.Open(sqlite.Open("mydb.sql"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("mydb.sql"), &gorm.Config{
+		Logger: gorm_logger.Default.LogMode(gorm_logger.Info),
+	})
 	if err != nil {
 		panic(err)
 	}
@@ -109,7 +112,7 @@ func main() {
 	app := fiber.New(fiber.Config{ErrorHandler: backend.ErrorPage})
 
 	// Initialize Fiber middleware
-	app.Use(logger.New())
+	app.Use(fiber_logger.New())
 	app.Use(recover.New())
 
 	app.Use(cors.New(cors.Config{
