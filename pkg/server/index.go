@@ -23,7 +23,7 @@ var BlankCardEntry map[string]any = map[string]any{
 	"Enabled":    false,
 	"IsNew":      false,
 	"ID":         "",
-	"Features":   []map[string]any{},
+	"Features":   []map[string]string{},
 }
 
 // Handler for the index page
@@ -45,7 +45,7 @@ func (s *Server) Index(c *fiber.Ctx) error {
 				"Enabled":    true,
 				"IsNew":      true,
 				"ID":         "catchat",
-				"Features": []map[string]any{
+				"Features": []map[string]string{
 					flags.SupportsAchievements,
 					flags.SupportsControllers,
 					flags.SuitableForAllAges,
@@ -68,7 +68,7 @@ func (s *Server) Index(c *fiber.Ctx) error {
 				"Enabled":    true,
 				"IsNew":      true,
 				"ID":         "cpmf",
-				"Features": []map[string]any{
+				"Features": []map[string]string{
 					flags.SupportsControllers,
 					flags.SuitableForAllAges,
 					flags.SupportsLegacyProtocols,
@@ -88,7 +88,7 @@ func (s *Server) Index(c *fiber.Ctx) error {
 				"Enabled":    true,
 				"IsNew":      true,
 				"ID":         "sb3",
-				"Features": []map[string]any{
+				"Features": []map[string]string{
 					flags.SupportsControllers,
 					flags.HasDownloadableContent,
 					flags.SuitableForAllAges,

@@ -1,101 +1,64 @@
 package v0
 
 import (
-	"log"
-	"strconv"
-
-	authorization_structs "github.com/cloudlink-omega/accounts/pkg/structs"
+	"github.com/cloudlink-omega/accounts/pkg/structs"
 	"github.com/cloudlink-omega/storage/pkg/types"
-	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
 
 type SaveArgs struct {
-	Slot  uint8  `json:"save_slot" validate:"required,min=1,max=10" label:"save_slot"`
-	Data  string `json:"save_data" validate:"required,max=10000" label:"save_data"`
-	UGI   string `json:"ugi" validate:"ulid" label:"ugi"`
-	Token string `json:"token" validate:"" label:"token"`
+	Slot  uint8  `json:"save_slot" form:"save_slot" validate:"required,min=1,max=10" label:"save_slot"`
+	Data  string `json:"save_data" form:"save_data" validate:"required,max=10000" label:"save_data"`
+	UGI   string `json:"ugi" form:"ugi" validate:"ulid" label:"ugi"`
+	Token string `json:"token" form:"token" validate:"" label:"token"`
 }
 
 type LoadArgs struct {
-	Slot  uint8  `json:"save_slot" validate:"required,min=1,max=10" label:"save_slot"`
-	UGI   string `json:"ugi" validate:"ulid" label:"ugi"`
-	Token string `json:"token" validate:"" label:"token"`
+	Slot  uint8  `json:"save_slot" form:"save_slot" validate:"required,min=1,max=10" label:"save_slot"`
+	UGI   string `json:"ugi" form:"ugi" validate:"ulid" label:"ugi"`
+	Token string `json:"token" form:"token" validate:"" label:"token"`
 }
 
 func (a *APIv0) Save(c *fiber.Ctx) error {
-
-	// Attempt to get claims based on token or cookie
-	var claims *authorization_structs.Claims
-	var save SaveArgs
-	if c.Body() != nil {
-		if err := json.Unmarshal(c.Body(), &save); err != nil {
-			return APIResult(c, fiber.StatusBadRequest, err.Error(), nil)
-		}
+	var args SaveArgs
+	if err := c.BodyParser(&args); err != nil {
+		return APIResult(c, fiber.StatusBadRequest, err.Error(), nil)
 	}
 
-	// Require authorization
-	if save.Token != "" {
-		if !a.ParentServer.Authorization.ValidFromToken(c, save.Token) {
-			return APIResult(c, fiber.StatusUnauthorized, "Unauthorized.", nil)
-		}
-		claims = a.ParentServer.Authorization.GetClaimsFromToken(c, save.Token)
-	} else {
-		if !a.ParentServer.Authorization.ValidFromNormal(c) {
-			return APIResult(c, fiber.StatusUnauthorized, "Unauthorized.", nil)
-		}
+	if args.Slot < 1 || args.Slot > 10 {
+		return APIResult(c, fiber.StatusBadRequest, "Invalid save slot (must be a number between 1-10).", nil)
+	}
+
+	// Attempt to get session
+	var claims *structs.Claims
+	if a.ParentServer.Authorization.ValidFromNormal(c) {
 		claims = a.ParentServer.Authorization.GetNormalClaims(c)
+	} else if a.ParentServer.Authorization.ValidFromToken(c, args.Token) {
+		claims = a.ParentServer.Authorization.GetClaimsFromToken(c, args.Token)
+	} else {
+		return APIResult(c, fiber.StatusUnauthorized, "Unauthorized.", nil)
 	}
 
-	// Try to read the contents, accept JSON or form data
-	if c.Body() == nil {
-		slot, err := strconv.ParseUint(c.FormValue("save_slot", "1"), 10, 8)
-		if err != nil {
-			return APIResult(c, fiber.StatusBadRequest, err.Error(), nil)
-		}
-		save.Slot = uint8(slot)
-		save.Data = c.FormValue("save_data", "")
-		save.UGI = c.FormValue("ugi", "")
+	// Get user from database
+	user := a.ParentServer.Accounts.DB.GetUser(claims.ULID)
+	if user == nil {
+		return APIResult(c, fiber.StatusInternalServerError, "Failed to get user.", nil)
 	}
 
-	usersave := &types.UserGameSave{
-		UserID:          claims.ULID,
-		SaveSlot:        save.Slot,
-		SaveData:        save.Data,
-		DeveloperGameID: save.UGI,
-	}
-
-	// Check if the UGI exists
-	var count int64
-	if err := a.Database.
-		Model(&types.DeveloperGame{}).
-		Where("id = ?", save.UGI).
-		Count(&count).
-		Error; err != nil {
-
+	// Encrypt save data
+	encrypted, err := a.ParentServer.Accounts.DB.Encrypt(user, args.Data)
+	if err != nil {
 		return APIResult(c, fiber.StatusInternalServerError, err.Error(), nil)
 	}
-	if count == 0 {
-		return APIResult(c, fiber.StatusInternalServerError, "Invalid UGI!", nil)
-	}
 
-	// Create or update save
-	result := a.Database.
-		Model(&types.UserGameSave{}).
-		Where("user_id = ?", claims.ULID).
-		Where("save_slot = ?", save.Slot).
-		Where("developer_game_id = ?", save.UGI).
-		Save(&usersave)
-
-	if result.Error != nil {
-		return APIResult(c, fiber.StatusInternalServerError, result.Error.Error(), nil)
-	}
-	if result.RowsAffected > 0 {
-		return APIResult(c, fiber.StatusOK, "OK", nil)
-	}
-	if result.RowsAffected > 1 {
-		return APIResult(c, fiber.StatusTeapot, "Database anomaly detected; contact an administrator!", nil)
+	// Save
+	var count int64
+	a.Database.Model(&types.UserGameSave{}).First(&types.UserGameSave{}, "user_id = ? AND save_slot = ? AND developer_game_id = ?", claims.ULID, args.Slot, args.UGI).Count(&count)
+	if count > 0 {
+		a.Database.Model(&types.UserGameSave{}).Where("user_id = ? AND save_slot = ? AND developer_game_id = ?", claims.ULID, args.Slot, args.UGI).Update("save_data", encrypted)
+	} else {
+		a.Database.Create(&types.UserGameSave{UserID: claims.ULID, SaveSlot: args.Slot, DeveloperGameID: args.UGI, SaveData: encrypted})
 	}
 
 	return APIResult(c, fiber.StatusOK, "OK", nil)
@@ -103,55 +66,48 @@ func (a *APIv0) Save(c *fiber.Ctx) error {
 
 func (a *APIv0) Load(c *fiber.Ctx) error {
 
-	// Attempt to get claims based on token or cookie
-	var claims *authorization_structs.Claims
-	var load LoadArgs
-	if c.Body() != nil {
-		if err := json.Unmarshal(c.Body(), &load); err != nil {
-			return APIResult(c, fiber.StatusBadRequest, err.Error(), nil)
-		}
-	}
-
-	// Require authorization
-	if load.Token != "" {
-		log.Println("Using legacy token")
-		if !a.ParentServer.Authorization.ValidFromToken(c, load.Token) {
-			return APIResult(c, fiber.StatusUnauthorized, "Unauthorized.", nil)
-		}
-		claims = a.ParentServer.Authorization.GetClaimsFromToken(c, load.Token)
-	} else {
-		log.Println("Using cookie-based token")
-		if !a.ParentServer.Authorization.ValidFromNormal(c) {
-			return APIResult(c, fiber.StatusUnauthorized, "Unauthorized.", nil)
-		}
-		claims = a.ParentServer.Authorization.GetNormalClaims(c)
-	}
-
-	// Try to read the contents, accept JSON or form data
-	slot, err := strconv.ParseUint(c.FormValue("save_slot", "1"), 10, 8)
-	if err != nil {
+	var args LoadArgs
+	if err := c.BodyParser(&args); err != nil {
 		return APIResult(c, fiber.StatusBadRequest, err.Error(), nil)
 	}
-	load.Slot = uint8(slot)
-	load.UGI = c.FormValue("ugi", "")
 
-	// Get save
-	var usersave types.UserGameSave
-	result := a.Database.
-		Model(&types.UserGameSave{}).
-		Where("user_id = ?", claims.ULID).
-		Where("save_slot = ?", load.Slot).
-		Where("developer_game_id = ?", load.UGI).
-		First(&usersave)
-
-	switch result.Error {
-	case nil:
-		return APIResult(c, fiber.StatusOK, "OK", usersave.SaveData)
-
-	case gorm.ErrRecordNotFound:
-		return APIResult(c, fiber.StatusInternalServerError, "Slot not found.", nil)
-
-	default:
-		return APIResult(c, fiber.StatusInternalServerError, result.Error.Error(), nil)
+	if args.Slot < 1 || args.Slot > 10 {
+		return APIResult(c, fiber.StatusBadRequest, "Invalid save slot (must be a number between 1-10).", nil)
 	}
+
+	// Attempt to get session
+	var claims *structs.Claims
+	if a.ParentServer.Authorization.ValidFromNormal(c) {
+		claims = a.ParentServer.Authorization.GetNormalClaims(c)
+	} else if a.ParentServer.Authorization.ValidFromToken(c, args.Token) {
+		claims = a.ParentServer.Authorization.GetClaimsFromToken(c, args.Token)
+	} else {
+		return APIResult(c, fiber.StatusUnauthorized, "Unauthorized.", nil)
+	}
+
+	// Load
+	var slot types.UserGameSave
+	result := a.Database.Model(&types.UserGameSave{}).First(&slot, "user_id = ? AND save_slot = ? AND developer_game_id = ?", claims.ULID, args.Slot, args.UGI)
+	if result.Error != nil {
+		switch result.Error {
+		case gorm.ErrRecordNotFound:
+			return APIResult(c, fiber.StatusNotFound, "Save slot not found.", nil)
+		default:
+			return APIResult(c, fiber.StatusInternalServerError, result.Error.Error(), nil)
+		}
+	}
+
+	// Get user from database
+	user := a.ParentServer.Accounts.DB.GetUser(claims.ULID)
+	if user == nil {
+		return APIResult(c, fiber.StatusInternalServerError, "Failed to get user.", nil)
+	}
+
+	// Decrypt save data
+	decrypted, err := a.ParentServer.Accounts.DB.Decrypt(user, slot.SaveData)
+	if err != nil {
+		return APIResult(c, fiber.StatusInternalServerError, err.Error(), nil)
+	}
+
+	return APIResult(c, fiber.StatusOK, "OK", decrypted)
 }

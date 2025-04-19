@@ -50,12 +50,6 @@ func main() {
 		panic(err)
 	}
 
-	// Initialize the Signaling server
-	signaling_server := signaling.New(
-		strings.Split(os.Getenv("ALLOWED_DOMAINS"), " "),
-		turn_only,
-	)
-
 	// Compile authorized domains for CORS
 	allowed_domains := strings.ReplaceAll(os.Getenv("ALLOWED_DOMAINS"), " ", ", ")
 
@@ -75,7 +69,7 @@ func main() {
 		os.Getenv("API_URL"),
 		os.Getenv("SERVER_NAME"),
 		os.Getenv("PRIMARY_WEBSITE"),
-		os.Getenv("SESSION_KEY"),
+		os.Getenv("SERVER_SECRET"),
 		enforce_https,
 		db,
 		&structs.MailConfig{
@@ -85,6 +79,14 @@ func main() {
 			Username: os.Getenv("EMAIL_USERNAME"),
 			Password: os.Getenv("EMAIL_PASSWORD"),
 		},
+	)
+
+	// Initialize the Signaling server
+	signaling_server := signaling.New(
+		strings.Split(os.Getenv("ALLOWED_DOMAINS"), " "),
+		turn_only,
+		auth.APIv1.Auth,
+		db,
 	)
 
 	// Initialize the Frontend server

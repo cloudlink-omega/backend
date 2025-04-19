@@ -15,7 +15,7 @@ type APIv0 struct {
 
 type Result struct {
 	Result string `json:"result"`
-	Data   any    `json:"data"`
+	Data   any    `json:"data,omitempty"`
 }
 
 func New(s *structs.Server) *APIv0 {
