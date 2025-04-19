@@ -5,7 +5,7 @@ import (
 )
 
 func (s *Server) DeveloperDashboard(c *fiber.Ctx) error {
-	loggedIn := s.Authorization.Valid(c)
+	loggedIn := s.Authorization.ValidFromNormal(c)
 	if !loggedIn {
 		return s.ErrorPage(c, &fiber.Error{
 			Code:    fiber.StatusUnauthorized,

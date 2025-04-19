@@ -1,0 +1,17 @@
+package structs
+
+import (
+	"github.com/cloudlink-omega/accounts"
+	"github.com/cloudlink-omega/accounts/pkg/authorization"
+	"github.com/cloudlink-omega/backend/pkg/database"
+	"github.com/gofiber/fiber/v2"
+)
+
+type Server struct {
+	ServerName    string
+	ServerURL     string
+	DB            *database.Database
+	App           *fiber.App
+	Authorization *authorization.Auth
+	Accounts      *accounts.Accounts
+}

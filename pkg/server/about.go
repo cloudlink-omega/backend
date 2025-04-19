@@ -5,7 +5,7 @@ import (
 )
 
 func (s *Server) About(c *fiber.Ctx) error {
-	loggedIn := s.Authorization.Valid(c)
+	loggedIn := s.Authorization.ValidFromNormal(c)
 
 	// Create modal data based on the ID
 	data := map[string]any{

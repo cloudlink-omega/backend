@@ -13,6 +13,7 @@ require (
 	github.com/cloudlink-omega/signaling v0.0.0-00010101000000-000000000000
 	github.com/cloudlink-omega/storage v0.0.0-00010101000000-000000000000
 	github.com/glebarez/sqlite v1.11.0
+	github.com/goccy/go-json v0.10.5
 	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/gofiber/template/html/v2 v2.1.3
 	github.com/joho/godotenv v1.5.1
@@ -29,7 +30,6 @@ require (
 	github.com/elithrar/simple-scrypt v1.3.0 // indirect
 	github.com/fasthttp/websocket v1.5.12 // indirect
 	github.com/glebarez/go-sqlite v1.22.0 // indirect
-	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/gofiber/contrib/websocket v1.3.4 // indirect
 	github.com/gofiber/template v1.8.3 // indirect
 	github.com/gofiber/utils v1.1.0 // indirect
@@ -46,6 +46,7 @@ require (
 	github.com/muka/peerjs-go v0.0.0-20240401061429-5b28944b9e4f // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/oklog/ulid/v2 v2.1.0 // indirect
+	github.com/philhofer/fwd v1.1.3-0.20240916144458-20a13a1f6b7c // indirect
 	github.com/pion/datachannel v1.5.10 // indirect
 	github.com/pion/dtls/v2 v2.2.12 // indirect
 	github.com/pion/ice/v2 v2.3.37 // indirect
@@ -70,6 +71,7 @@ require (
 	github.com/savsgio/gotils v0.0.0-20250408102913-196191ec6287 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
+	github.com/tinylib/msgp v1.2.5 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.60.0 // indirect
 	github.com/wlynxg/anet v0.0.5 // indirect

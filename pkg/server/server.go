@@ -4,8 +4,10 @@ import (
 	"embed"
 	"net/http"
 
-	"github.com/cloudlink-omega/accounts/pkg/authorization"
+	"github.com/cloudlink-omega/accounts"
 	"github.com/cloudlink-omega/backend/pkg/database"
+	v0 "github.com/cloudlink-omega/backend/pkg/server/v0"
+	"github.com/cloudlink-omega/backend/pkg/structs"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -21,13 +23,7 @@ var embedded_templates embed.FS
 var embedded_static embed.FS
 
 // TODO: add fields for the frontend server
-type Server struct {
-	ServerName    string
-	ServerURL     string
-	DB            *database.Database
-	App           *fiber.App
-	Authorization *authorization.Auth
-}
+type Server structs.Server
 
 // New creates a new Server instance.
 //
@@ -46,10 +42,14 @@ func New(
 	// Database.
 	db *gorm.DB,
 
+	// Accounts API
+	accounts_api *accounts.Accounts,
+
 ) *Server {
 	srv := &Server{
 		ServerName: server_name,
 		ServerURL:  server_url,
+		Accounts:   accounts_api,
 	}
 
 	// Initialize DB
@@ -74,6 +74,10 @@ func New(
 	srv.App.Get("/modal", srv.Modal)
 	srv.App.Get("/about", srv.About)
 	srv.App.Get("/", srv.Index)
+
+	// Configure API Routes
+	apiv0 := v0.New((*structs.Server)(srv))
+	srv.App.Mount("/api/v0", apiv0.App)
 
 	// Initialize assets path
 	srv.App.Use("/assets", filesystem.New(filesystem.Config{

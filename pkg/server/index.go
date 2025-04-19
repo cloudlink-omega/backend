@@ -28,7 +28,7 @@ var BlankCardEntry map[string]any = map[string]any{
 
 // Handler for the index page
 func (s *Server) Index(c *fiber.Ctx) error {
-	loggedIn := s.Authorization.Valid(c)
+	loggedIn := s.Authorization.ValidFromNormal(c)
 
 	data := map[string]any{
 		"BaseURL":    s.ServerURL,

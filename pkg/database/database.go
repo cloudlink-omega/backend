@@ -15,5 +15,6 @@ func (d *Database) RunMigrations() error {
 		&types.Developer{},
 		&types.DeveloperGame{},
 		&types.DeveloperMember{},
+		&types.UserGameSave{},
 	)
 }

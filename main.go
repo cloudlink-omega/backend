@@ -43,7 +43,7 @@ func main() {
 	enable_discord = os.Getenv("ENABLE_DISCORD") == "true"
 
 	// Initialize database
-	db, err := gorm.Open(sqlite.Open("mydb.sql"), &gorm.Config{
+	db, err := gorm.Open(sqlite.Open("mydb.db"), &gorm.Config{
 		Logger: gorm_logger.Default.LogMode(gorm_logger.Info),
 	})
 	if err != nil {
@@ -92,10 +92,11 @@ func main() {
 		os.Getenv("SERVER_NAME"),
 		os.Getenv("SERVER_URL"),
 		db,
+		auth,
 	)
 
 	// Passthrough authorization server to the backend server
-	backend.Authorization = auth.APIv0.Auth
+	backend.Authorization = auth.APIv1.Auth
 
 	// Initialize the OAuth providers
 	if enable_discord {
@@ -109,7 +110,9 @@ func main() {
 	}
 
 	// Initialize overall Fiber app
-	app := fiber.New(fiber.Config{ErrorHandler: backend.ErrorPage})
+	app := fiber.New(fiber.Config{
+		ErrorHandler: backend.ErrorPage,
+	})
 
 	// Initialize Fiber middleware
 	app.Use(fiber_logger.New())
@@ -127,7 +130,7 @@ func main() {
 	app.Mount("/", backend.App)
 
 	// Serve hosted files
-	app.Static("/hosted", os.Getenv("HOSTED_PATH"))
+	app.Static("/hosted", os.Getenv("HOSTED_PATH"), fiber.Static{Compress: true})
 
 	// Mount metrics middleware
 	app.Get("/metrics", monitor.New())
