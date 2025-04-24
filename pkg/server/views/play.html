@@ -1,4 +1,4 @@
-<div class="container mx-auto px-4 py-4 text-center items-center">
+<div id="player" class="container mx-auto px-4 py-4 text-center items-center">
 	<flex class="container items-center justify-center gap-3">
 		<div class="container items-center justify-center">
 			<!-- TODO: figure out how to make this fit without scrollbars being needed... -->
@@ -102,3 +102,6 @@
 
 <!-- Use to handle modals -->
 <script src="/assets/js/modals.js"></script>
+
+<!-- Very basic cheat mitigation. This is not very good but it's better than nothing. -->
+<script id="playcheck">!function(){function a(){let b=!1,c=1,d=new Date,e=d.getTime(),f=new Date,g=f-e;if(!(b||isNaN(f)||f>c)){b=!0;document.getElementById("player").remove();const h=document.createElement("div"),i=document.createElement("h1"),j=document.createElement("p");h.className="flex flex-col items-center justify-center gap-2 w-auto mx-2 my-5 dark:text-white",i.className="text-5xl font-bold",i.textContent="Oops! That's not allowed.",j.className="text-2xl font-underline",j.textContent="It's not cool to cheat. Reload the page to play again.",h.appendChild(i),h.appendChild(j),document.getElementById("main").appendChild(h),document.getElementById("playcheck").remove()}}window.addEventListener("load",a),window.addEventListener("resize",a),window.addEventListener("mousemove",a),window.addEventListener("focus",a),window.addEventListener("blur",a)}();</script>
