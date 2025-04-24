@@ -50,9 +50,9 @@
                 </a>
 
                 {{ if .LoggedIn }}
-                <a href="#"
+                <a href="/explore"
                     class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                    Link
+                    Explore
                 </a>
                 <span class="text-gray-400 px-3 py-2 text-sm font-medium cursor-not-allowed">
                     Disabled
@@ -126,9 +126,9 @@
             </a>
 
             {{ if .LoggedIn }}
-            <a href="#"
+            <a href="/explore"
                 class="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                Link
+                Explore
             </a>
             <span class="block px-3 py-2 rounded-lg text-base font-medium text-gray-400 cursor-not-allowed">
                 Disabled
@@ -149,7 +149,12 @@
                     </svg>
                 </button>
                 <div class="hidden pl-4" id="mobile-dropdown-menu">
-                    <a href="#"
+                    <a 
+                        {{ if .LoggedIn }}
+                        href="{{ .BaseURL }}/dashboard"
+                        {{ else }}
+                        href="{{ .BaseURL }}/accounts/register?redirect={{ .BaseURL }}"
+                        {{ end }}
                         class="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                         {{ if .LoggedIn }}
                         My Account
@@ -163,7 +168,12 @@
                         Settings
                     </a>
                     {{ end }}
-                    <a href="#"
+                    <a
+                        {{ if .LoggedIn }}
+                        href="{{ .BaseURL }}/accounts/logout?redirect={{ .BaseURL }}"
+                        {{ else }}
+                        href="{{ .BaseURL }}/accounts/login?redirect={{ .BaseURL }}"
+                        {{ end }}
                         class="block px-3 py-2 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                         {{ if .LoggedIn }}
                         Logout

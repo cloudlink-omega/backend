@@ -73,6 +73,7 @@ func New(
 	srv.App.Get("/terms", srv.Terms)
 	srv.App.Get("/modal", srv.Modal)
 	srv.App.Get("/about", srv.About)
+	srv.App.Get("/explore", srv.Explore)
 	srv.App.Get("/", srv.Index)
 
 	// Configure API Routes

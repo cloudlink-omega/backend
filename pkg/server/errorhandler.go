@@ -24,10 +24,10 @@ func (s *Server) ErrorPage(c *fiber.Ctx, err error) error {
 	c.Status(status_code)
 
 	// Either render a page, or send plain text
-	request_content_type := string(c.Request().Header.Peek("Content-Type"))
+	request_content_type := string(c.Request().Header.ContentType())
 
 	var match bool
-	for _, t := range []string{"html", "plain", "form"} {
+	for _, t := range []string{"html", "plain", "form", "json", "xml"} {
 		match = !match && strings.Contains(request_content_type, t)
 	}
 

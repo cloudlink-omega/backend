@@ -43,13 +43,18 @@ func (a *APIv0) Save(c *fiber.Ctx) error {
 	// Get user from database
 	user := a.ParentServer.Accounts.DB.GetUser(claims.ULID)
 	if user == nil {
-		return APIResult(c, fiber.StatusInternalServerError, "Failed to get user.", nil)
+		return APIResult(c, fiber.StatusInternalServerError, "Failed to get user for encrypting save.", nil)
 	}
 
 	// Encrypt save data
 	encrypted, err := a.ParentServer.Accounts.DB.Encrypt(user, args.Data)
 	if err != nil {
 		return APIResult(c, fiber.StatusInternalServerError, err.Error(), nil)
+	}
+
+	// Check if developer game exists
+	if a.Database.Model(&types.DeveloperGame{}).First(&types.DeveloperGame{}, "id = ?", args.UGI).Error == gorm.ErrRecordNotFound {
+		return APIResult(c, fiber.StatusBadRequest, "Invalid Game ID (UGI not found).", nil)
 	}
 
 	// Save
@@ -100,7 +105,7 @@ func (a *APIv0) Load(c *fiber.Ctx) error {
 	// Get user from database
 	user := a.ParentServer.Accounts.DB.GetUser(claims.ULID)
 	if user == nil {
-		return APIResult(c, fiber.StatusInternalServerError, "Failed to get user.", nil)
+		return APIResult(c, fiber.StatusInternalServerError, "Failed to get user for decrypting save.", nil)
 	}
 
 	// Decrypt save data

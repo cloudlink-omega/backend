@@ -1,6 +1,8 @@
 package server
 
 import (
+	"log"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,6 +15,19 @@ func (s *Server) Dashboard(c *fiber.Ctx) error {
 		})
 	}
 
+	claims := s.Authorization.GetNormalClaims(c)
+
+	// Read all active sessions
+	sessions, err := s.Accounts.DB.GetAllSessions(claims.ULID)
+	if err != nil {
+		return s.ErrorPage(c, &fiber.Error{
+			Code:    fiber.StatusInternalServerError,
+			Message: "Failed to retrieve user sessions.",
+		})
+	}
+
+	log.Println(sessions)
+
 	// Create modal data based on the ID
 	data := map[string]any{
 		"BaseURL":      s.ServerURL,
@@ -21,6 +36,7 @@ func (s *Server) Dashboard(c *fiber.Ctx) error {
 		"GamesPlayed":  0,
 		"FriendsMet":   0,
 		"PointsEarned": 0,
+		"Sessions":     sessions,
 		"Logs": []map[string]any{
 			{
 				"Timestamp": "nil",

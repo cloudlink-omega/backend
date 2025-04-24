@@ -1,0 +1,18 @@
+<div class="container mx-auto px-4 py-4 text-center items-center">
+	<div class="py-2">
+		<div class="container text-center justify-center mb-6">
+			<h2 class="text-3xl font-bold dark:text-white">Explore</h2>
+		</div>
+		<hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
+		<div class="container rounded-xl w-max bg-white dark:bg-gray-900">
+			<div class="flex flex-wrap flex-column gap-2 p-4">
+				{{ range .PageCards }}
+					{{ template "explore_card" . }}
+				{{ end }}
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Use to handle modals -->
+<script src="/assets/js/modals.js"></script>
