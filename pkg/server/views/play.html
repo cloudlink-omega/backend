@@ -1,0 +1,104 @@
+<div class="container mx-auto px-4 py-4 text-center items-center">
+	<flex class="container items-center justify-center gap-3">
+		<div class="container items-center justify-center">
+			<!-- TODO: figure out how to make this fit without scrollbars being needed... -->
+			<iframe class="m-auto w-full h-screen" frameborder="0" scrolling="no" src="/hosted/Countdown.html"
+				allowfullscreen="true" allow="autoplay; clipboard-write;" referrerpolicy="same-origin"></iframe>
+		</div>
+		<div class="flex flex-row items-center justify-center gap-2 pb-5 pt-5">
+			<img src="/assets/static/img/ui/placeholder_user.png" alt="Profile Image" class="w-10 h-10">
+			<h2 class="text-xl font-bold dark:text-white">Developer Name</h2>
+		</div>
+		<div class="flex flex-row items-center justify-center gap-2 pb-7">
+			<h1 class="text-5xl font-bold dark:text-white">Game Name</h1>
+		</div>
+		<div class="container bg-white dark:bg-gray-800 p-4 rounded-xl bg-gray-100 dark:bg-gray-700 dark:text-white">
+			<h2 class="text-2xl font-bold dark:text-white pb-2">Description</h2>
+			<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam, placeat.</p>
+
+			<!-- TODO: make this render dynamically -->
+			<h2 class="text-2xl font-bold dark:text-white pt-5 pb-5">Features</h2>
+			<div class="flex flex-row flex-wrap items-center justify-center pb-2">
+
+
+				<img class="dark:invert" src="/assets/static/img/tags/achievements.svg"
+					title="This game supports earning achievements.">
+
+
+
+				<img class="dark:invert" src="/assets/static/img/tags/controllers.svg"
+					title="This game supports controllers.">
+
+
+
+				<img class="dark:invert" src="/assets/static/img/tags/everyone.svg"
+					title="This game is suitable for everyone.">
+
+
+
+				<img class="dark:invert" src="/assets/static/img/tags/legacy.svg"
+					title="This game supports legacy CloudLink clients.">
+
+
+
+				<img class="dark:invert" src="/assets/static/img/tags/multidev.svg"
+					title="This game can be played on mobile or desktop devices.">
+
+
+
+				<img class="dark:invert" src="/assets/static/img/tags/oss.svg" title="The game is open source.">
+
+
+
+				<img class="dark:invert" src="/assets/static/img/tags/onscratch.svg"
+					title="This game is also available on Scratch.">
+
+
+
+				<img class="dark:invert" src="/assets/static/img/tags/ontw.svg"
+					title="This game was made using Turbowarp.">
+
+
+
+				<img class="dark:invert" src="/assets/static/img/tags/review.svg"
+					title="This game is undergoing review or awaiting approval by an administrator.">
+
+
+
+				<img class="dark:invert" src="/assets/static/img/tags/save.svg"
+					title="This game supports cloud save data.">
+
+
+
+				<img class="dark:invert" src="/assets/static/img/tags/vchat.svg"
+					title="This game supports proximity voice chat.">
+
+
+			</div>
+		</div>
+		<div class="flex flex-row items-center justify-between gap-2 w-auto mx-2 my-5 dark:text-white">
+			<p>© 1 April 2025.</p>
+			<button type="button"
+				class="open-modal-button px-3 py-2 rounded-xl ring-1 ring-inset ring-gray-300 dark:ring-gray-600 bg-gray-100 dark:bg-gray-700 hover:bg-red-400 dark:hover:bg-red-400 hover:text-white hover:font-bold dark:text-white transition-all duration-200"
+				data-item-id="{{ .ID }}">
+				<span class="flex items-center justify-center gap-2">
+
+					<!-- TODO: replace this placeholder svg (It's taken directly from Scratch) -->
+					<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg"
+						xmlns:xlink="http://www.w3.org/1999/xlink">
+						<defs />
+						<g id="report-white" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+							<path
+								d="M9.93975407,12.6597613 C8.46423356,12.6597613 7.2696347,13.8543601 7.2696347,15.3298806 C7.2696347,16.8054011 8.46423356,18 9.93975407,18 C11.4152746,18 12.6098734,16.8054011 12.6098734,15.3298806 C12.6098734,13.8543601 11.4152746,12.6597613 9.93975407,12.6597613 M11.4725499,10.2269663 C10.7934286,11.7478886 9.08607954,11.7478886 8.40695827,10.2269663 L6.23867952,5.39847481 C5.55955826,3.88804156 6.41050539,2 7.77147532,2 L12.1080328,2 C13.4690027,2 14.3199499,3.88804156 13.6408286,5.39847481 L11.4725499,10.2269663 Z"
+								id="Fill-1" fill="#FFFFFF" />
+						</g>
+					</svg>
+					Report
+				</span>
+			</button>
+		</div>
+	</flex>
+</div>
+
+<!-- Use to handle modals -->
+<script src="/assets/js/modals.js"></script>
