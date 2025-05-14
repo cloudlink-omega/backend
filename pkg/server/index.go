@@ -44,7 +44,7 @@ func (s *Server) Index(c *fiber.Ctx) error {
 				"FooterText": "Launching April 1st, 2025",
 				"Enabled":    true,
 				"IsNew":      true,
-				"ID":         "catchat",
+				"ID":         "01HNPHRWS0N0AYMM5K4HN31V4W",
 				"Features": []map[string]string{
 					flags.SupportsAchievements,
 					flags.SupportsControllers,
@@ -67,7 +67,7 @@ func (s *Server) Index(c *fiber.Ctx) error {
 				"FooterText": "Launching January 1st, 2025",
 				"Enabled":    true,
 				"IsNew":      true,
-				"ID":         "cpmf",
+				"ID":         "01HNPHRWS0N0AYMM5K4HN31V4W",
 				"Features": []map[string]string{
 					flags.SupportsControllers,
 					flags.SuitableForAllAges,
@@ -87,7 +87,7 @@ func (s *Server) Index(c *fiber.Ctx) error {
 				"FooterText": "Launching April 1st, 2025",
 				"Enabled":    true,
 				"IsNew":      true,
-				"ID":         "sb3",
+				"ID":         "01HNPHRWS0N0AYMM5K4HN31V4W",
 				"Features": []map[string]string{
 					flags.SupportsControllers,
 					flags.HasDownloadableContent,
