@@ -1,9 +1,11 @@
 package main
 
 import (
+	"log"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/cloudlink-omega/accounts"
 	"github.com/cloudlink-omega/accounts/pkg/structs"
@@ -140,7 +142,23 @@ func main() {
 	}
 
 	// Serve hosted files
-	app.Static("/hosted", os.Getenv("HOSTED_PATH"), fiber.Static{Compress: true})
+	app.Static("/hosted/projects_public", os.Getenv("HOSTED_PATH")+"/projects_public", fiber.Static{Compress: true, CacheDuration: time.Minute})
+	app.Static("/hosted/developer_art", os.Getenv("HOSTED_PATH")+"/developer_art", fiber.Static{Compress: true})
+	app.Static("/hosted/game_art", os.Getenv("HOSTED_PATH")+"/game_art", fiber.Static{Compress: true})
+	app.Static("/hosted/thumbnail", os.Getenv("HOSTED_PATH")+"/thumbnails", fiber.Static{Compress: true})
+
+	app.Static("/hosted/projects_private", os.Getenv("HOSTED_PATH")+"/projects_private", fiber.Static{
+		Compress:      true,
+		CacheDuration: time.Minute,
+		Next: func(c *fiber.Ctx) bool {
+			// TODO: Properly implement checks to make sure the requesting user has permissions to access a private project file
+			path := c.Request().URI().Path()
+			segments := strings.Split(string(path), "/")
+			fileName := segments[len(segments)-1]
+			log.Println(fileName)
+			return !auth.APIv1.Auth.ValidFromNormal(c)
+		},
+	})
 
 	// Mount metrics middleware
 	app.Get("/metrics", monitor.New())
