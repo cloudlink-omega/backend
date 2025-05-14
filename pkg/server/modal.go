@@ -16,6 +16,7 @@ func (s *Server) Modal(c *fiber.Ctx) error {
 		"ServerName": s.ServerName,
 		"Title":      "Dynamic Modal for Item " + id,
 		"Content":    "This is dynamically loaded content for item " + id,
+		"GameID":     id,
 	}
 
 	c.Context().SetContentType("text/html; charset=utf-8")
