@@ -35,6 +35,7 @@ func (d *Database) RunMigrations() error {
 		Name:        "Test Game",
 		ID:          "01HNPHRWS0N0AYMM5K4HN31V4W",
 		DeveloperID: "01HNPHQM5SPAG43J68R3NRX4M6",
+		Description: "This is a sample game provided by the server for testing use.",
 	}).Error; err != nil {
 		return err
 	}
