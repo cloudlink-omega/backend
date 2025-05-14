@@ -131,6 +131,14 @@ func main() {
 	app.Mount("/accounts", auth.App)
 	app.Mount("/", backend.App)
 
+	// Create directories for hosted files
+	for _, folder := range []string{"projects_public", "projects_private", "developer_art", "game_art", "thumbnails"} {
+		dir := os.Getenv("HOSTED_PATH") + "/" + folder
+		if _, err := os.Stat(dir); os.IsNotExist(err) {
+			os.Mkdir(dir, 0755)
+		}
+	}
+
 	// Serve hosted files
 	app.Static("/hosted", os.Getenv("HOSTED_PATH"), fiber.Static{Compress: true})
 
