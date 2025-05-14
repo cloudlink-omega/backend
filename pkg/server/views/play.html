@@ -7,14 +7,14 @@
 		</div>
 		<div class="flex flex-row items-center justify-center gap-2 pb-5 pt-5">
 			<img src="/assets/static/img/ui/placeholder_user.png" alt="Profile Image" class="w-10 h-10">
-			<h2 class="text-xl font-bold dark:text-white">Developer Name</h2>
+			<h2 class="text-xl font-bold dark:text-white">{{ .DeveloperName }}</h2>
 		</div>
 		<div class="flex flex-row items-center justify-center gap-2 pb-7">
-			<h1 class="text-5xl font-bold dark:text-white">Game Name</h1>
+			<h1 class="text-5xl font-bold dark:text-white">{{ .GameName }}</h1>
 		</div>
 		<div class="container bg-white dark:bg-gray-800 p-4 rounded-xl bg-gray-100 dark:bg-gray-700 dark:text-white">
 			<h2 class="text-2xl font-bold dark:text-white pb-2">Description</h2>
-			<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam, placeat.</p>
+			<p>{{ .GameDescription }}</p>
 
 			<!-- TODO: make this render dynamically -->
 			<h2 class="text-2xl font-bold dark:text-white pt-5 pb-5">Features</h2>
