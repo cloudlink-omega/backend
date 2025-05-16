@@ -54,9 +54,6 @@ func New(
 
 	// Initialize DB
 	frontend_db := &database.Database{DB: db}
-	if err := frontend_db.RunMigrations(); err != nil {
-		panic(err)
-	}
 	srv.DB = frontend_db
 
 	// Initialize template engine
