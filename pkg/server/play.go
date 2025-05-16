@@ -14,7 +14,14 @@ func (s *Server) Play(c *fiber.Ctx) error {
 	game := s.DB.GetGame(id)
 
 	if game == nil {
-		return s.ErrorPage(c, &fiber.Error{Code: fiber.StatusNotFound, Message: "Whoops! Game not found."})
+		data := map[string]any{
+			"BaseURL":    s.ServerURL,
+			"ServerName": s.ServerName,
+			"Title":      "Whoops!",
+		}
+		c.Context().SetContentType("text/html; charset=utf-8")
+		c.Status(fiber.StatusNotFound)
+		return c.Render("views/play_not_found", data, "views/layouts/default")
 	}
 
 	data := map[string]any{
