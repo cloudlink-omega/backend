@@ -24,14 +24,14 @@ func (d *Database) RunMigrations() error {
 	}
 
 	// Seed the database with the test Developer and test Game IDs
-	if err := d.DB.Model(&types.Developer{}).FirstOrCreate(&types.Developer{
+	if err := d.DB.FirstOrCreate(&types.Developer{
 		Name: "Test Developer",
 		ID:   "01HNPHQM5SPAG43J68R3NRX4M6",
 	}).Error; err != nil {
 		return err
 	}
 
-	if err := d.DB.Model(&types.DeveloperGame{}).FirstOrCreate(&types.DeveloperGame{
+	if err := d.DB.FirstOrCreate(&types.DeveloperGame{
 		Name:        "Test Game",
 		ID:          "01HNPHRWS0N0AYMM5K4HN31V4W",
 		DeveloperID: "01HNPHQM5SPAG43J68R3NRX4M6",
