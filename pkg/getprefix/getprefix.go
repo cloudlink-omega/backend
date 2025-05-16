@@ -1,8 +1,9 @@
 package getprefix
 
 import (
-	"log"
 	"strings"
+
+	"github.com/gofiber/fiber/v2/log"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -17,7 +18,7 @@ func Get(c *fiber.Ctx) string {
 		result = strings.Split(c.Path(), "/")[1]
 	}
 
-	log.Print("Here's the router name: " + result)
+	log.Debug("Here's the router name: " + result)
 
 	// If we are outside of a router, we need to fetch the name of the route we are on
 	return result

@@ -1,7 +1,7 @@
 package server
 
 import (
-	"log"
+	"github.com/gofiber/fiber/v2/log"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -26,7 +26,7 @@ func (s *Server) Dashboard(c *fiber.Ctx) error {
 		})
 	}
 
-	log.Println(sessions)
+	log.Debug(sessions)
 
 	// Create modal data based on the ID
 	data := map[string]any{

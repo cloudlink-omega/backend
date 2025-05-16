@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gofiber/fiber/v2/log"
 
 	"github.com/cloudlink-omega/accounts"
 	"github.com/cloudlink-omega/accounts/pkg/structs"
@@ -168,7 +169,7 @@ func main() {
 			path := c.Request().URI().Path()
 			segments := strings.Split(string(path), "/")
 			fileName := segments[len(segments)-1]
-			log.Println(fileName)
+			log.Debug(fileName)
 			return !auth.APIv1.Auth.ValidFromNormal(c)
 		},
 	})
@@ -177,13 +178,13 @@ func main() {
 	app.Get("/metrics", monitor.New())
 
 	// Seed the database
-	log.Println("Migrating and seeding database...")
+	log.Info("Migrating and seeding database...")
 	if err := common.MigrateAndSeed(db); err != nil {
 		panic(err)
 	}
 
 	// Run the app
-	log.Println("Starting server...")
+	log.Info("Starting server...")
 	if https_mode {
 		app.ListenTLS(os.Getenv("API_URL"), os.Getenv("HTTPS_CERT"), os.Getenv("HTTPS_KEY"))
 	} else {
