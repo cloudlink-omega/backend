@@ -2,9 +2,6 @@ package server
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
-
-	"github.com/cloudlink-omega/storage/pkg/types"
 )
 
 // Handler for the explore page
@@ -14,8 +11,9 @@ func (s *Server) Play(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	// Check if the game exists
-	var game types.DeveloperGame
-	if s.DB.DB.Preload("Developer").Find(&game, "id = ?", id).Error == gorm.ErrRecordNotFound {
+	game := s.DB.GetGame(id)
+
+	if game == nil {
 		return s.ErrorPage(c, &fiber.Error{Code: fiber.StatusNotFound, Message: "Whoops! Game not found."})
 	}
 
