@@ -3,6 +3,7 @@ package server
 import (
 	"embed"
 	"net/http"
+	"time"
 
 	"github.com/cloudlink-omega/accounts"
 	"github.com/cloudlink-omega/backend/pkg/database"
@@ -61,6 +62,22 @@ func New(
 
 	// Initialize app
 	srv.App = fiber.New(fiber.Config{Views: engine, ErrorHandler: srv.ErrorPage})
+
+	// Custom middleware to check for expired sessions and destroy them
+	srv.App.Use(func(c *fiber.Ctx) error {
+		claims := srv.Authorization.GetNormalClaims(c)
+		if claims == nil {
+			return c.Next()
+		}
+
+		if claims.ExpiresAt.Before(time.Now()) {
+			srv.Accounts.APIv1.ClearCookie(c)
+			srv.Accounts.DB.DeleteSession(claims.ID)
+			return c.Next()
+		}
+
+		return c.Next()
+	})
 
 	// Configure routes
 	srv.App.Get("/admin", srv.Admin)
