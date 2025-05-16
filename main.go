@@ -47,7 +47,7 @@ func main() {
 
 	// Initialize database
 	db, err := gorm.Open(mysql.Open(
-		fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
+		fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=True",
 			os.Getenv("DB_USERNAME"),
 			os.Getenv("DB_PASSWORD"),
 			os.Getenv("DB_HOST"),
@@ -124,6 +124,7 @@ func main() {
 	// Initialize overall Fiber app
 	app := fiber.New(fiber.Config{
 		ErrorHandler: backend.ErrorPage,
+		ProxyHeader:  "X-Real-IP",
 	})
 
 	// Initialize Fiber middleware
