@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -19,7 +20,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/joho/godotenv"
 
-	"github.com/glebarez/sqlite"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	gorm_logger "gorm.io/gorm/logger"
 )
@@ -45,7 +46,14 @@ func main() {
 	enable_discord = os.Getenv("ENABLE_DISCORD") == "true"
 
 	// Initialize database
-	db, err := gorm.Open(sqlite.Open("mydb.db"), &gorm.Config{
+	db, err := gorm.Open(mysql.Open(
+		fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
+			os.Getenv("DB_USERNAME"),
+			os.Getenv("DB_PASSWORD"),
+			os.Getenv("DB_HOST"),
+			os.Getenv("DB_PORT"),
+			os.Getenv("DB_DATABASE"),
+		)), &gorm.Config{
 		Logger: gorm_logger.Default.LogMode(gorm_logger.Info),
 	})
 	if err != nil {
