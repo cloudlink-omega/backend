@@ -12,6 +12,7 @@ import (
 	"github.com/cloudlink-omega/accounts/pkg/structs"
 	"github.com/cloudlink-omega/backend/pkg/server"
 	"github.com/cloudlink-omega/signaling"
+	"github.com/cloudlink-omega/storage/pkg/common"
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -89,6 +90,8 @@ func main() {
 			Username: os.Getenv("EMAIL_USERNAME"),
 			Password: os.Getenv("EMAIL_PASSWORD"),
 		},
+		true, // Enable testing mode - Allows accounts to bypass email registration if they use @localhost
+		true, // Defer migrations
 	)
 
 	// Initialize the Signaling server
@@ -97,6 +100,7 @@ func main() {
 		turn_only,
 		auth.APIv1.Auth,
 		db,
+		true, // Defer migrations
 	)
 
 	// Initialize the Frontend server
@@ -172,7 +176,14 @@ func main() {
 	// Mount metrics middleware
 	app.Get("/metrics", monitor.New())
 
+	// Seed the database
+	log.Println("Migrating and seeding database...")
+	if err := common.MigrateAndSeed(db); err != nil {
+		panic(err)
+	}
+
 	// Run the app
+	log.Println("Starting server...")
 	if https_mode {
 		app.ListenTLS(os.Getenv("API_URL"), os.Getenv("HTTPS_CERT"), os.Getenv("HTTPS_KEY"))
 	} else {
