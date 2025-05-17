@@ -1,10 +1,18 @@
 package server
 
 import (
-	"github.com/gofiber/fiber/v2/log"
+	"fmt"
+
+	"github.com/cloudlink-omega/storage/pkg/types"
+	"github.com/mileusna/useragent"
 
 	"github.com/gofiber/fiber/v2"
 )
+
+type ParsedSession struct {
+	*types.UserSession
+	Device string
+}
 
 func (s *Server) Dashboard(c *fiber.Ctx) error {
 	loggedIn := s.Authorization.ValidFromNormal(c)
@@ -26,55 +34,54 @@ func (s *Server) Dashboard(c *fiber.Ctx) error {
 		})
 	}
 
-	log.Debug(sessions)
+	// Parse sessions list
+	var parsed_sessions []*ParsedSession
+	for _, session := range sessions {
+		ua := useragent.Parse(session.UserAgent)
+
+		dev := fmt.Sprintf("%s v%s on %s", ua.Name, ua.Version, ua.OS)
+
+		if ua.Desktop {
+			dev += " (Desktop)"
+		} else if ua.Mobile {
+			dev += " (Mobile)"
+		} else if ua.Tablet {
+			dev += " (Tablet)"
+		} else if ua.Bot {
+			dev += " (Bot)"
+		} else {
+			dev += " (Other/Unknown)"
+		}
+
+		parsed_session := &ParsedSession{
+			UserSession: session,
+			Device:      dev,
+		}
+		parsed_sessions = append(parsed_sessions, parsed_session)
+	}
+
+	// Get the top 20 logs
+	logs, pages, err := s.Accounts.DB.GetUserLogs(claims.ULID, 0)
+	if err != nil {
+		return s.ErrorPage(c, &fiber.Error{
+			Code:    fiber.StatusInternalServerError,
+			Message: "Failed to retrieve user logs.",
+		})
+	}
 
 	// Create modal data based on the ID
 	data := map[string]any{
 		"BaseURL":      s.ServerURL,
 		"ServerName":   s.ServerName,
 		"LoggedIn":     true,
-		"GamesPlayed":  0,
-		"FriendsMet":   0,
-		"PointsEarned": 0,
-		"Sessions":     sessions,
-		"Logs": []map[string]any{
-			{
-				"Timestamp": "nil",
-				"Action":    "Authentication (IP: 127.0.0.1)",
-				"Success":   true,
-				"Message":   "Passed",
-			},
-			{
-				"Timestamp": "nil",
-				"Action":    "Authentication (IP: 127.0.0.1)",
-				"Warn":      true,
-				"Message":   "Multifactor Step Failed",
-			},
-			{
-				"Timestamp": "nil",
-				"Action":    "Authentication (IP: 192.168.1.1)",
-				"Fail":      true,
-				"Message":   "Invalid Credentials",
-			},
-			{
-				"Timestamp": "nil",
-				"Action":    "Setup TOTP",
-				"Success":   true,
-				"Message":   "Ok",
-			},
-			{
-				"Timestamp": "nil",
-				"Action":    "Verify Email",
-				"Success":   true,
-				"Message":   "Ok",
-			},
-			{
-				"Timestamp": "nil",
-				"Action":    "Create Account",
-				"Success":   true,
-				"Message":   "Account Created",
-			},
-		},
+		"GamesPlayed":  "WIP",
+		"FriendsMet":   "WIP",
+		"PointsEarned": "WIP",
+		"Sessions":     parsed_sessions,
+		"Empty":        len(logs) == 0,
+		"Logs":         logs,
+		"Page":         1,
+		"Pages":        pages,
 	}
 
 	c.Context().SetContentType("text/html; charset=utf-8")
