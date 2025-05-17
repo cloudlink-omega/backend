@@ -41,7 +41,7 @@ func (a *APIv0) Save(c *fiber.Ctx) error {
 	}
 
 	// Get user from database
-	user := a.ParentServer.Accounts.DB.GetUser(claims.ULID)
+	user, _ := a.ParentServer.Accounts.DB.GetUser(claims.ULID)
 	if user == nil {
 		return APIResult(c, fiber.StatusInternalServerError, "Failed to get user for encrypting save.", nil)
 	}
@@ -103,7 +103,7 @@ func (a *APIv0) Load(c *fiber.Ctx) error {
 	}
 
 	// Get user from database
-	user := a.ParentServer.Accounts.DB.GetUser(claims.ULID)
+	user, _ := a.ParentServer.Accounts.DB.GetUser(claims.ULID)
 	if user == nil {
 		return APIResult(c, fiber.StatusInternalServerError, "Failed to get user for decrypting save.", nil)
 	}
