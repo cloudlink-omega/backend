@@ -16,6 +16,7 @@ type explore_card_entry struct {
 // Handler for the explore page
 func (s *Server) Explore(c *fiber.Ctx) error {
 	loggedIn := s.Authorization.ValidFromNormal(c)
+	claims := s.Authorization.GetNormalClaims(c)
 
 	var loaded_cards []*explore_card_entry
 	games, _, _ := s.DB.GetAllGames(0, 20)
@@ -31,11 +32,17 @@ func (s *Server) Explore(c *fiber.Ctx) error {
 		loaded_cards = append(loaded_cards, entry)
 	}
 
+	var username string
+	if loggedIn {
+		username = claims.Username
+	}
+
 	data := map[string]any{
 		"BaseURL":    s.ServerURL,
 		"ServerName": s.ServerName,
 		"Title":      "Explore",
 		"LoggedIn":   loggedIn,
+		"Username":   username,
 		"PageCards":  loaded_cards, /* []map[string]any{
 			{
 				"Image":     "/assets/static/img/dummy1.png",
