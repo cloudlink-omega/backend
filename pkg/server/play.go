@@ -13,6 +13,9 @@ func (s *Server) Play(c *fiber.Ctx) error {
 	// Check if the game exists
 	game := s.DB.GetGame(id)
 
+	claims := s.Authorization.GetNormalClaims(c)
+	loggedIn := s.Authorization.ValidFromNormal(c)
+
 	if game == nil {
 		data := map[string]any{
 			"BaseURL":    s.ServerURL,
@@ -24,14 +27,22 @@ func (s *Server) Play(c *fiber.Ctx) error {
 		return c.Render("views/play_not_found", data, "views/layouts/default")
 	}
 
+	var username string
+	if loggedIn {
+		username = claims.Username
+	}
+
 	data := map[string]any{
 		"BaseURL":         s.ServerURL,
+		"LoggedIn":        loggedIn,
+		"Username":        username,
 		"ServerName":      s.ServerName,
 		"Title":           game.Name,
 		"GameName":        game.Name,
 		"DeveloperName":   game.Developer.Name,
 		"GameDescription": game.Description,
 		"ID":              game.ID,
+		"Features":        game.Features,
 	}
 
 	// Render the modal template

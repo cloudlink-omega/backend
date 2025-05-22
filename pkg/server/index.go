@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/cloudlink-omega/backend/pkg/flags"
+	"github.com/cloudlink-omega/storage/pkg/types"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -26,16 +26,54 @@ var BlankCardEntry map[string]any = map[string]any{
 	"Features":   []map[string]string{},
 }
 
+type index_card_entry struct {
+	Cover      *types.Image
+	Title      string
+	Text       string
+	Creator    string
+	FooterText string
+	Enabled    bool
+	IsNew      bool
+	ID         string
+	Features   []*types.FeatureTag
+}
+
 // Handler for the index page
 func (s *Server) Index(c *fiber.Ctx) error {
 	loggedIn := s.Authorization.ValidFromNormal(c)
+
+	var loaded_cards []*index_card_entry
+	games, _, _ := s.DB.GetAllGames(0, 3)
+	for _, game := range games {
+
+		entry := &index_card_entry{
+			Title:      game.Name,
+			Text:       game.Description,
+			Creator:    game.Developer.Name,
+			FooterText: "",
+			Enabled:    true,
+			IsNew:      false,
+			ID:         game.ID,
+			Features:   game.Features,
+			Cover:      game.Thumbnail,
+		}
+
+		loaded_cards = append(loaded_cards, entry)
+	}
+
+	var username string
+
+	if loggedIn {
+		username = s.Authorization.GetNormalClaims(c).Username
+	}
 
 	data := map[string]any{
 		"BaseURL":    s.ServerURL,
 		"ServerName": s.ServerName,
 		"Title":      "Home Page",
 		"LoggedIn":   loggedIn,
-		"Cards": []map[string]any{
+		"Username":   username,
+		"Cards":      loaded_cards, /* []map[string]any{
 			{
 				"ImageURL":   "/assets/static/img/dummy2.png",
 				"Title":      "CatChat Remastered",
@@ -45,7 +83,7 @@ func (s *Server) Index(c *fiber.Ctx) error {
 				"Enabled":    true,
 				"IsNew":      true,
 				"ID":         "01HNPHRWS0N0AYMM5K4HN31V4W",
-				"Features": []map[string]string{
+				"Features":   []map[string]string{
 					flags.SupportsAchievements,
 					flags.SupportsControllers,
 					flags.SuitableForAllAges,
@@ -68,7 +106,7 @@ func (s *Server) Index(c *fiber.Ctx) error {
 				"Enabled":    true,
 				"IsNew":      true,
 				"ID":         "01HNPHRWS0N0AYMM5K4HN31V4W",
-				"Features": []map[string]string{
+				"Features":   []map[string]string{
 					flags.SupportsControllers,
 					flags.SuitableForAllAges,
 					flags.SupportsLegacyProtocols,
@@ -88,7 +126,7 @@ func (s *Server) Index(c *fiber.Ctx) error {
 				"Enabled":    true,
 				"IsNew":      true,
 				"ID":         "01HNPHRWS0N0AYMM5K4HN31V4W",
-				"Features": []map[string]string{
+				"Features":   []map[string]string{
 					flags.SupportsControllers,
 					flags.HasDownloadableContent,
 					flags.SuitableForAllAges,
@@ -102,11 +140,11 @@ func (s *Server) Index(c *fiber.Ctx) error {
 				},
 			},
 			BlankCardEntry,
-		},
+		}, */
 		"CardsSoon": []map[string]any{
 			BlankComingSoonEntry,
-			BlankComingSoonEntry,
-			BlankComingSoonEntry,
+			/*BlankComingSoonEntry,
+			BlankComingSoonEntry,*/
 		},
 	}
 

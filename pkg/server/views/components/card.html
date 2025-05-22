@@ -6,14 +6,14 @@
             <!-- Image Container -->
             <div class="relative h-56 overflow-hidden">
                 {{ if .Enabled }}
-                {{ if .ImageURL }}
-                <img src="{{ .ImageURL }}"
-                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" alt="..."
-                    loading="lazy">
-                {{ end }}
-                {{ else }}
-                <img src="/assets/static/img/blank.png"
-                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" alt="...">
+                    {{ if .Cover }}
+                    <img src="{{ .Cover.Link }}"
+                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" alt="..."
+                        loading="lazy">
+                    {{ else }}
+                    <img src="/assets/static/img/blank.png"
+                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" alt="...">
+                    {{ end }}
                 {{ end }}
             </div>
 
@@ -49,7 +49,8 @@
 
                 <!-- Button -->
                 {{ if .Enabled }}
-                <button type="button" class="open-modal-button w-full px-3 py-2 rounded-xl ring-1 ring-inset ring-gray-300 dark:ring-gray-600 bg-gray-100 dark:bg-gray-700 hover:bg-red-400 dark:hover:bg-red-400 hover:text-white hover:font-bold dark:text-white transition-all duration-200" data-item-id="{{ .ID }}">
+                <!-- open-modal-button -->
+                <a href="/play/{{ .ID }}" type="button" class="flex flex-col w-full px-3 py-2 rounded-xl ring-1 ring-inset ring-gray-300 dark:ring-gray-600 bg-gray-100 dark:bg-gray-700 hover:bg-red-400 dark:hover:bg-red-400 hover:text-white hover:font-bold dark:text-white transition-all duration-200" data-item-id="{{ .ID }}">
                     <span class="flex items-center justify-center gap-2">
                         Launch
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -58,7 +59,7 @@
                                 clip-rule="evenodd" />
                         </svg>
                     </span>
-                </button>
+                </a>
                 {{ else }}
                 <button type="button" class="w-full px-6 py-3 bg-gray-600 text-white rounded-xl 
                            font-medium">

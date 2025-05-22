@@ -1,6 +1,10 @@
 {{ define "explore_card" }}
 <a href="/play/{{ .ID }}" class="bg-white dark:bg-gray-800 p-4 rounded-xl bg-gray-100 dark:bg-gray-700 hover:text-white hover:font-bold dark:text-white transition-all duration-200 ">
-    <img src="{{ .Image }}" alt="Game Image" class="w-full h-48 object-cover mb-4 rounded-lg">
+    {{ if .Cover }}
+    <img src="{{ .Cover.Link }}" alt="Game Image" class="w-full h-48 object-cover mb-4 rounded-lg">
+    {{ else }}
+    <img src="/assets/static/img/blank.png"  alt="Game Image" class="w-full h-48 object-cover mb-4 rounded-lg">
+    {{ end }}
     <div class="flex flex-col w-full gap-2 text-center items-center">
         <h3 class="text-lg text-gray-700 dark:text-white max-w-60 truncate" title="{{ .Title }}">{{ .Title }}</h3>
         <p class="text-gray-600 dark:text-gray-400 max-w-60 truncate" title="{{ .Developer }}">{{ .Developer }}</p>

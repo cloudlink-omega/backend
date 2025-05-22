@@ -9,6 +9,7 @@ import (
 	"github.com/cloudlink-omega/backend/pkg/database"
 	v0 "github.com/cloudlink-omega/backend/pkg/server/v0"
 	"github.com/cloudlink-omega/backend/pkg/structs"
+	"github.com/cloudlink-omega/storage/pkg/types"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -43,6 +44,9 @@ func New(
 	// Database.
 	db *gorm.DB,
 
+	// Cache interface.
+	cache *types.DBCache,
+
 	// Accounts API
 	accounts_api *accounts.Accounts,
 
@@ -54,7 +58,7 @@ func New(
 	}
 
 	// Initialize DB
-	frontend_db := &database.Database{DB: db}
+	frontend_db := &database.Database{DB: db, Cache: cache}
 	srv.DB = frontend_db
 
 	// Initialize template engine

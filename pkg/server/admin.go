@@ -13,10 +13,13 @@ func (s *Server) Admin(c *fiber.Ctx) error {
 		})
 	}
 
+	claims := s.Authorization.GetNormalClaims(c)
+
 	// Create modal data based on the ID
 	data := map[string]any{
 		"BaseURL":    s.ServerURL,
 		"ServerName": s.ServerName,
+		"Username":   claims.Username,
 		"LoggedIn":   true,
 	}
 
