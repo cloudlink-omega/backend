@@ -14,6 +14,7 @@ import (
 	"github.com/cloudlink-omega/backend/pkg/server"
 	"github.com/cloudlink-omega/signaling"
 	"github.com/cloudlink-omega/storage/pkg/common"
+	"github.com/cloudlink-omega/storage/pkg/types"
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -46,6 +47,7 @@ func main() {
 	enable_google = os.Getenv("ENABLE_GOOGLE") == "true"
 	enable_github = os.Getenv("ENABLE_GITHUB") == "true"
 	enable_discord = os.Getenv("ENABLE_DISCORD") == "true"
+	convert_old_db := os.Getenv("CONVERT_OLD_DB") == "true"
 
 	// Initialize database
 	db, err := gorm.Open(mysql.Open(
@@ -61,6 +63,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// Init global cache
+	cache := types.NewDBCache()
 
 	// Compile authorized domains for CORS
 	allowed_domains := strings.ReplaceAll(os.Getenv("ALLOWED_DOMAINS"), " ", ", ")
@@ -84,6 +89,7 @@ func main() {
 		os.Getenv("SERVER_SECRET"),
 		enforce_https,
 		db,
+		cache,
 		&structs.MailConfig{
 			Enabled:  use_email,
 			Port:     email_port,
@@ -109,6 +115,7 @@ func main() {
 		os.Getenv("SERVER_NAME"),
 		os.Getenv("SERVER_URL"),
 		db,
+		cache,
 		auth,
 	)
 
@@ -181,6 +188,29 @@ func main() {
 	log.Info("Migrating and seeding database...")
 	if err := common.MigrateAndSeed(db); err != nil {
 		panic(err)
+	}
+
+	if convert_old_db {
+		log.Info("Preparing to convert old database...")
+
+		// Initialize v0 database
+		old_db, err := gorm.Open(mysql.Open(
+			fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=True",
+				os.Getenv("DB_USERNAME"),
+				os.Getenv("DB_PASSWORD"),
+				os.Getenv("DB_HOST"),
+				os.Getenv("DB_PORT"),
+				os.Getenv("OLD_DB"),
+			)), &gorm.Config{
+			Logger: gorm_logger.Default.LogMode(gorm_logger.Info),
+		})
+		if err != nil {
+			panic(err)
+		}
+		log.Info("Now converting old database...")
+		if err := common.ConvertDatabase(old_db, db, auth.DB); err != nil {
+			panic(err)
+		}
 	}
 
 	// Run the app
