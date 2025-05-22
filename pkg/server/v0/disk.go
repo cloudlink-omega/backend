@@ -53,17 +53,17 @@ func (a *APIv0) Save(c *fiber.Ctx) error {
 	}
 
 	// Check if developer game exists
-	if a.Database.Model(&types.DeveloperGame{}).First(&types.DeveloperGame{}, "id = ?", args.UGI).Error == gorm.ErrRecordNotFound {
+	if a.Database.DB.Model(&types.DeveloperGame{}).First(&types.DeveloperGame{}, "id = ?", args.UGI).Error == gorm.ErrRecordNotFound {
 		return APIResult(c, fiber.StatusBadRequest, "Invalid Game ID (UGI not found).", nil)
 	}
 
 	// Save
 	var count int64
-	a.Database.Model(&types.UserGameSave{}).First(&types.UserGameSave{}, "user_id = ? AND save_slot = ? AND developer_game_id = ?", claims.ULID, args.Slot, args.UGI).Count(&count)
+	a.Database.DB.Model(&types.UserGameSave{}).First(&types.UserGameSave{}, "user_id = ? AND save_slot = ? AND developer_game_id = ?", claims.ULID, args.Slot, args.UGI).Count(&count)
 	if count > 0 {
-		a.Database.Model(&types.UserGameSave{}).Where("user_id = ? AND save_slot = ? AND developer_game_id = ?", claims.ULID, args.Slot, args.UGI).Update("save_data", encrypted)
+		a.Database.DB.Model(&types.UserGameSave{}).Where("user_id = ? AND save_slot = ? AND developer_game_id = ?", claims.ULID, args.Slot, args.UGI).Update("save_data", encrypted)
 	} else {
-		a.Database.Create(&types.UserGameSave{UserID: claims.ULID, SaveSlot: args.Slot, DeveloperGameID: args.UGI, SaveData: encrypted})
+		a.Database.DB.Create(&types.UserGameSave{UserID: claims.ULID, SaveSlot: args.Slot, DeveloperGameID: args.UGI, SaveData: encrypted})
 	}
 
 	return APIResult(c, fiber.StatusOK, "OK", nil)
@@ -92,7 +92,7 @@ func (a *APIv0) Load(c *fiber.Ctx) error {
 
 	// Load
 	var slot types.UserGameSave
-	result := a.Database.Model(&types.UserGameSave{}).First(&slot, "user_id = ? AND save_slot = ? AND developer_game_id = ?", claims.ULID, args.Slot, args.UGI)
+	result := a.Database.DB.Model(&types.UserGameSave{}).First(&slot, "user_id = ? AND save_slot = ? AND developer_game_id = ?", claims.ULID, args.Slot, args.UGI)
 	if result.Error != nil {
 		switch result.Error {
 		case gorm.ErrRecordNotFound:

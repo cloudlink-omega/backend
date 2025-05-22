@@ -8,6 +8,12 @@ import (
 	"gorm.io/gorm"
 )
 
+func (d *Database) GameExists(id string) bool {
+	res := d.DB.Where("id = ?", id).First(&types.DeveloperGame{})
+
+	return res.RowsAffected > 0 && res.Error == nil
+}
+
 func (d *Database) GetGame(id string) (game *types.DeveloperGame) {
 	if game, ok := d.Cache.Get("game", id); ok {
 		return game.(*types.DeveloperGame)

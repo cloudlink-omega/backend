@@ -8,6 +8,7 @@ import (
 	"github.com/cloudlink-omega/accounts"
 	"github.com/cloudlink-omega/backend/pkg/database"
 	v0 "github.com/cloudlink-omega/backend/pkg/server/v0"
+	v1 "github.com/cloudlink-omega/backend/pkg/server/v1"
 	"github.com/cloudlink-omega/backend/pkg/structs"
 	"github.com/cloudlink-omega/storage/pkg/types"
 	"github.com/gofiber/fiber/v2"
@@ -99,13 +100,15 @@ func New(
 
 	// Configure API Routes
 	apiv0 := v0.New((*structs.Server)(srv))
+	apiv1 := v1.New((*structs.Server)(srv))
 	srv.App.Mount("/api/v0", apiv0.App)
+	srv.App.Mount("/api/v1", apiv1.App)
 
 	// Initialize assets path
 	srv.App.Use("/assets", filesystem.New(filesystem.Config{
 		Root:       http.FS(embedded_static),
 		PathPrefix: "assets",
-		Browse:     false,
+		Browse:     true,
 	}))
 
 	// Initialize middleware
