@@ -1,3 +1,7 @@
+<!-- Handle markdown -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<!-- Player -->
 <div id="player" class="container mx-auto px-4 py-4 text-center items-center">
 	<flex class="container items-center justify-center gap-3">
 		<div class="container items-center justify-center">
@@ -15,69 +19,11 @@
 		<div class="container bg-white dark:bg-gray-800 p-4 rounded-xl bg-gray-100 dark:bg-gray-700 dark:text-white">
 			<h2 class="text-2xl font-bold dark:text-white pb-2">Description</h2>
 			<p>{{ .GameDescription }}</p>
-
-			<!-- TODO: make this render dynamically -->
 			<h2 class="text-2xl font-bold dark:text-white pt-5 pb-5">Features</h2>
 			<div class="flex flex-row flex-wrap items-center justify-center pb-2">
 				{{ range .Features }}
 					{{ template "feature_elem" . }}
 				{{ end }}
-
-				<!--
-
-				<img class="dark:invert" src="/assets/static/img/tags/achievements.svg"
-					title="This game supports earning achievements.">
-
-
-
-				<img class="dark:invert" src="/assets/static/img/tags/controllers.svg"
-					title="This game supports controllers.">
-
-
-
-				<img class="dark:invert" src="/assets/static/img/tags/everyone.svg"
-					title="This game is suitable for everyone.">
-
-
-
-				<img class="dark:invert" src="/assets/static/img/tags/legacy.svg"
-					title="This game supports legacy CloudLink clients.">
-
-
-
-				<img class="dark:invert" src="/assets/static/img/tags/multidev.svg"
-					title="This game can be played on mobile or desktop devices.">
-
-
-
-				<img class="dark:invert" src="/assets/static/img/tags/oss.svg" title="The game is open source.">
-
-
-
-				<img class="dark:invert" src="/assets/static/img/tags/onscratch.svg"
-					title="This game is also available on Scratch.">
-
-
-
-				<img class="dark:invert" src="/assets/static/img/tags/ontw.svg"
-					title="This game was made using Turbowarp.">
-
-
-
-				<img class="dark:invert" src="/assets/static/img/tags/review.svg"
-					title="This game is undergoing review or awaiting approval by an administrator.">
-
-
-
-				<img class="dark:invert" src="/assets/static/img/tags/save.svg"
-					title="This game supports cloud save data.">
-
-
-
-				<img class="dark:invert" src="/assets/static/img/tags/vchat.svg"
-					title="This game supports proximity voice chat.">
-
-				 -->
 			</div>
 		</div>
 		<div class="flex flex-row items-center justify-between gap-2 w-auto mx-2 my-5 dark:text-white">
@@ -100,6 +46,19 @@
 					Report
 				</span>
 			</button>
+		</div>
+
+		<div class="container">
+			<h2 class="text-4xl font-bold dark:text-white pb-8">Comments</h2>
+			<div class="flex items-start space-x-4 mb-4 w-auto bg-white dark:bg-gray-800 p-4 rounded-xl bg-gray-100 dark:bg-gray-700 dark:text-white border-2 border-gray-300 dark:border-gray-600">
+				<img src="/assets/static/img/placeholder.png" alt="Profile Image" class="flex max-w-12 m-2 rounded-xl flex-shrink-0">
+				<div class="flex flex-col items-start gap-2">
+					<textarea class="w-full text-left" id="comment_text"></textarea>
+				</div>
+			</div>
+			{{ range .Comments }}
+				{{ template "comment" . }}
+			{{ end }}
 		</div>
 	</flex>
 </div>
