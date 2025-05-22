@@ -15,6 +15,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/html/v2"
+	"github.com/microcosm-cc/bluemonday"
 	"gorm.io/gorm"
 )
 
@@ -55,6 +56,7 @@ func New(
 		ServerName: server_name,
 		ServerURL:  server_url,
 		Accounts:   accounts_api,
+		Policy:     bluemonday.UGCPolicy(),
 	}
 
 	// Initialize DB

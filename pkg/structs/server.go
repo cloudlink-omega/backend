@@ -6,6 +6,7 @@ import (
 	"github.com/cloudlink-omega/backend/pkg/database"
 	"github.com/cloudlink-omega/storage/pkg/types"
 	"github.com/gofiber/fiber/v2"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 type Server struct {
@@ -16,4 +17,5 @@ type Server struct {
 	Authorization *authorization.Auth
 	Accounts      *accounts.Accounts
 	Cache         *types.DBCache
+	Policy        *bluemonday.Policy
 }
