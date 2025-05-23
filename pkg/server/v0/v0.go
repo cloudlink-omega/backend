@@ -3,7 +3,6 @@ package v0
 import (
 	"github.com/cloudlink-omega/backend/pkg/database"
 	"github.com/cloudlink-omega/backend/pkg/structs"
-	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -33,11 +32,4 @@ func New(s *structs.Server) *APIv0 {
 	api.App.Get("/", api.Index)
 
 	return api
-}
-
-func APIResult(c *fiber.Ctx, status int, result string, data any) error {
-	c.Set("Content-Type", "application/json")
-	c.SendStatus(status)
-	message, _ := json.Marshal(&Result{Result: result, Data: data})
-	return c.SendString(string(message))
 }

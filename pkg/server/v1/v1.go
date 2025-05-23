@@ -25,6 +25,10 @@ func New(s *structs.Server) *APIv1 {
 		Database:     s.DB,
 	}
 
+	// Cloud save slots feature
+	api.App.Post("/save", api.Save)
+	api.App.Post("/load", api.Load)
+
 	// Index
 	api.App.Get("/", api.Index)
 

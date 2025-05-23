@@ -5,5 +5,5 @@ import (
 )
 
 func (a *APIv0) Index(c *fiber.Ctx) error {
-	return APIResult(c, fiber.StatusOK, "OK", "Hello, world!")
+	return c.Status(fiber.StatusOK).SendString("Hello, world!")
 }

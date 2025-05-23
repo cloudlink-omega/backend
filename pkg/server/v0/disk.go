@@ -23,38 +23,39 @@ type LoadArgs struct {
 func (a *APIv0) Save(c *fiber.Ctx) error {
 	var args SaveArgs
 	if err := c.BodyParser(&args); err != nil {
-		return APIResult(c, fiber.StatusBadRequest, err.Error(), nil)
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 
 	if args.Slot < 1 || args.Slot > 10 {
-		return APIResult(c, fiber.StatusBadRequest, "Invalid save slot (must be a number between 1-10).", nil)
+		return c.Status(fiber.StatusBadRequest).SendString("Invalid save slot (must be a number between 1-10).")
 	}
 
 	// Attempt to get session
 	var claims *structs.Claims
-	if a.ParentServer.Authorization.ValidFromNormal(c) {
-		claims = a.ParentServer.Authorization.GetNormalClaims(c)
-	} else if a.ParentServer.Authorization.ValidFromToken(args.Token) {
+	if a.ParentServer.Authorization.ValidFromToken(args.Token) {
 		claims = a.ParentServer.Authorization.GetClaimsFromToken(args.Token)
 	} else {
-		return APIResult(c, fiber.StatusUnauthorized, "Unauthorized.", nil)
+		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized.")
 	}
 
 	// Get user from database
-	user, _ := a.ParentServer.Accounts.DB.GetUser(claims.ULID)
+	user, err := a.ParentServer.Accounts.DB.GetUser(claims.ULID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
 	if user == nil {
-		return APIResult(c, fiber.StatusInternalServerError, "Failed to get user for encrypting save.", nil)
+		return c.Status(fiber.StatusInternalServerError).SendString("Could not find user.")
 	}
 
 	// Encrypt save data
 	encrypted, err := a.ParentServer.Accounts.DB.Encrypt(user, args.Data)
 	if err != nil {
-		return APIResult(c, fiber.StatusInternalServerError, err.Error(), nil)
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 
 	// Check if developer game exists
 	if a.Database.DB.Model(&types.DeveloperGame{}).First(&types.DeveloperGame{}, "id = ?", args.UGI).Error == gorm.ErrRecordNotFound {
-		return APIResult(c, fiber.StatusBadRequest, "Invalid Game ID (UGI not found).", nil)
+		return c.Status(fiber.StatusBadRequest).SendString("Invalid Game ID (UGI not found).")
 	}
 
 	// Save
@@ -66,28 +67,26 @@ func (a *APIv0) Save(c *fiber.Ctx) error {
 		a.Database.DB.Create(&types.UserGameSave{UserID: claims.ULID, SaveSlot: args.Slot, DeveloperGameID: args.UGI, SaveData: encrypted})
 	}
 
-	return APIResult(c, fiber.StatusOK, "OK", nil)
+	return c.Status(fiber.StatusOK).SendString("OK")
 }
 
 func (a *APIv0) Load(c *fiber.Ctx) error {
 
 	var args LoadArgs
 	if err := c.BodyParser(&args); err != nil {
-		return APIResult(c, fiber.StatusBadRequest, err.Error(), nil)
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 
 	if args.Slot < 1 || args.Slot > 10 {
-		return APIResult(c, fiber.StatusBadRequest, "Invalid save slot (must be a number between 1-10).", nil)
+		return c.Status(fiber.StatusBadRequest).SendString("Invalid save slot (must be a number between 1-10).")
 	}
 
 	// Attempt to get session
 	var claims *structs.Claims
-	if a.ParentServer.Authorization.ValidFromNormal(c) {
-		claims = a.ParentServer.Authorization.GetNormalClaims(c)
-	} else if a.ParentServer.Authorization.ValidFromToken(args.Token) {
+	if a.ParentServer.Authorization.ValidFromToken(args.Token) {
 		claims = a.ParentServer.Authorization.GetClaimsFromToken(args.Token)
 	} else {
-		return APIResult(c, fiber.StatusUnauthorized, "Unauthorized.", nil)
+		return c.Status(fiber.StatusUnauthorized).SendString("Unauthorized.")
 	}
 
 	// Load
@@ -96,23 +95,26 @@ func (a *APIv0) Load(c *fiber.Ctx) error {
 	if result.Error != nil {
 		switch result.Error {
 		case gorm.ErrRecordNotFound:
-			return APIResult(c, fiber.StatusNotFound, "Save slot not found.", nil)
+			return c.Status(fiber.StatusNotFound).SendString("Save slot not found.")
 		default:
-			return APIResult(c, fiber.StatusInternalServerError, result.Error.Error(), nil)
+			return c.Status(fiber.StatusInternalServerError).SendString(result.Error.Error())
 		}
 	}
 
 	// Get user from database
-	user, _ := a.ParentServer.Accounts.DB.GetUser(claims.ULID)
+	user, err := a.ParentServer.Accounts.DB.GetUser(claims.ULID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
 	if user == nil {
-		return APIResult(c, fiber.StatusInternalServerError, "Failed to get user for decrypting save.", nil)
+		return c.Status(fiber.StatusInternalServerError).SendString("Could not find user.")
 	}
 
 	// Decrypt save data
 	decrypted, err := a.ParentServer.Accounts.DB.Decrypt(user, slot.SaveData)
 	if err != nil {
-		return APIResult(c, fiber.StatusInternalServerError, err.Error(), nil)
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 
-	return APIResult(c, fiber.StatusOK, "OK", decrypted)
+	return c.Status(fiber.StatusOK).SendString(decrypted)
 }
