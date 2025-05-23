@@ -45,7 +45,7 @@ func (d *Database) GetAllGames(page int, limit int) (games []*types.DeveloperGam
 		return games.(cached_all).Games, games.(cached_all).Total, games.(cached_all).MaxPages
 	}
 
-	d.DB.Preload("Developer").Limit(limit).Offset(page * limit).Find(&games)
+	d.DB.Preload("Developer").Preload("Features").Preload("Thumbnail").Limit(limit).Offset(page * limit).Where("state > 0").Order("created_at DESC").Find(&games)
 	d.DB.Find(&types.DeveloperGame{}).Count(&total)
 	max_pages = int64(math.Ceil(float64(total) / float64(limit)))
 
