@@ -34,8 +34,8 @@ func (a *APIv0) Save(c *fiber.Ctx) error {
 	var claims *structs.Claims
 	if a.ParentServer.Authorization.ValidFromNormal(c) {
 		claims = a.ParentServer.Authorization.GetNormalClaims(c)
-	} else if a.ParentServer.Authorization.ValidFromToken(c, args.Token) {
-		claims = a.ParentServer.Authorization.GetClaimsFromToken(c, args.Token)
+	} else if a.ParentServer.Authorization.ValidFromToken(args.Token) {
+		claims = a.ParentServer.Authorization.GetClaimsFromToken(args.Token)
 	} else {
 		return APIResult(c, fiber.StatusUnauthorized, "Unauthorized.", nil)
 	}
@@ -84,8 +84,8 @@ func (a *APIv0) Load(c *fiber.Ctx) error {
 	var claims *structs.Claims
 	if a.ParentServer.Authorization.ValidFromNormal(c) {
 		claims = a.ParentServer.Authorization.GetNormalClaims(c)
-	} else if a.ParentServer.Authorization.ValidFromToken(c, args.Token) {
-		claims = a.ParentServer.Authorization.GetClaimsFromToken(c, args.Token)
+	} else if a.ParentServer.Authorization.ValidFromToken(args.Token) {
+		claims = a.ParentServer.Authorization.GetClaimsFromToken(args.Token)
 	} else {
 		return APIResult(c, fiber.StatusUnauthorized, "Unauthorized.", nil)
 	}
