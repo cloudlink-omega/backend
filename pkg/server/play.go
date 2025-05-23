@@ -1,7 +1,10 @@
 package server
 
 import (
+	"os"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 )
 
 // Handler for the explore page
@@ -13,10 +16,15 @@ func (s *Server) Play(c *fiber.Ctx) error {
 	// Check if the game exists
 	game := s.DB.GetGame(id)
 
+	_, file_error := os.Stat(s.HostedPath + "/projects_public/" + id)
+
 	claims := s.Authorization.GetNormalClaims(c)
 	loggedIn := s.Authorization.ValidFromNormal(c)
 
-	if game == nil {
+	if file_error != nil || game == nil {
+		if file_error != nil {
+			log.Error(file_error)
+		}
 		data := map[string]any{
 			"BaseURL":    s.ServerURL,
 			"ServerName": s.ServerName,

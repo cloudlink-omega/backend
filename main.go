@@ -5,7 +5,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gofiber/fiber/v2/log"
 
@@ -114,6 +113,7 @@ func main() {
 	backend := server.New(
 		os.Getenv("SERVER_NAME"),
 		os.Getenv("SERVER_URL"),
+		os.Getenv("HOSTED_PATH"),
 		db,
 		cache,
 		auth,
@@ -162,24 +162,8 @@ func main() {
 		}
 	}
 
-	// Serve hosted files
-	app.Static("/hosted/projects_public", os.Getenv("HOSTED_PATH")+"/projects_public", fiber.Static{Compress: true, CacheDuration: time.Minute})
-	app.Static("/hosted/developer_art", os.Getenv("HOSTED_PATH")+"/developer_art", fiber.Static{Compress: true})
-	app.Static("/hosted/game_art", os.Getenv("HOSTED_PATH")+"/game_art", fiber.Static{Compress: true})
-	app.Static("/hosted/thumbnail", os.Getenv("HOSTED_PATH")+"/thumbnails", fiber.Static{Compress: true})
-
-	app.Static("/hosted/projects_private", os.Getenv("HOSTED_PATH")+"/projects_private", fiber.Static{
-		Compress:      true,
-		CacheDuration: time.Minute,
-		Next: func(c *fiber.Ctx) bool {
-			// TODO: Properly implement checks to make sure the requesting user has permissions to access a private project file
-			path := c.Request().URI().Path()
-			segments := strings.Split(string(path), "/")
-			fileName := segments[len(segments)-1]
-			log.Debug(fileName)
-			return !auth.APIv1.Auth.ValidFromNormal(c)
-		},
-	})
+	static := app.Group("/hosted")
+	server.StaticHandler(backend, static, os.Getenv("HOSTED_PATH"))
 
 	// Mount metrics middleware
 	app.Get("/metrics", monitor.New())

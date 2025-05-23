@@ -18,4 +18,5 @@ type Server struct {
 	Accounts      *accounts.Accounts
 	Cache         *types.DBCache
 	Policy        *bluemonday.Policy
+	HostedPath    string
 }

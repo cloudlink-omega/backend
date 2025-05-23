@@ -43,6 +43,9 @@ func New(
 	// PrimaryWebsite is the URL of the primary website.
 	server_url string,
 
+	// Point to the folder where the hosted assets are.
+	hosted_path string,
+
 	// Database.
 	db *gorm.DB,
 
@@ -58,6 +61,7 @@ func New(
 		ServerURL:  server_url,
 		Accounts:   accounts_api,
 		Policy:     bluemonday.UGCPolicy(),
+		HostedPath: hosted_path,
 	}
 
 	// Initialize DB
