@@ -39,7 +39,7 @@
                 </h6>
 
                 <!-- Text Content -->
-                <p class="text-gray-700 dark:text-gray-300 mb-6 line-clamp-3">
+                <p id="text_{{ .ID }}" class="text-gray-700 dark:text-gray-300 mb-6 line-clamp-3">
                     {{ if .Enabled }}
                     {{ .Text }}
                     {{ else }}
@@ -75,9 +75,7 @@
             <div class="px-6 py-4 flex items-center">
                 <div class="grid grid-cols-5">
                     {{ range .Features }}
-                        {{ range $key, $value := . }}
-                            <img class="dark:invert" src="/assets/static/img/tags/{{ $key }}.svg" title="{{ $value }}"/>
-                        {{ end }}
+                        {{ template "feature_elem" . }}
                     {{ end }}
                 </div>
             </div>
@@ -107,4 +105,9 @@
         </div>
     </div>
 </div>
+    {{ if .Enabled }}
+    <script>
+        document.getElementById("text_{{ .ID }}").innerHTML = marked.parse("{{ .Text }}");
+    </script>
+    {{ end }}
 {{ end }}
