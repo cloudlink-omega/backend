@@ -20,6 +20,10 @@ func (s *Server) Play(c *fiber.Ctx) error {
 
 	claims := s.Authorization.GetNormalClaims(c)
 	loggedIn := s.Authorization.ValidFromNormal(c)
+	var username string
+	if loggedIn {
+		username = claims.Username
+	}
 
 	if file_error != nil || game == nil {
 		if file_error != nil {
@@ -27,17 +31,14 @@ func (s *Server) Play(c *fiber.Ctx) error {
 		}
 		data := map[string]any{
 			"BaseURL":    s.ServerURL,
+			"LoggedIn":   loggedIn,
+			"Username":   username,
 			"ServerName": s.ServerName,
 			"Title":      "Whoops!",
 		}
 		c.Context().SetContentType("text/html; charset=utf-8")
 		c.Status(fiber.StatusNotFound)
 		return c.Render("views/play_not_found", data, "views/layouts/default")
-	}
-
-	var username string
-	if loggedIn {
-		username = claims.Username
 	}
 
 	data := map[string]any{
