@@ -77,6 +77,15 @@ func main() {
 		}
 	}
 
+	// Setup email settings
+	mail_config := &structs.MailConfig{
+		Enabled:  use_email,
+		Port:     email_port,
+		Server:   os.Getenv("EMAIL_SERVER"),
+		Username: os.Getenv("EMAIL_USERNAME"),
+		Password: os.Getenv("EMAIL_PASSWORD"),
+	}
+
 	// Initialize the Accounts server
 	auth := accounts.New(
 		"/accounts",
@@ -89,23 +98,8 @@ func main() {
 		enforce_https,
 		db,
 		cache,
-		&structs.MailConfig{
-			Enabled:  use_email,
-			Port:     email_port,
-			Server:   os.Getenv("EMAIL_SERVER"),
-			Username: os.Getenv("EMAIL_USERNAME"),
-			Password: os.Getenv("EMAIL_PASSWORD"),
-		},
+		mail_config,
 		true, // Enable testing mode - Allows accounts to bypass email registration if they use @localhost
-		true, // Defer migrations
-	)
-
-	// Initialize the Signaling server
-	signaling_server := signaling.New(
-		strings.Split(os.Getenv("ALLOWED_DOMAINS"), " "),
-		turn_only,
-		auth.APIv1.Auth,
-		db,
 		true, // Defer migrations
 	)
 
@@ -117,6 +111,17 @@ func main() {
 		db,
 		cache,
 		auth,
+		mail_config,
+	)
+
+	// Initialize the Signaling server
+	signaling_server := signaling.New(
+		strings.Split(os.Getenv("ALLOWED_DOMAINS"), " "),
+		turn_only,
+		auth.APIv1.Auth,
+		db,
+		backend.DB,
+		true, // Defer migrations
 	)
 
 	// Passthrough authorization server to the backend server

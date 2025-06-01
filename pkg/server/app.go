@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/cloudlink-omega/accounts"
+	account_structs "github.com/cloudlink-omega/accounts/pkg/structs"
 	"github.com/cloudlink-omega/backend/pkg/database"
 	v0 "github.com/cloudlink-omega/backend/pkg/server/v0"
 	v1 "github.com/cloudlink-omega/backend/pkg/server/v1"
@@ -55,6 +56,9 @@ func New(
 	// Accounts API
 	accounts_api *accounts.Accounts,
 
+	// Email Config
+	email_config *account_structs.MailConfig,
+
 ) *Server {
 	srv := &Server{
 		ServerName: server_name,
@@ -62,6 +66,7 @@ func New(
 		Accounts:   accounts_api,
 		Policy:     bluemonday.UGCPolicy(),
 		HostedPath: hosted_path,
+		MailConfig: email_config,
 	}
 
 	// Initialize DB
@@ -93,8 +98,8 @@ func New(
 	// Configure routes
 	srv.App.Get("/admin", srv.Admin)
 	srv.App.Get("/dashboard", srv.Dashboard)
-	srv.App.Get("/developer", srv.DeveloperDashboard)
-	srv.App.Get("/omegadash", srv.OmegaDash)
+	// srv.App.Get("/developer", srv.DeveloperDashboard)
+	// srv.App.Get("/omegadash", srv.OmegaDash)
 	srv.App.Get("/terms", srv.Terms)
 	srv.App.Get("/modal", srv.Modal)
 	srv.App.Get("/about", srv.About)

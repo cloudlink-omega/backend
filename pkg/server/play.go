@@ -52,14 +52,14 @@ func (s *Server) Play(c *fiber.Ctx) error {
 		"GameDescription": game.Description,
 		"ID":              game.ID,
 		"Features":        game.Features,
-		"Comments": []map[string]string{
+		/* "Comments": []map[string]string{
 			{
 				"ID":       "1",
 				"Username": "MikeDEV",
 				"Comment":  `Hello world! This is an example comment. **Very cool!** *This should render as markdown.*`,
 				"Date":     "1/1/2023",
 			},
-		},
+		}, */
 	}
 
 	// Render the modal template

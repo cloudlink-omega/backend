@@ -19,7 +19,7 @@ func (d *Database) GetGame(id string) (game *types.DeveloperGame) {
 		return game.(*types.DeveloperGame)
 	}
 
-	res := d.DB.Preload("Developer").Preload("Features").Where("id = ?", id).First(&game)
+	res := d.DB.Preload("Developer").Preload("Developer.DeveloperMembers").Preload("Features").Where("id = ?", id).First(&game)
 	if res.Error != nil {
 		if res.Error == gorm.ErrRecordNotFound {
 			return nil

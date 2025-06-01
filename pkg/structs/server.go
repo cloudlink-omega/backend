@@ -3,6 +3,7 @@ package structs
 import (
 	"github.com/cloudlink-omega/accounts"
 	"github.com/cloudlink-omega/accounts/pkg/authorization"
+	"github.com/cloudlink-omega/accounts/pkg/structs"
 	"github.com/cloudlink-omega/backend/pkg/database"
 	"github.com/cloudlink-omega/storage/pkg/types"
 	"github.com/gofiber/fiber/v2"
@@ -19,4 +20,5 @@ type Server struct {
 	Cache         *types.DBCache
 	Policy        *bluemonday.Policy
 	HostedPath    string
+	MailConfig    *structs.MailConfig
 }
