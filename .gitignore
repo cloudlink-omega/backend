@@ -40,3 +40,5 @@ __debug_*
 # Ignore live reload by Air
 .air.toml
 tmp/
+
+*.fiber.gz
