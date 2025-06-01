@@ -99,8 +99,8 @@ func main() {
 		db,
 		cache,
 		mail_config,
-		true, // Enable testing mode - Allows accounts to bypass email registration if they use @localhost
-		true, // Defer migrations
+		false, // Enable testing mode - Allows accounts to bypass email registration if they use @localhost
+		true,  // Defer migrations
 	)
 
 	// Initialize the Frontend server
