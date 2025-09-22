@@ -47,8 +47,12 @@ func main() {
 	enable_github = os.Getenv("ENABLE_GITHUB") == "true"
 	enable_discord = os.Getenv("ENABLE_DISCORD") == "true"
 	convert_old_db := os.Getenv("CONVERT_OLD_DB") == "true"
+	bypass_db := os.Getenv("BYPASS_DB") == "true"
 
 	// Initialize database
+	if bypass_db {
+		log.Info("You might see an error about being unable to connect. Please ignore it.")
+	}
 	db, err := gorm.Open(mysql.Open(
 		fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=True",
 			os.Getenv("DB_USERNAME"),
@@ -59,7 +63,7 @@ func main() {
 		)), &gorm.Config{
 		Logger: gorm_logger.Default.LogMode(gorm_logger.Info),
 	})
-	if err != nil {
+	if err != nil && !bypass_db {
 		panic(err)
 	}
 
@@ -100,6 +104,7 @@ func main() {
 		cache,
 		mail_config,
 		false, // Enable testing mode - Allows accounts to bypass email registration if they use @localhost
+		bypass_db,
 		true,  // Defer migrations
 	)
 
@@ -112,6 +117,7 @@ func main() {
 		cache,
 		auth,
 		mail_config,
+		bypass_db,
 	)
 
 	// Initialize the Signaling server
@@ -121,6 +127,7 @@ func main() {
 		auth.APIv1.Auth,
 		db,
 		backend.DB,
+		bypass_db,
 		true, // Defer migrations
 	)
 
@@ -157,48 +164,67 @@ func main() {
 	// Mount servers in the Fiber app
 	app.Mount("/signaling", signaling_server.App)
 	app.Mount("/accounts", auth.App)
-	app.Mount("/", backend.App)
 
-	// Create directories for hosted files
-	for _, folder := range []string{"projects_public", "projects_private", "developer_art", "game_art", "thumbnails"} {
-		dir := os.Getenv("HOSTED_PATH") + "/" + folder
-		if _, err := os.Stat(dir); os.IsNotExist(err) {
-			os.Mkdir(dir, 0755)
+	// Do this if we have the DB enabled
+	if !bypass_db {
+		// Mount the backend
+		app.Mount("/", backend.App)
+
+		// Create directories for hosted files
+		for _, folder := range []string{"projects_public", "projects_private", "developer_art", "game_art", "thumbnails"} {
+			dir := os.Getenv("HOSTED_PATH") + "/" + folder
+			if _, err := os.Stat(dir); os.IsNotExist(err) {
+				os.Mkdir(dir, 0755)
+			}
 		}
-	}
 
-	static := app.Group("/hosted")
-	server.StaticHandler(backend, static, os.Getenv("HOSTED_PATH"))
+		static := app.Group("/hosted")
+		server.StaticHandler(backend, static, os.Getenv("HOSTED_PATH"))
+	}
 
 	// Mount metrics middleware
 	app.Get("/metrics", monitor.New())
 
 	// Seed the database
-	log.Info("Migrating and seeding database...")
-	if err := common.MigrateAndSeed(db); err != nil {
-		panic(err)
-	}
+	if bypass_db {
+		log.Info(`You have opted to disable the DB functionality.
 
-	if convert_old_db {
-		log.Info("Preparing to convert old database...")
+		Going forward, you are on your own.
+		Frontend pages will be disabled, and there will be NO security measures in place.
+		End users will be able to login with any username and password, and any game ID will
+		be accepted blindly. 
+		
+		This is NOT recommended for production.
+		You have been warned.
+		`)
 
-		// Initialize v0 database
-		old_db, err := gorm.Open(mysql.Open(
-			fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=True",
-				os.Getenv("DB_USERNAME"),
-				os.Getenv("DB_PASSWORD"),
-				os.Getenv("DB_HOST"),
-				os.Getenv("DB_PORT"),
-				os.Getenv("OLD_DB"),
-			)), &gorm.Config{
-			Logger: gorm_logger.Default.LogMode(gorm_logger.Info),
-		})
-		if err != nil {
+	} else {
+		log.Info("Migrating and seeding database...")
+		if err := common.MigrateAndSeed(db); err != nil {
 			panic(err)
 		}
-		log.Info("Now converting old database...")
-		if err := common.ConvertDatabase(old_db, db, auth.DB); err != nil {
-			panic(err)
+
+		if convert_old_db {
+			log.Info("Preparing to convert old database...")
+
+			// Initialize v0 database
+			old_db, err := gorm.Open(mysql.Open(
+				fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=True",
+					os.Getenv("DB_USERNAME"),
+					os.Getenv("DB_PASSWORD"),
+					os.Getenv("DB_HOST"),
+					os.Getenv("DB_PORT"),
+					os.Getenv("OLD_DB"),
+				)), &gorm.Config{
+				Logger: gorm_logger.Default.LogMode(gorm_logger.Info),
+			})
+			if err != nil {
+				panic(err)
+			}
+			log.Info("Now converting old database...")
+			if err := common.ConvertDatabase(old_db, db, auth.DB); err != nil {
+				panic(err)
+			}
 		}
 	}
 

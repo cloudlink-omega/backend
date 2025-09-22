@@ -1,6 +1,7 @@
 package server
 
 import (
+	"log"
 	"embed"
 	"net/http"
 	"time"
@@ -59,6 +60,9 @@ func New(
 	// Email Config
 	email_config *account_structs.MailConfig,
 
+	// Disable DB - This service is completely disabled since it's a frontend-facing service
+	bypass_db bool,
+
 ) *Server {
 	srv := &Server{
 		ServerName: server_name,
@@ -67,6 +71,11 @@ func New(
 		Policy:     bluemonday.UGCPolicy(),
 		HostedPath: hosted_path,
 		MailConfig: email_config,
+	}
+
+	if bypass_db {
+		log.Println("DB bypass enabled, skipping frontend server initialization.")
+		return srv
 	}
 
 	// Initialize DB
